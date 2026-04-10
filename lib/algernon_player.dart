@@ -20,8 +20,12 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     with SingleTickerProviderStateMixin {
   //
   /// Initialise SoLoud and tell it how we want to receive audio data
-  final _soloud = SoLoud.instance;
+  final _soLoud = SoLoud.instance;
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
+  double _fftSmoothing = 0.5;
+
+  bool get _soLoudIsReady =>
+      _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
   /// [_fftDataImageNotifier] is where we store the latest data from the FFT, in an image format for efficient
   /// passthrough to the shader later.
@@ -36,16 +40,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   late final Ticker _ticker;
   final Duration _fpsAimDuration = const Duration(microseconds: 1000000 ~/ 60);
   Duration _lastTimestamp = Duration.zero;
-
-  @override
-  dispose() {
-    _ticker.stop();
-    _audioData.dispose();
-    _fftDataImageNotifier.value?.dispose();
-    _soloud.deinit();
-
-    super.dispose();
-  }
 
   @override
   void initState() {
@@ -63,11 +57,20 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   @override
+  dispose() {
+    _ticker.stop();
+    _audioData.dispose();
+    _fftDataImageNotifier.value?.dispose();
+    _soLoud.deinit();
+
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        /// Rebuild when the FFT data changes
-        Expanded(
+        Positioned.fill(
           child: ListenableBuilder(
             listenable: _fftDataImageNotifier,
             builder: (BuildContext context, Widget? child) {
@@ -79,20 +82,45 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             },
           ),
         ),
-        ElevatedButton(
-          onPressed: _initialiseSoundAndPlay,
-          child: const Text('PLAY'),
+        Positioned.directional(
+          textDirection: TextDirection.ltr,
+          bottom: 0,
+          height: 30,
+          start: 0,
+          end: 0,
+          child: ElevatedButton(
+            onPressed: _initialiseSoundAndPlay,
+            child: const Text('PLAY'),
+          ),
+        ),
+        Positioned.directional(
+          textDirection: TextDirection.ltr,
+          top: 0,
+          height: 48,
+          start: 0,
+          end: 0,
+          child: Slider(
+            value: _fftSmoothing,
+            onChanged: (double value) {
+              if (_soLoudIsReady) {
+                setState(() {
+                  _fftSmoothing = value;
+                  _soLoud.setFftSmoothing(_fftSmoothing);
+                });
+              }
+            },
+          ),
         ),
       ],
     );
   }
 
   void _initialiseSoundAndPlay() async {
-    await _soloud.init(bufferSize: 512);
-    _soloud.setFftSmoothing(1.0);
-    _soloud.setVisualizationEnabled(true);
+    await _soLoud.init(bufferSize: 512);
+    _soLoud.setFftSmoothing(_fftSmoothing);
+    _soLoud.setVisualizationEnabled(true);
 
-    await _soloud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
+    await _soLoud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
   }
 
   /// Runs on every tick of [_ticker] as a callback (which works because this widget uses the
@@ -102,8 +130,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   void _onTick(Duration elapsed) async {
     if (elapsed - _lastTimestamp >= _fpsAimDuration &&
         context.mounted &&
-        _soloud.isInitialized &&
-        _soloud.getVisualizationEnabled()) {
+        _soLoudIsReady) {
       {
         _lastTimestamp = elapsed;
         try {

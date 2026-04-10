@@ -111,8 +111,6 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
             child: Stack(
               children: [
                 Padding(
-                  /// Individual pages must handle the horizontal padding as it affects the position
-                  /// of scrollbars, which areas are active for scrolling etc.
                   padding: EdgeInsets.zero,
                   child: NavigatorPopHandler(
                     onPop: () async {

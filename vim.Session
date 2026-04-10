@@ -17,24 +17,19 @@ badd +11 lib/app_state.dart
 badd +57 lib/main.dart
 badd +1 lib/pages/root_page.dart
 badd +148 ~/.config/nvim/init.lua
-badd +102 ~/000-WORK/algernon/pubspec.yaml
-badd +38 ~/000-WORK/algernon/README.md
+badd +102 pubspec.yaml
+badd +38 README.md
 badd +97 lib/algernon_player.dart
 badd +8 lib/algernon_shader_painter.dart
-badd +23 ~/000-WORK/algernon/shaders/algernon1.frag
+badd +23 shaders/algernon1.frag
 argglobal
 %argdel
-$argadd lib/algernon_audio_handler.dart
-$argadd lib/algernon_audio_observer.dart
-$argadd lib/algernon_audio_player.dart
-$argadd lib/algernon_audio_seeker.dart
-edit ~/000-WORK/algernon/pubspec.yaml
+edit pubspec.yaml
 argglobal
-if bufexists(fnamemodify("~/000-WORK/algernon/pubspec.yaml", ":p")) | buffer ~/000-WORK/algernon/pubspec.yaml | else | edit ~/000-WORK/algernon/pubspec.yaml | endif
+if bufexists(fnamemodify("pubspec.yaml", ":p")) | buffer pubspec.yaml | else | edit pubspec.yaml | endif
 if &buftype ==# 'terminal'
-  silent file ~/000-WORK/algernon/pubspec.yaml
+  silent file pubspec.yaml
 endif
-balt ~/.config/nvim/init.lua
 setlocal foldmethod=manual
 setlocal foldexpr=0
 setlocal foldmarker={{{,}}}
@@ -45,7 +40,7 @@ setlocal foldnestmax=20
 setlocal nofoldenable
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 102 - ((13 * winheight(0) + 13) / 27)
+let s:l = 102 - ((18 * winheight(0) + 19) / 38)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
