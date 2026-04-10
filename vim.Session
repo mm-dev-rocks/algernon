@@ -1,0 +1,70 @@
+let SessionLoad = 1
+let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
+let v:this_session=expand("<sfile>:p")
+silent only
+silent tabonly
+cd ~/000-WORK/algernon
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+let s:shortmess_save = &shortmess
+if &shortmess =~ 'A'
+  set shortmess=aoOA
+else
+  set shortmess=aoO
+endif
+badd +11 lib/app_state.dart
+badd +57 lib/main.dart
+badd +1 lib/pages/root_page.dart
+badd +148 ~/.config/nvim/init.lua
+badd +102 ~/000-WORK/algernon/pubspec.yaml
+badd +38 ~/000-WORK/algernon/README.md
+badd +97 lib/algernon_player.dart
+badd +8 lib/algernon_shader_painter.dart
+badd +23 ~/000-WORK/algernon/shaders/algernon1.frag
+argglobal
+%argdel
+$argadd lib/algernon_audio_handler.dart
+$argadd lib/algernon_audio_observer.dart
+$argadd lib/algernon_audio_player.dart
+$argadd lib/algernon_audio_seeker.dart
+edit ~/000-WORK/algernon/pubspec.yaml
+argglobal
+if bufexists(fnamemodify("~/000-WORK/algernon/pubspec.yaml", ":p")) | buffer ~/000-WORK/algernon/pubspec.yaml | else | edit ~/000-WORK/algernon/pubspec.yaml | endif
+if &buftype ==# 'terminal'
+  silent file ~/000-WORK/algernon/pubspec.yaml
+endif
+balt ~/.config/nvim/init.lua
+setlocal foldmethod=manual
+setlocal foldexpr=0
+setlocal foldmarker={{{,}}}
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal nofoldenable
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 102 - ((13 * winheight(0) + 13) / 27)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 102
+normal! 046|
+tabnext 1
+if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20
+let &shortmess = s:shortmess_save
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if filereadable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &g:so = s:so_save | let &g:siso = s:siso_save
+set hlsearch
+nohlsearch
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :
