@@ -20,6 +20,15 @@ class PainterConfigModel with ChangeNotifier {
     notifyListeners();
   }
 
+  /// [_currentShaderFilterQuality] affects something like visual smoothing/interpolation.
+  FilterQuality _currentShaderFilterQuality =
+      ALGERNON.shaderFilterQualities.values.first;
+  FilterQuality get currentShaderFilterQuality => _currentShaderFilterQuality;
+  set currentShaderFilterQuality(FilterQuality filterQuality) {
+    _currentShaderFilterQuality = filterQuality;
+    notifyListeners();
+  }
+
   @override
   dispose() {
     _fftDataImage?.dispose();

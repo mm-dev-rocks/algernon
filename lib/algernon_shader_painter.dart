@@ -10,9 +10,11 @@ class AlgernonShaderPainter extends StatelessWidget {
     super.key,
     required this.fftDataTexture,
     required this.shaderAssetKey,
+    required this.shaderFilterQuality,
   });
   final ui.Image fftDataTexture;
   final String shaderAssetKey;
+  final FilterQuality shaderFilterQuality;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +23,11 @@ class AlgernonShaderPainter extends StatelessWidget {
       (context, shader, child) => CustomPaint(
         //size: Size(256, 256),
         size: MediaQuery.of(context).size,
-        painter: ShaderPainter(shader: shader, fftDataTexture: fftDataTexture),
+        painter: ShaderPainter(
+          shader: shader,
+          fftDataTexture: fftDataTexture,
+          shaderFilterQuality: shaderFilterQuality,
+        ),
       ),
 
       /// We just need an empty generic child widget
@@ -32,9 +38,14 @@ class AlgernonShaderPainter extends StatelessWidget {
 
 /// Pass our FTT data in to the shader and paint a canvas with it.
 class ShaderPainter extends CustomPainter {
-  ShaderPainter({required this.shader, required this.fftDataTexture});
+  ShaderPainter({
+    required this.shader,
+    required this.shaderFilterQuality,
+    required this.fftDataTexture,
+  });
   ui.FragmentShader shader;
   ui.Image fftDataTexture;
+  final FilterQuality shaderFilterQuality;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -50,7 +61,7 @@ class ShaderPainter extends CustomPainter {
 
     final paint = Paint()
       // Unlikely to make much difference to performance but test variations for aesthetics
-      ..filterQuality = FilterQuality.none
+      ..filterQuality = shaderFilterQuality
       ..shader = shader;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
   }

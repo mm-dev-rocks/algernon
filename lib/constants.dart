@@ -46,10 +46,17 @@ class ALGERNON {
     'usePitchCompensation': [bool, false],
   };
 
+  static const int finalAimFps = 30;
   static final Map<String, String> shaderAssetKeys = {
     'Rose Tunnel': 'shaders/algernon_rose_tunnel_quadrant.frag',
     'Blocks Spiral': 'shaders/algernon_blocks_spiral.frag',
     'Blocks Simple': 'shaders/algernon_blocks_simple.frag',
+  };
+  static final Map<String, FilterQuality> shaderFilterQualities = {
+    'None': FilterQuality.none,
+    'Low': FilterQuality.low,
+    'Medium': FilterQuality.medium,
+    'High': FilterQuality.high,
   };
 
   static const double sliderTrackHeight = 3;

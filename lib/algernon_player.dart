@@ -24,7 +24,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Initialise SoLoud and tell it how we want to receive audio data
   final _soLoud = SoLoud.instance;
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
-  double _fftSmoothing = 0.5;
+
+  /// TODO magic number
+  double _fftSmoothingAmount = 0.5;
 
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
@@ -38,9 +40,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   late ui.Image? _zeroImage;
   bool _zeroImageExists = false;
 
-  // Frame rate we aim for
   late final Ticker _ticker;
-  final Duration _fpsAimDuration = const Duration(microseconds: 1000000 ~/ 60);
+  // Frame rate we aim for
+  final Duration _fpsAimDuration = const Duration(
+    microseconds: 1000000 ~/ ALGERNON.finalAimFps,
+  );
   Duration _lastTimestamp = Duration.zero;
 
   @override
@@ -81,6 +85,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       fftDataTexture:
                           _painterConfigModel.fftDataImage ?? _zeroImage!,
                       shaderAssetKey: _painterConfigModel.currentShaderAssetKey,
+                      shaderFilterQuality:
+                          _painterConfigModel.currentShaderFilterQuality,
                     )
                   : const SizedBox.shrink();
             },
@@ -89,17 +95,12 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         Positioned.directional(
           textDirection: TextDirection.ltr,
           bottom: 0,
-          height: 30,
           start: 0,
           end: 0,
           child: Row(
             children: [
               DropdownButton<String>(
                 value: _painterConfigModel.currentShaderAssetKey,
-                icon: const Icon(Icons.arrow_downward),
-                elevation: 16,
-                style: const TextStyle(color: Colors.deepPurple),
-                underline: Container(height: 2, color: Colors.deepPurpleAccent),
                 onChanged: (String? value) {
                   setState(() {
                     _painterConfigModel.currentShaderAssetKey = value!;
@@ -125,19 +126,42 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         Positioned.directional(
           textDirection: TextDirection.ltr,
           top: 0,
-          height: 48,
           start: 0,
           end: 0,
-          child: Slider(
-            value: _fftSmoothing,
-            onChanged: (double value) {
-              if (_soLoudIsReady) {
-                setState(() {
-                  _fftSmoothing = value;
-                  _soLoud.setFftSmoothing(_fftSmoothing);
-                });
-              }
-            },
+          child: Row(
+            children: [
+              /// TODO DRY
+              DropdownButton<FilterQuality>(
+                value: _painterConfigModel.currentShaderFilterQuality,
+                onChanged: (FilterQuality? value) {
+                  setState(() {
+                    _painterConfigModel.currentShaderFilterQuality = value!;
+                  });
+                },
+                items: ALGERNON.shaderFilterQualities.values
+                    .map<DropdownMenuItem<FilterQuality>>((
+                      FilterQuality value,
+                    ) {
+                      return DropdownMenuItem<FilterQuality>(
+                        value: value,
+                        child: Text(value.toString()),
+                      );
+                    })
+                    .toList(),
+              ),
+              const Spacer(),
+              Slider(
+                value: _fftSmoothingAmount,
+                onChanged: (double value) {
+                  if (_soLoudIsReady) {
+                    setState(() {
+                      _fftSmoothingAmount = value;
+                      _soLoud.setFftSmoothing(_fftSmoothingAmount);
+                    });
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ],
@@ -146,7 +170,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   void _initialiseSoundAndPlay() async {
     await _soLoud.init(bufferSize: 512);
-    //_soLoud.setFftSmoothing(_fftSmoothing);
     _soLoud.setVisualizationEnabled(true);
 
     //await _soLoud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
@@ -167,6 +190,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           Future<void>.microtask(() async {
             _audioData.updateSamples();
             _painterConfigModel.fftDataImage = await _imageFromFftData(
+              /// TODO Explain why we choose this subset of the data
               Float32List.sublistView(_audioData.getAudioData(), 0, 256),
             );
           });
