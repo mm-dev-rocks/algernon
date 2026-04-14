@@ -149,17 +149,19 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                     })
                     .toList(),
               ),
-              const Spacer(),
-              Slider(
-                value: _fftSmoothingAmount,
-                onChanged: (double value) {
-                  if (_soLoudIsReady) {
-                    setState(() {
-                      _fftSmoothingAmount = value;
-                      _soLoud.setFftSmoothing(_fftSmoothingAmount);
-                    });
-                  }
-                },
+              Expanded(
+                child: Slider(
+                  value: _fftSmoothingAmount,
+                  divisions: 100,
+                  onChanged: (double value) {
+                    if (_soLoudIsReady) {
+                      setState(() {
+                        _fftSmoothingAmount = value;
+                        _soLoud.setFftSmoothing(_fftSmoothingAmount);
+                      });
+                    }
+                  },
+                ),
               ),
             ],
           ),
@@ -172,8 +174,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     await _soLoud.init(bufferSize: 512);
     _soLoud.setVisualizationEnabled(true);
 
-    //await _soLoud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
-    await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
+    await _soLoud.playSource(
+      asset: 'assets/Pointer Sisters - Automatic.mp3',
+      looping: true,
+    );
+    //await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
   }
 
   /// Runs on every tick of [_ticker] as a callback (which works because this widget uses the
