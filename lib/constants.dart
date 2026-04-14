@@ -54,6 +54,12 @@ class ALGERNON {
     'Oscilloscope Columns': 'shaders/algernon_oscilloscope_columns.frag',
     'Rings Radial': 'shaders/algernon_rings_radial.frag',
     'Warp Kaleido': 'shaders/algernon_warp_kaleido.frag',
+    'Lissajous Web': 'shaders/algernon_lissajous_web.frag',
+    'Interference Waves': 'shaders/algernon_interference_waves.frag',
+    'Voronoi Cells': 'shaders/algernon_voronoi_cells.frag',
+    'Moire Grid': 'shaders/algernon_moire_grid.frag',
+    'Polar Warp': 'shaders/algernon_polar_warp.frag',
+    'Domain Tiles': 'shaders/algernon_domain_tiles.frag',
   };
   static final Map<String, FilterQuality> shaderFilterQualities = {
     'None': FilterQuality.none,

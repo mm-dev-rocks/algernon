@@ -100,6 +100,12 @@ flutter:
     - shaders/algernon_oscilloscope_columns.frag
     - shaders/algernon_rings_radial.frag
     - shaders/algernon_warp_kaleido.frag
+    - shaders/algernon_lissajous_web.frag
+    - shaders/algernon_interference_waves.frag
+    - shaders/algernon_voronoi_cells.frag
+    - shaders/algernon_moire_grid.frag
+    - shaders/algernon_polar_warp.frag
+    - shaders/algernon_domain_tiles.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:
