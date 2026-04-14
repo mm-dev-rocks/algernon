@@ -51,6 +51,9 @@ class ALGERNON {
     'Rose Tunnel': 'shaders/algernon_rose_tunnel_quadrant.frag',
     'Blocks Spiral': 'shaders/algernon_blocks_spiral.frag',
     'Blocks Simple': 'shaders/algernon_blocks_simple.frag',
+    'Oscilloscope Columns': 'shaders/algernon_oscilloscope_columns.frag',
+    'Rings Radial': 'shaders/algernon_rings_radial.frag',
+    'Warp Kaleido': 'shaders/algernon_warp_kaleido.frag',
   };
   static final Map<String, FilterQuality> shaderFilterQualities = {
     'None': FilterQuality.none,

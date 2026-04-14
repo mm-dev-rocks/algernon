@@ -97,6 +97,9 @@ flutter:
     - shaders/algernon_blocks_simple.frag
     - shaders/algernon_blocks_spiral.frag
     - shaders/algernon_rose_tunnel_quadrant.frag
+    - shaders/algernon_oscilloscope_columns.frag
+    - shaders/algernon_rings_radial.frag
+    - shaders/algernon_warp_kaleido.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:
