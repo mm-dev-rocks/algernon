@@ -6,16 +6,19 @@ import 'package:flutter_shaders/flutter_shaders.dart';
 
 /// Get a fragment shader and use it to paint a widget.
 class AlgernonShaderPainter extends StatelessWidget {
-  const AlgernonShaderPainter({super.key, required this.audioImage});
-  final ui.Image audioImage;
+  const AlgernonShaderPainter({super.key, required this.fftDataTexture});
+  final ui.Image fftDataTexture;
 
   @override
   Widget build(BuildContext context) {
     return ShaderBuilder(
-      assetKey: 'shaders/algernon1.frag',
+      //assetKey: 'shaders/algernon_rose_tunnel_quadrant.frag',
+      //assetKey: 'shaders/algernon_blocks_spiral.frag',
+      //assetKey: 'shaders/algernon_blocks_simple.frag',
       (context, shader, child) => CustomPaint(
+        //size: Size(256, 256),
         size: MediaQuery.of(context).size,
-        painter: ShaderPainter(shader: shader, audioImage: audioImage),
+        painter: ShaderPainter(shader: shader, fftDataTexture: fftDataTexture),
       ),
 
       /// We just need an empty generic child widget
@@ -26,9 +29,9 @@ class AlgernonShaderPainter extends StatelessWidget {
 
 /// Pass our FTT data in to the shader and paint a canvas with it.
 class ShaderPainter extends CustomPainter {
-  ShaderPainter({required this.shader, required this.audioImage});
+  ShaderPainter({required this.shader, required this.fftDataTexture});
   ui.FragmentShader shader;
-  ui.Image audioImage;
+  ui.Image fftDataTexture;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -40,14 +43,17 @@ class ShaderPainter extends CustomPainter {
       ..setFloat(0, size.width)
       ..setFloat(1, size.height)
       // There's only one sampler
-      ..setImageSampler(0, audioImage);
+      ..setImageSampler(0, fftDataTexture);
 
-    final paint = Paint()..shader = shader;
+    final paint = Paint()
+      // Unlikely to make much difference to performance but test variations for aesthetics
+      ..filterQuality = FilterQuality.none
+      ..shader = shader;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
   }
 
   @override
   bool shouldRepaint(covariant ShaderPainter oldDelegate) {
-    return oldDelegate.audioImage != audioImage;
+    return oldDelegate.fftDataTexture != fftDataTexture;
   }
 }

@@ -94,12 +94,14 @@ flutter:
   generate: true
 
   shaders:
-    - shaders/simple.frag
-    - shaders/algernon1.frag
+    - shaders/algernon_blocks_simple.frag
+    - shaders/algernon_blocks_spiral.frag
+    - shaders/algernon_rose_tunnel_quadrant.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - 'assets/Pointer Sisters - Automatic.mp3'
+    - 'assets/Eternal Circle.mp3'
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

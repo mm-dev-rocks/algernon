@@ -76,7 +76,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             builder: (BuildContext context, Widget? child) {
               return _zeroImageExists
                   ? AlgernonShaderPainter(
-                      audioImage: _fftDataImageNotifier.value ?? _zeroImage!,
+                      fftDataTexture:
+                          _fftDataImageNotifier.value ?? _zeroImage!,
                     )
                   : const SizedBox.shrink();
             },
@@ -117,10 +118,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   void _initialiseSoundAndPlay() async {
     await _soLoud.init(bufferSize: 512);
-    _soLoud.setFftSmoothing(_fftSmoothing);
+    //_soLoud.setFftSmoothing(_fftSmoothing);
     _soLoud.setVisualizationEnabled(true);
 
-    await _soLoud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
+    //await _soLoud.playSource(asset: 'assets/Pointer Sisters - Automatic.mp3');
+    await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
   }
 
   /// Runs on every tick of [_ticker] as a callback (which works because this widget uses the
