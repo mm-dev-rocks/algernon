@@ -46,6 +46,12 @@ class ALGERNON {
     'usePitchCompensation': [bool, false],
   };
 
+  static final Map<String, String> shaderAssetKeys = {
+    'Rose Tunnel': 'shaders/algernon_rose_tunnel_quadrant.frag',
+    'Blocks Spiral': 'shaders/algernon_blocks_spiral.frag',
+    'Blocks Simple': 'shaders/algernon_blocks_simple.frag',
+  };
+
   static const double sliderTrackHeight = 3;
   static const SliderTrackShape sliderTrackShape =
       RectangularSliderTrackShape();

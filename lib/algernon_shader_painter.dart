@@ -6,15 +6,18 @@ import 'package:flutter_shaders/flutter_shaders.dart';
 
 /// Get a fragment shader and use it to paint a widget.
 class AlgernonShaderPainter extends StatelessWidget {
-  const AlgernonShaderPainter({super.key, required this.fftDataTexture});
+  const AlgernonShaderPainter({
+    super.key,
+    required this.fftDataTexture,
+    required this.shaderAssetKey,
+  });
   final ui.Image fftDataTexture;
+  final String shaderAssetKey;
 
   @override
   Widget build(BuildContext context) {
     return ShaderBuilder(
-      //assetKey: 'shaders/algernon_rose_tunnel_quadrant.frag',
-      //assetKey: 'shaders/algernon_blocks_spiral.frag',
-      //assetKey: 'shaders/algernon_blocks_simple.frag',
+      assetKey: shaderAssetKey,
       (context, shader, child) => CustomPaint(
         //size: Size(256, 256),
         size: MediaQuery.of(context).size,

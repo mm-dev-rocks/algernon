@@ -5,6 +5,8 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
+import 'package:algernon/constants.dart';
+import 'package:algernon/painter_config_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -27,12 +29,12 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
-  /// [_fftDataImageNotifier] is where we store the latest data from the FFT, in an image format for efficient
-  /// passthrough to the shader later.
-  /// When it changes we can rebuild the [AlgernonShaderPainter] widget via a [ListenableBuilder].
-  final ValueNotifier<ui.Image?> _fftDataImageNotifier = ValueNotifier(null);
+  /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
+  /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
+  /// [AlgernonShaderPainter] to rebuild.
+  final PainterConfigModel _painterConfigModel = PainterConfigModel();
 
-  /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start)
+  /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start).
   late ui.Image? _zeroImage;
   bool _zeroImageExists = false;
 
@@ -60,7 +62,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   dispose() {
     _ticker.stop();
     _audioData.dispose();
-    _fftDataImageNotifier.value?.dispose();
+    _painterConfigModel.dispose();
     _soLoud.deinit();
 
     super.dispose();
@@ -72,12 +74,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       children: [
         Positioned.fill(
           child: ListenableBuilder(
-            listenable: _fftDataImageNotifier,
+            listenable: _painterConfigModel,
             builder: (BuildContext context, Widget? child) {
               return _zeroImageExists
                   ? AlgernonShaderPainter(
                       fftDataTexture:
-                          _fftDataImageNotifier.value ?? _zeroImage!,
+                          _painterConfigModel.fftDataImage ?? _zeroImage!,
+                      shaderAssetKey: _painterConfigModel.currentShaderAssetKey,
                     )
                   : const SizedBox.shrink();
             },
@@ -89,9 +92,34 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           height: 30,
           start: 0,
           end: 0,
-          child: ElevatedButton(
-            onPressed: _initialiseSoundAndPlay,
-            child: const Text('PLAY'),
+          child: Row(
+            children: [
+              DropdownButton<String>(
+                value: _painterConfigModel.currentShaderAssetKey,
+                icon: const Icon(Icons.arrow_downward),
+                elevation: 16,
+                style: const TextStyle(color: Colors.deepPurple),
+                underline: Container(height: 2, color: Colors.deepPurpleAccent),
+                onChanged: (String? value) {
+                  setState(() {
+                    _painterConfigModel.currentShaderAssetKey = value!;
+                  });
+                },
+                items: ALGERNON.shaderAssetKeys.values
+                    .map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    })
+                    .toList(),
+              ),
+              const Spacer(),
+              ElevatedButton(
+                onPressed: _initialiseSoundAndPlay,
+                child: const Text('PLAY'),
+              ),
+            ],
           ),
         ),
         Positioned.directional(
@@ -138,7 +166,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         try {
           Future<void>.microtask(() async {
             _audioData.updateSamples();
-            _fftDataImageNotifier.value = await _imageFromFftData(
+            _painterConfigModel.fftDataImage = await _imageFromFftData(
               Float32List.sublistView(_audioData.getAudioData(), 0, 256),
             );
           });
