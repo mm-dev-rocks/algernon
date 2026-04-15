@@ -2,13 +2,38 @@
 
 enum TweakType {
   fftDataSmoothing(
-    name: 'FFT Smoothing',
+    label: 'FFT Smoothing',
     description: 'Smoothing/interpolation between FFT bins.',
+  ),
+  uniformPushRange(
+    label: 'Push Range',
+    uniform: 'u_pushRange',
+    description: 'Size range of the cell size swings',
+  ),
+  uniformBorderWidth(
+    label: 'Border Width',
+    uniform: 'u_borderWidth',
+    description: 'Width of black borders',
+  ),
+  uniformBaseRadius(
+    label: 'Base Radius',
+    uniform: 'u_baseRadius',
+    description: 'Radius of base',
   );
 
-  final String name;
+  final String label;
   final String description;
-  const TweakType({required this.name, required this.description});
+  final String? uniform;
+  const TweakType({
+    required this.label,
+    required this.description,
+    this.uniform,
+  });
 }
 
-enum TweakId { fftDataSmoothing }
+enum TweakId {
+  fftDataSmoothing,
+  uniformPushRange,
+  uniformBorderWidth,
+  uniformBaseRadius,
+}

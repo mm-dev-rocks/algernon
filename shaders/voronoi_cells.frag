@@ -28,6 +28,10 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
 
+uniform float u_pushRange;
+uniform float u_borderWidth;
+uniform float u_baseRadius;
+
 out vec4 fragColor;
 
 // Number of Voronoi cells / FFT bins used. 16 is legible and maps naturally
@@ -37,15 +41,15 @@ const int CELL_COUNT = 16;
 
 // Radius of the circle on which the sites rest when their bin is silent.
 // 0.35 fills roughly 70 % of the shorter screen dimension nicely.
-const float BASE_RADIUS = 0.35;
+// const float BASE_RADIUS = 0.35;
 
 // How far a site can move radially beyond BASE_RADIUS at full amplitude.
 // Larger values = more dramatic cell-size swings.
-const float PUSH_RANGE = 0.18;
+// const float PUSH_RANGE = 0.18;
 
 // Border darkness: pixels within this normalised distance of a cell edge
 // are darkened toward black. Higher = wider, more visible borders.
-const float BORDER_WIDTH = 0.04;
+// const float BORDER_WIDTH = 0.04;
 
 // pi — defined locally so we don't rely on any extension constants.
 const float PI = 3.14159265;
@@ -84,7 +88,8 @@ void main() {
 
     // Radial position: silent bin → sites sit on BASE_RADIUS; loud → pushed
     // out.
-    float radius = BASE_RADIUS + binAmp * PUSH_RANGE;
+    // float radius = BASE_RADIUS + binAmp * PUSH_RANGE;
+    float radius = u_baseRadius + binAmp * u_pushRange;
 
     // Site position in aspect-corrected screen space.
     vec2 site = vec2(cos(angle), sin(angle)) * radius;
@@ -108,8 +113,9 @@ void main() {
   // The border of a Voronoi cell is the locus where d1 == d2 (equidistant
   // from two sites). We approximate border proximity as (d2 - d1), remapped
   // to a 0..1 signal that is 0 at the border and 1 well inside a cell.
-  // Dividing by BORDER_WIDTH normalises the width of the dark border line.
-  float borderProximity = clamp((d2 - d1) / BORDER_WIDTH, 0.0, 1.0);
+  // Dividing by u_borderWidth normalises the width of the dark border line.
+  // float borderProximity = clamp((d2 - d1) / BORDER_WIDTH, 0.0, 1.0);
+  float borderProximity = clamp((d2 - d1) / u_borderWidth, 0.0, 1.0);
 
   // --- Colour ---
   //

@@ -50,7 +50,7 @@ class ALGERNON {
   };
 
   static const int finalAimFps = 30;
-  static final List<ShaderMetaModel> shaderMetaModels = [
+  static final List<ShaderMetaModel> shadersMetadata = [
     ShaderMetaModel(
       friendlyName: 'Rose Tunnel',
       id: 'rose_tunnel_quadrant',
@@ -138,6 +138,27 @@ class ALGERNON {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
           id: 'voronoi_cells_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
+        ),
+        TweakId.uniformPushRange.name: ShaderTweakModel(
+          id: 'voronoi_cells_${TweakId.uniformPushRange.name}',
+          tweakType: TweakType.uniformPushRange,
+          min: 0.05,
+          max: 0.25,
+          defaultVal: 0.18,
+        ),
+        TweakId.uniformBorderWidth.name: ShaderTweakModel(
+          id: 'voronoi_cells_${TweakId.uniformBorderWidth.name}',
+          tweakType: TweakType.uniformBorderWidth,
+          min: 0.01,
+          max: 0.04,
+          defaultVal: 0.02,
+        ),
+        TweakId.uniformBaseRadius.name: ShaderTweakModel(
+          id: 'voronoi_cells_${TweakId.uniformBaseRadius.name}',
+          tweakType: TweakType.uniformBaseRadius,
+          min: 0.05,
+          max: 0.75,
+          defaultVal: 0.30,
         ),
       },
     ),

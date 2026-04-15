@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:ui' as ui;
 
+import 'package:algernon/enum/enum.dart';
 import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 
@@ -22,12 +24,17 @@ class AlgernonShaderPainter extends StatelessWidget {
     return ShaderBuilder(
       assetKey: shaderMeta.assetKey,
       (context, shader, child) => CustomPaint(
-        //size: Size(256, 256),
-        size: MediaQuery.of(context).size,
+        size: Size(256, 256),
+        //size: MediaQuery.of(context).size,
         painter: ShaderPainter(
           shader: shader,
           fftDataTexture: fftDataTexture,
           shaderFilterQuality: shaderFilterQuality,
+          shaderTweaks: Map.fromEntries(
+            shaderMeta.shaderTweaks.entries.where(
+              (e) => e.value.tweakType != TweakType.fftDataSmoothing,
+            ),
+          ),
         ),
       ),
 
@@ -43,10 +50,12 @@ class ShaderPainter extends CustomPainter {
     required this.shader,
     required this.shaderFilterQuality,
     required this.fftDataTexture,
+    required this.shaderTweaks,
   });
-  ui.FragmentShader shader;
-  ui.Image fftDataTexture;
+  final ui.FragmentShader shader;
+  final ui.Image fftDataTexture;
   final FilterQuality shaderFilterQuality;
+  final Map<String, ShaderTweakModel> shaderTweaks;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -59,6 +68,10 @@ class ShaderPainter extends CustomPainter {
       ..setFloat(1, size.height)
       // There's only one sampler
       ..setImageSampler(0, fftDataTexture);
+
+    shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
+      shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.currentVal);
+    });
 
     final paint = Paint()
       // Unlikely to make much difference to performance but test variations for aesthetics

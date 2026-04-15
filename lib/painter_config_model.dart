@@ -14,7 +14,7 @@ class PainterConfigModel with ChangeNotifier {
   }
 
   /// [_currentShader] tracks which shader is currently in use.
-  ShaderMetaModel _currentShaderMeta = ALGERNON.shaderMetaModels.first;
+  ShaderMetaModel _currentShaderMeta = ALGERNON.shadersMetadata.first;
   ShaderMetaModel get currentShaderMeta => _currentShaderMeta;
   set currentShaderMeta(ShaderMetaModel shaderMeta) {
     _currentShaderMeta = shaderMeta;

@@ -27,7 +27,7 @@
 
 precision mediump float;
 
-uniform vec2      u_resolution;
+uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
 
 out vec4 fragColor;
@@ -39,11 +39,11 @@ const int SOURCE_COUNT = 5;
 
 // Spatial frequency scale: higher = tighter, more numerous rings per unit
 // distance. This is a "zoom" on the wave pattern, not the audio frequency.
-const float WAVE_SCALE  = 18.0;
+const float WAVE_SCALE = 18.0;
 
 // How sharply the interference sum is thresholded into bright/dark bands.
 // 1.0 = soft sine gradient; higher values snap toward hard bright rings.
-const float CONTRAST    = 1.6;
+const float CONTRAST = 1.6;
 
 // Helper: reads a single bin by float index and returns amplitude 0..1.
 // +0.5 texel-centre offset — the codebase convention for bin sampling.
@@ -56,8 +56,8 @@ void main() {
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
 
   // Centre and aspect-correct so the pattern is not squashed on wide canvases.
-  vec2 p   = st - vec2(0.5, 0.5);
-  p.x     *= u_resolution.x / u_resolution.y;
+  vec2 p = st - vec2(0.5, 0.5);
+  p.x *= u_resolution.x / u_resolution.y;
 
   // --- Fixed source positions ---
   //
@@ -66,11 +66,11 @@ void main() {
   // simple symmetry — it remains complex across all audio states.
   // Coordinates are in the same aspect-corrected space as p above.
   vec2 sources[5];
-  sources[0] = vec2( 0.00,  0.00);   // centre
-  sources[1] = vec2(-0.30,  0.20);   // upper-left
-  sources[2] = vec2( 0.30,  0.20);   // upper-right
-  sources[3] = vec2(-0.20, -0.28);   // lower-left
-  sources[4] = vec2( 0.25, -0.22);   // lower-right
+  sources[0] = vec2(0.00, 0.00);   // centre
+  sources[1] = vec2(-0.30, 0.20);  // upper-left
+  sources[2] = vec2(0.30, 0.20);   // upper-right
+  sources[3] = vec2(-0.20, -0.28); // lower-left
+  sources[4] = vec2(0.25, -0.22);  // lower-right
 
   // --- FFT band mapping ---
   //
@@ -85,11 +85,14 @@ void main() {
   //   61..120 upper-mid / presence (consonants, plucks, hi-hat body)
   //   121..180 treble (cymbals, air, shimmer)
   float amp[5];
-  amp[0] = (sampleBin(2.0)   + sampleBin(4.0)   + sampleBin(6.0))   / 3.0; // sub-bass
-  amp[1] = (sampleBin(10.0)  + sampleBin(14.0)  + sampleBin(18.0))  / 3.0; // bass
-  amp[2] = (sampleBin(30.0)  + sampleBin(40.0)  + sampleBin(50.0))  / 3.0; // low-mid
-  amp[3] = (sampleBin(80.0)  + sampleBin(95.0)  + sampleBin(110.0)) / 3.0; // upper-mid
-  amp[4] = (sampleBin(130.0) + sampleBin(150.0) + sampleBin(170.0)) / 3.0; // treble
+  amp[0] = (sampleBin(2.0) + sampleBin(4.0) + sampleBin(6.0)) / 3.0; // sub-bass
+  amp[1] = (sampleBin(10.0) + sampleBin(14.0) + sampleBin(18.0)) / 3.0; // bass
+  amp[2] =
+      (sampleBin(30.0) + sampleBin(40.0) + sampleBin(50.0)) / 3.0; // low-mid
+  amp[3] =
+      (sampleBin(80.0) + sampleBin(95.0) + sampleBin(110.0)) / 3.0; // upper-mid
+  amp[4] =
+      (sampleBin(130.0) + sampleBin(150.0) + sampleBin(170.0)) / 3.0; // treble
 
   // --- Wave superposition ---
   //
@@ -104,15 +107,15 @@ void main() {
   float waveSum = 0.0;
 
   for (int i = 0; i < SOURCE_COUNT; i++) {
-    float dist   = length(p - sources[i]);
+    float dist = length(p - sources[i]);
     float height = amp[i] * sin(WAVE_SCALE * dist);
-    waveSum     += height;
+    waveSum += height;
   }
 
   // waveSum is in the range -(SOURCE_COUNT)..(SOURCE_COUNT).
   // Remap to 0..1 by shifting and scaling, then apply contrast curve.
-  float normalised  = waveSum / float(SOURCE_COUNT) * 0.5 + 0.5;  // 0..1
-  float contrasted  = pow(clamp(normalised, 0.0, 1.0), CONTRAST);
+  float normalised = waveSum / float(SOURCE_COUNT) * 0.5 + 0.5; // 0..1
+  float contrasted = pow(clamp(normalised, 0.0, 1.0), CONTRAST);
 
   // --- Colour ---
   //
@@ -124,17 +127,21 @@ void main() {
   // Each channel is also shifted in phase (by 0 / 0.33 / 0.67 of the cycle)
   // so that the R/G/B fringes land on *different* wavefronts — preventing the
   // trivially boring case where all three channels are identical.
-  float bassAmp   = amp[0] + amp[1];        // combined low-end weight
-  float midAmp    = amp[2];                 // mid weight
-  float trebleAmp = amp[3] + amp[4];        // combined high-end weight
+  float bassAmp = amp[0] + amp[1];   // combined low-end weight
+  float midAmp = amp[2];             // mid weight
+  float trebleAmp = amp[3] + amp[4]; // combined high-end weight
 
   // Phase offsets create colour separation between wavefronts.
   // The sin() input is the same as the interference calculation above, but
   // here we re-derive it per-channel for the phase shift — the extra sin()
   // calls are on scalars, not vectors, so cost is modest.
-  float r = pow(clamp(sin(contrasted * 3.14159265 + 0.0)  * bassAmp   + 0.3, 0.0, 1.0), 1.2);
-  float g = pow(clamp(sin(contrasted * 3.14159265 + 2.09) * midAmp    + 0.3, 0.0, 1.0), 1.2);
-  float b = pow(clamp(sin(contrasted * 3.14159265 + 4.19) * trebleAmp + 0.3, 0.0, 1.0), 1.2);
+  float r = pow(
+      clamp(sin(contrasted * 3.14159265 + 0.0) * bassAmp + 0.3, 0.0, 1.0), 1.2);
+  float g = pow(
+      clamp(sin(contrasted * 3.14159265 + 2.09) * midAmp + 0.3, 0.0, 1.0), 1.2);
+  float b = pow(
+      clamp(sin(contrasted * 3.14159265 + 4.19) * trebleAmp + 0.3, 0.0, 1.0),
+      1.2);
 
   // Add a base luminance proportional to overall loudness so the visualiser
   // stays visible on near-silent audio (avoids a completely black screen).

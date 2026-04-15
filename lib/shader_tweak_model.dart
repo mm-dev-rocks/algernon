@@ -8,7 +8,6 @@ import 'package:algernon/enum/enum.dart';
 /// Sets up some config defaults and provides a place to store user settings.
 class ShaderTweakModel {
   ShaderTweakModel({
-    //required this.friendlyName,
     required this.id,
     required this.tweakType,
     this.min = 0,
@@ -24,7 +23,6 @@ class ShaderTweakModel {
     }
   }
 
-  //final String friendlyName;
   final String id;
   final TweakType tweakType;
   final double min;

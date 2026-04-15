@@ -10,6 +10,7 @@ import 'package:algernon/enum/enum.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/shader_meta_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
+import 'package:algernon/shader_tweak_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -81,19 +82,22 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     return Stack(
       children: [
         Positioned.fill(
-          child: ListenableBuilder(
-            listenable: _painterConfig,
-            builder: (BuildContext context, Widget? child) {
-              return _zeroImageExists
-                  ? AlgernonShaderPainter(
-                      fftDataTexture:
-                          _painterConfig.fftDataImage ?? _zeroImage!,
-                      shaderMeta: _painterConfig.currentShaderMeta,
-                      shaderFilterQuality:
-                          _painterConfig.currentShaderFilterQuality,
-                    )
-                  : const SizedBox.shrink();
-            },
+          child: FittedBox(
+            fit: BoxFit.cover,
+            child: ListenableBuilder(
+              listenable: _painterConfig,
+              builder: (BuildContext context, Widget? child) {
+                return _zeroImageExists
+                    ? AlgernonShaderPainter(
+                        fftDataTexture:
+                            _painterConfig.fftDataImage ?? _zeroImage!,
+                        shaderMeta: _painterConfig.currentShaderMeta,
+                        shaderFilterQuality:
+                            _painterConfig.currentShaderFilterQuality,
+                      )
+                    : const SizedBox.shrink();
+              },
+            ),
           ),
         ),
         Positioned.directional(
@@ -110,7 +114,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                     _painterConfig.currentShaderMeta = value!;
                   });
                 },
-                items: ALGERNON.shaderMetaModels
+                items: ALGERNON.shadersMetadata
                     .map<DropdownMenuItem<ShaderMetaModel>>((
                       ShaderMetaModel shaderMeta,
                     ) {
@@ -131,12 +135,39 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         ),
         Positioned.directional(
           textDirection: TextDirection.ltr,
+          top: 100,
+          start: 0,
+          child: Row(
+            children: [
+              ..._painterConfig.currentShaderMeta.shaderTweaks.entries
+                  .where(
+                    (MapEntry<String, ShaderTweakModel> entry) =>
+                        entry.value.tweakType != TweakType.fftDataSmoothing,
+                  )
+                  .map(
+                    (MapEntry<String, ShaderTweakModel> entry) =>
+                        ShaderTweakSlider(
+                          shaderTweak: entry.value,
+                          name: entry.value.tweakType.label,
+                          onChanged: (double value) {
+                            if (_soLoudIsReady) {
+                              setState(() {
+                                entry.value.currentVal = value;
+                              });
+                            }
+                          },
+                        ),
+                  ),
+            ],
+          ),
+        ),
+        Positioned.directional(
+          textDirection: TextDirection.ltr,
           top: 0,
           start: 0,
           end: 0,
           child: Row(
             children: [
-              /// TODO DRY
               DropdownButton<FilterQuality>(
                 value: _painterConfig.currentShaderFilterQuality,
                 onChanged: (FilterQuality? value) {
@@ -156,9 +187,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                     .toList(),
               ),
               Expanded(
-                child: Slider(
-                  value: fftSmoothingTweak.currentVal,
-                  divisions: fftSmoothingTweak.divisions,
+                child: ShaderTweakSlider(
+                  shaderTweak: fftSmoothingTweak,
+                  name: TweakType.fftDataSmoothing.label,
                   onChanged: (double value) {
                     if (_soLoudIsReady) {
                       setState(() {
