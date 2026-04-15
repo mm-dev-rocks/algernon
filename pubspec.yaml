@@ -94,18 +94,18 @@ flutter:
   generate: true
 
   shaders:
-    - shaders/algernon_blocks_simple.frag
-    - shaders/algernon_blocks_spiral.frag
-    - shaders/algernon_rose_tunnel_quadrant.frag
-    - shaders/algernon_oscilloscope_columns.frag
-    - shaders/algernon_rings_radial.frag
-    - shaders/algernon_warp_kaleido.frag
-    - shaders/algernon_lissajous_web.frag
-    - shaders/algernon_interference_waves.frag
-    - shaders/algernon_voronoi_cells.frag
-    - shaders/algernon_moire_grid.frag
-    - shaders/algernon_polar_warp.frag
-    - shaders/algernon_domain_tiles.frag
+    - shaders/blocks_simple.frag
+    - shaders/blocks_spiral.frag
+    - shaders/rose_tunnel_quadrant.frag
+    - shaders/oscilloscope_columns.frag
+    - shaders/rings_radial.frag
+    - shaders/warp_kaleido.frag
+    - shaders/lissajous_web.frag
+    - shaders/interference_waves.frag
+    - shaders/voronoi_cells.frag
+    - shaders/moire_grid.frag
+    - shaders/polar_warp.frag
+    - shaders/domain_tiles.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:

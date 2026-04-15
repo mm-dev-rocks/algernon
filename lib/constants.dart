@@ -15,7 +15,6 @@ class ALGERNON {
   static const String appName = 'Algernon - Audio Visualiser';
   static const String androidNotificationChannelId =
       'rocks.mm_dev.algernon.channel';
-  //static const FlexScheme appColorScheme = FlexScheme.jungle;
 
   /// Route / page names
   static const String routeRoot = '/';
@@ -54,120 +53,120 @@ class ALGERNON {
   static final List<ShaderMetaModel> shaderMetaModels = [
     ShaderMetaModel(
       friendlyName: 'Rose Tunnel',
-      id: 'algernon_rose_tunnel_quadrant',
+      id: 'rose_tunnel_quadrant',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_rose_tunnel_quadrant${TweakId.fftDataSmoothing.name}',
+          id: 'rose_tunnel_quadrant_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Blocks Spiral',
-      id: 'algernon_blocks_spiral',
+      id: 'blocks_spiral',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_blocks_spiral${TweakId.fftDataSmoothing.name}',
+          id: 'blocks_spiral_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Blocks Simple',
-      id: 'algernon_blocks_simple',
+      id: 'blocks_simple',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_blocks_simple${TweakId.fftDataSmoothing.name}',
+          id: 'blocks_simple_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Oscilloscope Columns',
-      id: 'algernon_oscilloscope_columns',
+      id: 'oscilloscope_columns',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_oscilloscope_columns${TweakId.fftDataSmoothing.name}',
+          id: 'oscilloscope_columns_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Rings Radial',
-      id: 'algernon_rings_radial',
+      id: 'rings_radial',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_rings_radial${TweakId.fftDataSmoothing.name}',
+          id: 'rings_radial_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Warp Kaleido',
-      id: 'algernon_warp_kaleido',
+      id: 'warp_kaleido',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_warp_kaleido${TweakId.fftDataSmoothing.name}',
+          id: 'warp_kaleido_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Lissajous Web',
-      id: 'algernon_lissajous_web',
+      id: 'lissajous_web',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_lissajous_web${TweakId.fftDataSmoothing.name}',
+          id: 'lissajous_web_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Interference Waves',
-      id: 'algernon_interference_waves',
+      id: 'interference_waves',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_interference_waves${TweakId.fftDataSmoothing.name}',
+          id: 'interference_waves_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Voronoi Cells',
-      id: 'algernon_voronoi_cells',
+      id: 'voronoi_cells',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_voronoi_cells${TweakId.fftDataSmoothing.name}',
+          id: 'voronoi_cells_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Moire Grid',
-      id: 'algernon_moire_grid',
+      id: 'moire_grid',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_moire_grid${TweakId.fftDataSmoothing.name}',
+          id: 'moire_grid_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Polar Warp',
-      id: 'algernon_polar_warp',
+      id: 'polar_warp',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_polar_warp${TweakId.fftDataSmoothing.name}',
+          id: 'polar_warp_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
     ),
     ShaderMetaModel(
       friendlyName: 'Domain Tiles',
-      id: 'algernon_domain_tiles',
+      id: 'domain_tiles',
       shaderTweaks: {
         TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'algernon_domain_tiles${TweakId.fftDataSmoothing.name}',
+          id: 'domain_tiles_${TweakId.fftDataSmoothing.name}',
           tweakType: TweakType.fftDataSmoothing,
         ),
       },
@@ -236,63 +235,6 @@ class ALGERNON {
   /// Webdav / Server-related
   ///
   ///////////////////////
-
-  static String appDataDirectory = ".algernon_audiobook_listener";
-  static String jsonFilename = "library.json";
-  static String readmeFilename = "README.md";
-  static String bookmarksFilename = "bookmarks-and-faves.json";
-  static String historyFilename = "history.json";
-  static String booksProgressDirectory = "progress";
-
-  /// Local
-  static String localCacheDirectoryBookCoverImages = "book-covers";
-  static String localCacheDirectoryBookInfoText = "book-info-text";
-
-  // Used to split/join lists of filenames
-  // Needs to be a character which is illegal in filenames on all OSes (so it
-  // won't be encountered in a filename), and short so that it doesn't add too
-  // much bulk to the JSON
-  static String safeJsonFilenameListSeperator = "/";
-  //static Map<String, dynamic> headerCharsetUtf8 = {'accept-charset': 'utf-8'};
-  static String dateFormat = 'yyyy-MM-dd HH:mm:ss';
-
-  /// How often to auto-save book progress
-  static const int bookSaveProgressTimeoutMillisecs = 15000;
-  static const int playbackInfoRevertTimeoutMillisecs = 10000;
-  static const int webdavAttemptLoginDelayMillisecs = 3000;
-
-  static const double webdavTryUpdatedLoginDetailsTimeoutIncrease = 1.5;
-
-  /// MIME types which are used for cue sheets
-  //static final List<String> cueSheetMimeTypes = [
-  //  'application/octet-stream',
-  //];
-
-  /// MIME types which are probably an entire book
-  //static final List<String> bookMimeTypes = [
-  //  //'audio/m4b',
-  //];
-
-  /// MIME types which are probably seperate chapters (or could be an entire book)
-  static final List<String> bookOrChapterMimeTypes = [
-    'audio/mpeg',
-    'audio/mp4',
-    'audio/ogg',
-    'audio/m4b',
-  ];
-
-  /// MIME types which are probably cover images
-  static final List<String> coverImageMimeTypes = ['image/jpeg', 'image/png'];
-
-  /// MIME types which are probably supplementary info files for a book
-  static final List<String> addedInfoFileExtensions = ['.txt', '.nfo'];
-
-  /// MIME types which are probably supplementary info files for a book
-  static final List<String> cueSheetFileExtensions = ['.cue'];
-
-  static const Function hhh = FlexTones.candyPop;
-
-  //FlexScheme dd = FlexScheme.yellowM3
 
   /// The key is the name as presented in the UI, ['flexSchemeName'] is the name of a scheme as per
   /// the [FlexScheme] enum.
