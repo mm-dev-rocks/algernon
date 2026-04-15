@@ -2,10 +2,12 @@
 
 import 'dart:async';
 
+import 'package:algernon/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:observable/observable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// To enable shared state in the app, add this widget to the tree. All widgets which want to access shared state should
 /// be children of this widget. Make this widget high enough in the tree that it wraps all of the children which need
@@ -112,6 +114,98 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     AppStateWidget._appState.remove(key);
     AppState.update(key, object);
   }
+
+  /// [SharedPreferencesWithCache] must be use the [SharedPreferencesWithCache.create] constructor,
+  /// which is async.
+  /// https://pub.dev/packages/shared_preferences
+  static Future<void> initPreferences() async {
+    AppState.update(
+      'preferences',
+      await SharedPreferencesWithCache.create(
+        cacheOptions: const SharedPreferencesWithCacheOptions(),
+      ),
+    );
+  }
+
+  static Future<void> setPreference(String key, dynamic value) async {
+    SharedPreferencesWithCache? sharedPreferences = AppState.get('preferences');
+
+    if (sharedPreferences == null) {
+      AppState.log('[SharedPreferencesWithCache] has not yet been initialised');
+    } else if (!ALGERNON.defaultPreferences.containsKey(key)) {
+      AppState.log(
+        "Preference '$key' does not exist in app (not found in 'ALGERNON.defaultPreferences')",
+      );
+    } else {
+      var [defaultType, defaultValue] = ALGERNON.defaultPreferences[key];
+      if (value.runtimeType != defaultType) {
+        AppState.log(
+          "Trying to set preference to incorrect type. '$key' should be '$defaultType', not '${value.runtimeType}'",
+        );
+      } else {
+        switch (defaultType) {
+          case const (bool):
+            await sharedPreferences.setBool(key, value);
+          case const (String):
+            await sharedPreferences.setString(key, value);
+          case const (double):
+            await sharedPreferences.setDouble(key, value);
+          case const (int):
+            await sharedPreferences.setInt(key, value);
+        }
+      }
+    }
+    //AppState.log("SET $key: ${value.toString()}");
+
+    AppState.update('preferences', sharedPreferences);
+  }
+
+  static dynamic getPreference(String key) {
+    SharedPreferencesWithCache? sharedPreferences = AppState.get('preferences');
+    dynamic userPreference;
+
+    if (sharedPreferences == null) {
+      AppState.log(
+        'SharedPreferencesWithCache has not yet been initialised: $key',
+      );
+      if (ALGERNON.defaultPreferences.containsKey(key)) {
+        var [defaultType, defaultValue] = ALGERNON.defaultPreferences[key];
+        userPreference = defaultValue;
+        AppState.log('- returning default ($defaultValue)');
+      }
+    } else if (ALGERNON.defaultPreferences.containsKey(key)) {
+      var [defaultType, defaultValue] = ALGERNON.defaultPreferences[key];
+      switch (defaultType) {
+        case const (bool):
+          userPreference = sharedPreferences.getBool(key) ?? defaultValue;
+        case const (String):
+          userPreference = sharedPreferences.getString(key) ?? defaultValue;
+        case const (double):
+          userPreference = sharedPreferences.getDouble(key) ?? defaultValue;
+        case const (int):
+          userPreference = sharedPreferences.getInt(key) ?? defaultValue;
+      }
+    } else {
+      AppState.log(
+        "Shared preference '$key' does not exist in app (not found in 'ALGERNON.defaultPreferences')",
+      );
+    }
+    //AppState.log("GET $key: ${userPreference.toString()}");
+
+    return userPreference;
+  }
+
+  //static Future<void> setShaderTweakValue(String key, dynamic value) async {
+  //  Map<String, dynamic> currentMap = AppState.getPreference(
+  //    "shaderTweakValuesMap",
+  //  );
+  //  currentMap[key] = value;
+  //  AppState.setPreference("shaderTweakValuesMap", currentMap);
+  //}
+
+  //static dynamic getShaderTweakValue(String key) {
+  //  return AppState.getPreference("shaderTweakValuesMap")[key];
+  //}
 
   /// Get the current route/page we are on
   static String get currentRoute {

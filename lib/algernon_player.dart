@@ -6,7 +6,10 @@ import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/enum/enum.dart';
 import 'package:algernon/painter_config_model.dart';
+import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -25,16 +28,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   final _soLoud = SoLoud.instance;
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
 
-  /// TODO magic number
-  double _fftSmoothingAmount = 0.5;
-
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
   /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
   /// [AlgernonShaderPainter] to rebuild.
-  final PainterConfigModel _painterConfigModel = PainterConfigModel();
+  final PainterConfigModel _painterConfig = PainterConfigModel();
 
   /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start).
   late ui.Image? _zeroImage;
@@ -66,7 +66,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   dispose() {
     _ticker.stop();
     _audioData.dispose();
-    _painterConfigModel.dispose();
+    _painterConfig.dispose();
     _soLoud.deinit();
 
     super.dispose();
@@ -74,19 +74,23 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   @override
   Widget build(BuildContext context) {
+    final ShaderTweakModel fftSmoothingTweak = _painterConfig
+        .currentShaderMeta
+        .shaderTweaks[TweakId.fftDataSmoothing.name]!;
+
     return Stack(
       children: [
         Positioned.fill(
           child: ListenableBuilder(
-            listenable: _painterConfigModel,
+            listenable: _painterConfig,
             builder: (BuildContext context, Widget? child) {
               return _zeroImageExists
                   ? AlgernonShaderPainter(
                       fftDataTexture:
-                          _painterConfigModel.fftDataImage ?? _zeroImage!,
-                      shaderAssetKey: _painterConfigModel.currentShaderAssetKey,
+                          _painterConfig.fftDataImage ?? _zeroImage!,
+                      shaderMeta: _painterConfig.currentShaderMeta,
                       shaderFilterQuality:
-                          _painterConfigModel.currentShaderFilterQuality,
+                          _painterConfig.currentShaderFilterQuality,
                     )
                   : const SizedBox.shrink();
             },
@@ -99,18 +103,20 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           end: 0,
           child: Row(
             children: [
-              DropdownButton<String>(
-                value: _painterConfigModel.currentShaderAssetKey,
-                onChanged: (String? value) {
+              DropdownButton<ShaderMetaModel>(
+                value: _painterConfig.currentShaderMeta,
+                onChanged: (ShaderMetaModel? value) {
                   setState(() {
-                    _painterConfigModel.currentShaderAssetKey = value!;
+                    _painterConfig.currentShaderMeta = value!;
                   });
                 },
-                items: ALGERNON.shaderAssetKeys.values
-                    .map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
+                items: ALGERNON.shaderMetaModels
+                    .map<DropdownMenuItem<ShaderMetaModel>>((
+                      ShaderMetaModel shaderMeta,
+                    ) {
+                      return DropdownMenuItem<ShaderMetaModel>(
+                        value: shaderMeta,
+                        child: Text(shaderMeta.friendlyName),
                       );
                     })
                     .toList(),
@@ -132,10 +138,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             children: [
               /// TODO DRY
               DropdownButton<FilterQuality>(
-                value: _painterConfigModel.currentShaderFilterQuality,
+                value: _painterConfig.currentShaderFilterQuality,
                 onChanged: (FilterQuality? value) {
                   setState(() {
-                    _painterConfigModel.currentShaderFilterQuality = value!;
+                    _painterConfig.currentShaderFilterQuality = value!;
                   });
                 },
                 items: ALGERNON.shaderFilterQualities.values
@@ -151,13 +157,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
               ),
               Expanded(
                 child: Slider(
-                  value: _fftSmoothingAmount,
-                  divisions: 100,
+                  value: fftSmoothingTweak.currentVal,
+                  divisions: fftSmoothingTweak.divisions,
                   onChanged: (double value) {
                     if (_soLoudIsReady) {
                       setState(() {
-                        _fftSmoothingAmount = value;
-                        _soLoud.setFftSmoothing(_fftSmoothingAmount);
+                        fftSmoothingTweak.currentVal = value;
+                        _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
                       });
                     }
                   },
@@ -194,7 +200,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         try {
           Future<void>.microtask(() async {
             _audioData.updateSamples();
-            _painterConfigModel.fftDataImage = await _imageFromFftData(
+            _painterConfig.fftDataImage = await _imageFromFftData(
               /// TODO Explain why we choose this subset of the data
               Float32List.sublistView(_audioData.getAudioData(), 0, 256),
             );

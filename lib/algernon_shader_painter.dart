@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:ui' as ui;
 
+import 'package:algernon/shader_meta_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
 
@@ -9,17 +10,17 @@ class AlgernonShaderPainter extends StatelessWidget {
   const AlgernonShaderPainter({
     super.key,
     required this.fftDataTexture,
-    required this.shaderAssetKey,
+    required this.shaderMeta,
     required this.shaderFilterQuality,
   });
   final ui.Image fftDataTexture;
-  final String shaderAssetKey;
+  final ShaderMetaModel shaderMeta;
   final FilterQuality shaderFilterQuality;
 
   @override
   Widget build(BuildContext context) {
     return ShaderBuilder(
-      assetKey: shaderAssetKey,
+      assetKey: shaderMeta.assetKey,
       (context, shader, child) => CustomPaint(
         //size: Size(256, 256),
         size: MediaQuery.of(context).size,

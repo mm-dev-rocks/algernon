@@ -1,6 +1,7 @@
 import 'dart:ui' as ui;
 
 import 'package:algernon/constants.dart';
+import 'package:algernon/shader_meta_model.dart';
 import 'package:flutter/material.dart';
 
 class PainterConfigModel with ChangeNotifier {
@@ -12,11 +13,11 @@ class PainterConfigModel with ChangeNotifier {
     notifyListeners();
   }
 
-  /// [_currentShaderAssetKey] tracks which shader is currently in use.
-  String _currentShaderAssetKey = ALGERNON.shaderAssetKeys.values.first;
-  String get currentShaderAssetKey => _currentShaderAssetKey;
-  set currentShaderAssetKey(String key) {
-    _currentShaderAssetKey = key;
+  /// [_currentShader] tracks which shader is currently in use.
+  ShaderMetaModel _currentShaderMeta = ALGERNON.shaderMetaModels.first;
+  ShaderMetaModel get currentShaderMeta => _currentShaderMeta;
+  set currentShaderMeta(ShaderMetaModel shaderMeta) {
+    _currentShaderMeta = shaderMeta;
     notifyListeners();
   }
 

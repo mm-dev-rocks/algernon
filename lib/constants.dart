@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/enum/enum.dart';
+import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_tweak_model.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 
@@ -44,23 +47,132 @@ class ALGERNON {
 
     'playbackSpeedIndex': [int, 1],
     'usePitchCompensation': [bool, false],
+    'shaderTweakValuesMap': [],
   };
 
   static const int finalAimFps = 30;
-  static final Map<String, String> shaderAssetKeys = {
-    'Rose Tunnel': 'shaders/algernon_rose_tunnel_quadrant.frag',
-    'Blocks Spiral': 'shaders/algernon_blocks_spiral.frag',
-    'Blocks Simple': 'shaders/algernon_blocks_simple.frag',
-    'Oscilloscope Columns': 'shaders/algernon_oscilloscope_columns.frag',
-    'Rings Radial': 'shaders/algernon_rings_radial.frag',
-    'Warp Kaleido': 'shaders/algernon_warp_kaleido.frag',
-    'Lissajous Web': 'shaders/algernon_lissajous_web.frag',
-    'Interference Waves': 'shaders/algernon_interference_waves.frag',
-    'Voronoi Cells': 'shaders/algernon_voronoi_cells.frag',
-    'Moire Grid': 'shaders/algernon_moire_grid.frag',
-    'Polar Warp': 'shaders/algernon_polar_warp.frag',
-    'Domain Tiles': 'shaders/algernon_domain_tiles.frag',
-  };
+  static final List<ShaderMetaModel> shaderMetaModels = [
+    ShaderMetaModel(
+      friendlyName: 'Rose Tunnel',
+      id: 'algernon_rose_tunnel_quadrant',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_rose_tunnel_quadrant${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Blocks Spiral',
+      id: 'algernon_blocks_spiral',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_blocks_spiral${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Blocks Simple',
+      id: 'algernon_blocks_simple',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_blocks_simple${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Oscilloscope Columns',
+      id: 'algernon_oscilloscope_columns',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_oscilloscope_columns${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Rings Radial',
+      id: 'algernon_rings_radial',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_rings_radial${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Warp Kaleido',
+      id: 'algernon_warp_kaleido',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_warp_kaleido${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Lissajous Web',
+      id: 'algernon_lissajous_web',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_lissajous_web${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Interference Waves',
+      id: 'algernon_interference_waves',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_interference_waves${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Voronoi Cells',
+      id: 'algernon_voronoi_cells',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_voronoi_cells${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Moire Grid',
+      id: 'algernon_moire_grid',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_moire_grid${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Polar Warp',
+      id: 'algernon_polar_warp',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_polar_warp${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+    ShaderMetaModel(
+      friendlyName: 'Domain Tiles',
+      id: 'algernon_domain_tiles',
+      shaderTweaks: {
+        TweakId.fftDataSmoothing.name: ShaderTweakModel(
+          id: 'algernon_domain_tiles${TweakId.fftDataSmoothing.name}',
+          tweakType: TweakType.fftDataSmoothing,
+        ),
+      },
+    ),
+  ];
   static final Map<String, FilterQuality> shaderFilterQualities = {
     'None': FilterQuality.none,
     'Low': FilterQuality.low,

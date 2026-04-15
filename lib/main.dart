@@ -17,7 +17,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   /// App preferences [SharedPreferencesWithCache] require async setup
-  //await AppState.initPreferences();
+  await AppState.initPreferences();
 
   // Necessary initialization for package:media_kit.
   //MediaKit.ensureInitialized();
