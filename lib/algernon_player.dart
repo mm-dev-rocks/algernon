@@ -218,7 +218,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             _audioData.updateSamples();
             final oldImage = _painterConfig.fftDataImage;
             _painterConfig.fftDataImage = await _imageFromFftData(
-              /// TODO Explain why we choose this subset of the data
+              /// We use `AudioData(GetSamplesKind.linear)`:
+              /// `Get data in a linear manner: the first 256 floats are audio FFI values, the other 256 are audio wave samples.`
+              ///
+              /// FFI (Foreign Function Interface) is how Dart talks to SoLoud's native C++ code. FFI here (from the
+              /// asoLoud docs) is either sloppy wording or a typo, but basically the first 256 floats are our FFT bins.
               Float32List.sublistView(_audioData.getAudioData(), 0, 256),
             );
             oldImage?.dispose();
