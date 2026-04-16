@@ -41,6 +41,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   late ui.Image? _zeroImage;
   bool _zeroImageExists = false;
 
+  bool _isProcessing = false;
+
   late final Ticker _ticker;
   // Frame rate we aim for
   final Duration _fpsAimDuration = const Duration(
@@ -77,7 +79,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Widget build(BuildContext context) {
     final ShaderTweakModel fftSmoothingTweak = _painterConfig
         .currentShaderMeta
-        .shaderTweaks[TweakId.fftDataSmoothing.name]!;
+        .shaderTweaks[TweakType.fftDataSmoothing.name]!;
 
     return Stack(
       children: [
@@ -92,8 +94,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         fftDataTexture:
                             _painterConfig.fftDataImage ?? _zeroImage!,
                         shaderMeta: _painterConfig.currentShaderMeta,
-                        shaderFilterQuality:
-                            _painterConfig.currentShaderFilterQuality,
                       )
                     : const SizedBox.shrink();
               },
@@ -168,24 +168,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           end: 0,
           child: Row(
             children: [
-              DropdownButton<FilterQuality>(
-                value: _painterConfig.currentShaderFilterQuality,
-                onChanged: (FilterQuality? value) {
-                  setState(() {
-                    _painterConfig.currentShaderFilterQuality = value!;
-                  });
-                },
-                items: ALGERNON.shaderFilterQualities.values
-                    .map<DropdownMenuItem<FilterQuality>>((
-                      FilterQuality value,
-                    ) {
-                      return DropdownMenuItem<FilterQuality>(
-                        value: value,
-                        child: Text(value.toString()),
-                      );
-                    })
-                    .toList(),
-              ),
               Expanded(
                 child: ShaderTweakSlider(
                   shaderTweak: fftSmoothingTweak,
@@ -213,6 +195,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     await _soLoud.playSource(
       asset: 'assets/Pointer Sisters - Automatic.mp3',
+      //volume: 0.1,
       looping: true,
     );
     //await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
@@ -223,21 +206,27 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Checks if it's time to take the next sample, if so convert the sample to FFT data and change
   /// [_fftDataImageNotifier] which will cause the [AlgernonFragment] widget to rebuild.
   void _onTick(Duration elapsed) async {
-    if (elapsed - _lastTimestamp >= _fpsAimDuration &&
+    if (!_isProcessing &&
+        elapsed - _lastTimestamp >= _fpsAimDuration &&
         context.mounted &&
         _soLoudIsReady) {
       {
         _lastTimestamp = elapsed;
+        _isProcessing = true;
         try {
           Future<void>.microtask(() async {
             _audioData.updateSamples();
+            final oldImage = _painterConfig.fftDataImage;
             _painterConfig.fftDataImage = await _imageFromFftData(
               /// TODO Explain why we choose this subset of the data
               Float32List.sublistView(_audioData.getAudioData(), 0, 256),
             );
+            oldImage?.dispose();
           });
         } on Exception catch (e) {
           debugPrint('$e');
+        } finally {
+          _isProcessing = false;
         }
       }
     }

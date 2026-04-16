@@ -13,23 +13,21 @@ class AlgernonShaderPainter extends StatelessWidget {
     super.key,
     required this.fftDataTexture,
     required this.shaderMeta,
-    required this.shaderFilterQuality,
   });
   final ui.Image fftDataTexture;
   final ShaderMetaModel shaderMeta;
-  final FilterQuality shaderFilterQuality;
 
   @override
   Widget build(BuildContext context) {
     return ShaderBuilder(
       assetKey: shaderMeta.assetKey,
       (context, shader, child) => CustomPaint(
-        size: Size(256, 256),
-        //size: MediaQuery.of(context).size,
+        /// Scale/magnitude is irrelevant as the shader uses screen resolution, but **this [Size] does create an aspect
+        /// ratio**.
+        size: const Size(1, 1),
         painter: ShaderPainter(
           shader: shader,
           fftDataTexture: fftDataTexture,
-          shaderFilterQuality: shaderFilterQuality,
           shaderTweaks: Map.fromEntries(
             shaderMeta.shaderTweaks.entries.where(
               (e) => e.value.tweakType != TweakType.fftDataSmoothing,
@@ -48,13 +46,11 @@ class AlgernonShaderPainter extends StatelessWidget {
 class ShaderPainter extends CustomPainter {
   ShaderPainter({
     required this.shader,
-    required this.shaderFilterQuality,
     required this.fftDataTexture,
     required this.shaderTweaks,
   });
   final ui.FragmentShader shader;
   final ui.Image fftDataTexture;
-  final FilterQuality shaderFilterQuality;
   final Map<String, ShaderTweakModel> shaderTweaks;
 
   @override
@@ -67,16 +63,17 @@ class ShaderPainter extends CustomPainter {
       ..setFloat(0, size.width)
       ..setFloat(1, size.height)
       // There's only one sampler
-      ..setImageSampler(0, fftDataTexture);
+      ..setImageSampler(0, fftDataTexture, filterQuality: FilterQuality.low);
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
-      shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.currentVal);
+      try {
+        shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.currentVal);
+      } on ArgumentError catch (_) {
+        // Shader switch in progress (ie user has changed selection in dropdown)... skip an update
+      }
     });
 
-    final paint = Paint()
-      // Unlikely to make much difference to performance but test variations for aesthetics
-      ..filterQuality = shaderFilterQuality
-      ..shader = shader;
+    final paint = Paint()..shader = shader;
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), paint);
   }
 

@@ -1,0 +1,74 @@
+let SessionLoad = 1
+let s:so_save = &g:so | let s:siso_save = &g:siso | setg so=0 siso=0 | setl so=-1 siso=-1
+let v:this_session=expand("<sfile>:p")
+silent only
+silent tabonly
+cd ~/000-WORK/algernon
+if expand('%') == '' && !&modified && line('$') <= 1 && getline(1) == ''
+  let s:wipebuf = bufnr('%')
+endif
+let s:shortmess_save = &shortmess
+if &shortmess =~ 'A'
+  set shortmess=aoOA
+else
+  set shortmess=aoO
+endif
+badd +86 lib/algernon_player.dart
+badd +28 lib/algernon_shader_painter.dart
+badd +1 lib/app_state.dart
+badd +76 lib/constants.dart
+badd +39 lib/painter_config_model.dart
+badd +1 lib/shader_meta_model.dart
+badd +38 lib/shader_tweak_model.dart
+badd +23 lib/shader_tweak_slider.dart
+badd +34 lib/enum/enum.dart
+badd +8 TODO.md
+argglobal
+%argdel
+$argadd lib/algernon_player.dart
+$argadd lib/algernon_shader_painter.dart
+$argadd lib/app_state.dart
+$argadd lib/constants.dart
+$argadd lib/painter_config_model.dart
+$argadd lib/shader_meta_model.dart
+$argadd lib/shader_tweak_model.dart
+edit TODO.md
+argglobal
+if bufexists(fnamemodify("TODO.md", ":p")) | buffer TODO.md | else | edit TODO.md | endif
+if &buftype ==# 'terminal'
+  silent file TODO.md
+endif
+balt lib/constants.dart
+setlocal foldmethod=manual
+setlocal foldexpr=0
+setlocal foldmarker={{{,}}}
+setlocal foldignore=#
+setlocal foldlevel=0
+setlocal foldminlines=1
+setlocal foldnestmax=20
+setlocal nofoldenable
+silent! normal! zE
+let &fdl = &fdl
+let s:l = 8 - ((7 * winheight(0) + 16) / 33)
+if s:l < 1 | let s:l = 1 | endif
+keepjumps exe s:l
+normal! zt
+keepjumps 8
+normal! 038|
+tabnext 1
+if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
+  silent exe 'bwipe ' . s:wipebuf
+endif
+unlet! s:wipebuf
+set winheight=1 winwidth=20
+let &shortmess = s:shortmess_save
+let s:sx = expand("<sfile>:p:r")."x.vim"
+if filereadable(s:sx)
+  exe "source " . fnameescape(s:sx)
+endif
+let &g:so = s:so_save | let &g:siso = s:siso_save
+set hlsearch
+nohlsearch
+doautoall SessionLoadPost
+unlet SessionLoad
+" vim: set ft=vim :

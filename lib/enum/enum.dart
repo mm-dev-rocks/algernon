@@ -19,6 +19,18 @@ enum TweakType {
     label: 'Base Radius',
     uniform: 'u_baseRadius',
     description: 'Radius of base',
+  ),
+  uniformWarpStrength(
+    label: 'Warp Strength',
+    uniform: 'u_warpStrength',
+    description:
+        'How strongly the FFT bins push and pull the coordinate field. Larger values = more dramatic warping; above ~0.3 it can fold on itself.',
+  ),
+  uniformFoldCount(
+    label: 'Fold Count',
+    uniform: 'u_foldCount',
+    description:
+        'Must be a positive integer; non-integer values produce asymmetric tears.',
   );
 
   final String label;
@@ -29,11 +41,4 @@ enum TweakType {
     required this.description,
     this.uniform,
   });
-}
-
-enum TweakId {
-  fftDataSmoothing,
-  uniformPushRange,
-  uniformBorderWidth,
-  uniformBaseRadius,
 }

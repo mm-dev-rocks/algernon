@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'package:algernon/enum/enum.dart';
 import 'package:algernon/shader_meta_model.dart';
-import 'package:algernon/shader_tweak_model.dart';
 import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+
+import 'package:algernon/shaders_meta_data.dart' as meta;
 
 /// Lots of constants related to the app:
 /// - UI (eg colours, sizes)
@@ -50,155 +50,15 @@ class ALGERNON {
   };
 
   static const int finalAimFps = 30;
-  static final List<ShaderMetaModel> shadersMetadata = [
-    ShaderMetaModel(
-      friendlyName: 'Rose Tunnel',
-      id: 'rose_tunnel_quadrant',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'rose_tunnel_quadrant_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Blocks Spiral',
-      id: 'blocks_spiral',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'blocks_spiral_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Blocks Simple',
-      id: 'blocks_simple',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'blocks_simple_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Oscilloscope Columns',
-      id: 'oscilloscope_columns',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'oscilloscope_columns_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Rings Radial',
-      id: 'rings_radial',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'rings_radial_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Warp Kaleido',
-      id: 'warp_kaleido',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'warp_kaleido_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Lissajous Web',
-      id: 'lissajous_web',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'lissajous_web_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Interference Waves',
-      id: 'interference_waves',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'interference_waves_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Voronoi Cells',
-      id: 'voronoi_cells',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'voronoi_cells_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-        TweakId.uniformPushRange.name: ShaderTweakModel(
-          id: 'voronoi_cells_${TweakId.uniformPushRange.name}',
-          tweakType: TweakType.uniformPushRange,
-          min: 0.05,
-          max: 0.25,
-          defaultVal: 0.18,
-        ),
-        TweakId.uniformBorderWidth.name: ShaderTweakModel(
-          id: 'voronoi_cells_${TweakId.uniformBorderWidth.name}',
-          tweakType: TweakType.uniformBorderWidth,
-          min: 0.01,
-          max: 0.04,
-          defaultVal: 0.02,
-        ),
-        TweakId.uniformBaseRadius.name: ShaderTweakModel(
-          id: 'voronoi_cells_${TweakId.uniformBaseRadius.name}',
-          tweakType: TweakType.uniformBaseRadius,
-          min: 0.05,
-          max: 0.75,
-          defaultVal: 0.30,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Moire Grid',
-      id: 'moire_grid',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'moire_grid_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Polar Warp',
-      id: 'polar_warp',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'polar_warp_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-    ShaderMetaModel(
-      friendlyName: 'Domain Tiles',
-      id: 'domain_tiles',
-      shaderTweaks: {
-        TweakId.fftDataSmoothing.name: ShaderTweakModel(
-          id: 'domain_tiles_${TweakId.fftDataSmoothing.name}',
-          tweakType: TweakType.fftDataSmoothing,
-        ),
-      },
-    ),
-  ];
   static final Map<String, FilterQuality> shaderFilterQualities = {
     'None': FilterQuality.none,
     'Low': FilterQuality.low,
     'Medium': FilterQuality.medium,
     'High': FilterQuality.high,
   };
+
+  /// Shader meta info is in another file to keep this file maintainable.
+  static final List<ShaderMetaModel> shadersMetadata = meta.shadersMetadata;
 
   static const double sliderTrackHeight = 3;
   static const SliderTrackShape sliderTrackShape =

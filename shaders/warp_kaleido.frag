@@ -20,18 +20,22 @@
 
 precision mediump float;
 
-uniform vec2      u_resolution;
+uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
+
+// 0.09 - 0.5
+uniform float u_warpStrength;
+uniform float u_foldCount;
 
 out vec4 fragColor;
 
 // Number of mirror-fold axes. 6 gives hexagonal kaleidoscope symmetry.
 // Must be a positive integer; non-integer values produce asymmetric tears.
-const float FOLD_COUNT = 6.0;
+// const float FOLD_COUNT = 6.0;
 
 // How strongly the FFT bins push and pull the coordinate field.
 // Larger values = more dramatic warping; above ~0.3 it can fold on itself.
-const float WARP_STRENGTH = 0.18;
+// const float WARP_STRENGTH = 0.18;
 
 // pi — defined locally so we don't rely on any extension constants.
 const float PI = 3.14159265;
@@ -52,7 +56,7 @@ float foldAngle(float theta) {
   float t = mod(theta + PI, 2.0 * PI);
 
   // Width of one sector in radians
-  float sectorAngle = PI / FOLD_COUNT;
+  float sectorAngle = PI / u_foldCount;
 
   // Map t into 0..2pi, then into the nearest sector
   t = mod(t, 2.0 * sectorAngle);
@@ -83,8 +87,8 @@ void main() {
   //
   // Each pair of bins pushes in perpendicular directions, so loud bass causes
   // the whole field to breathe/pulse while the midrange makes it shimmer.
-  float warpX = (sampleBin(2.0) - sampleBin(4.0)) * WARP_STRENGTH;
-  float warpY = (sampleBin(6.0) - sampleBin(8.0)) * WARP_STRENGTH;
+  float warpX = (sampleBin(2.0) - sampleBin(4.0)) * u_warpStrength;
+  float warpY = (sampleBin(6.0) - sampleBin(8.0)) * u_warpStrength;
   p += vec2(warpX, warpY);
 
   // --- Kaleidoscope fold ---
@@ -93,8 +97,8 @@ void main() {
   // back to Cartesian for the colour computation. The radius is unchanged —
   // only the angular position is mirrored.
   float radius = length(p);
-  float angle  = atan(p.y, p.x);               // raw angle, -pi..pi
-  float foldedAngle = foldAngle(angle);         // mirrored into first sector
+  float angle = atan(p.y, p.x);         // raw angle, -pi..pi
+  float foldedAngle = foldAngle(angle); // mirrored into first sector
 
   // Reconstruct a Cartesian point inside the folded sector.
   // This is what actually creates the kaleidoscope symmetry.
@@ -108,16 +112,16 @@ void main() {
   // sampleBin ranges: 0..10 = sub-bass, 11..50 = bass/low-mid, 51..120 = mid.
   // Each is averaged across a few neighbouring bins (manual box average) to
   // reduce the "jittery single bin" effect and give smoother colour shifts.
-  float bass   = (sampleBin(3.0)  + sampleBin(5.0)  + sampleBin(7.0))  / 3.0;
-  float mid    = (sampleBin(20.0) + sampleBin(30.0) + sampleBin(40.0)) / 3.0;
-  float treble = (sampleBin(80.0) + sampleBin(100.0)+ sampleBin(120.0))/ 3.0;
+  float bass = (sampleBin(3.0) + sampleBin(5.0) + sampleBin(7.0)) / 3.0;
+  float mid = (sampleBin(20.0) + sampleBin(30.0) + sampleBin(40.0)) / 3.0;
+  float treble = (sampleBin(80.0) + sampleBin(100.0) + sampleBin(120.0)) / 3.0;
 
   // The folded coordinate q.x / q.y create interference-pattern-like stripes
-  // across the sectors. sin() oscillates smoothly between -1 and 1; the *0.5+0.5
-  // remaps it to 0..1 for use as a brightness factor.
+  // across the sectors. sin() oscillates smoothly between -1 and 1; the
+  // *0.5+0.5 remaps it to 0..1 for use as a brightness factor.
   float stripeX = sin(q.x * 12.0) * 0.5 + 0.5;
   float stripeY = sin(q.y * 12.0) * 0.5 + 0.5;
-  float pattern = stripeX * stripeY;             // product gives a grid/moiré
+  float pattern = stripeX * stripeY; // product gives a grid/moiré
 
   // Attenuate pattern by distance from centre so the middle is always dark
   // (avoids a blown-out bright centre that would obscure the structure).
@@ -127,8 +131,8 @@ void main() {
   // Final RGB: each channel is the audio band × the geometric pattern.
   // This means colour shifts with frequency content AND with the kaleidoscope
   // geometry simultaneously — neither dominates independently.
-  float r = bass   * pattern;
-  float g = mid    * pattern;
+  float r = bass * pattern;
+  float g = mid * pattern;
   float b = treble * pattern;
 
   // Boost overall brightness slightly during loud passages by adding a small
@@ -138,8 +142,6 @@ void main() {
   g += loudness * 0.08;
   b += loudness * 0.08;
 
-  fragColor = vec4(clamp(r, 0.0, 1.0),
-                   clamp(g, 0.0, 1.0),
-                   clamp(b, 0.0, 1.0),
-                   1.0);
+  fragColor =
+      vec4(clamp(r, 0.0, 1.0), clamp(g, 0.0, 0.5), clamp(b, 0.0, 1.0), 1.0);
 }
