@@ -10,7 +10,7 @@ project(runner LANGUAGES CXX)
 set(BINARY_NAME "algernon")
 # The unique GTK application identifier for this application. See:
 # https://wiki.gnome.org/HowDoI/ChooseApplicationID
-set(APPLICATION_ID "com.example.algernon")
+set(APPLICATION_ID "rocks.mm_dev.algernon")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.

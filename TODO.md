@@ -5,8 +5,6 @@ tweaktype should it be handling above, and uniform?
 
 tidy up constants file
 
-look into performance problems with current shader recreation/shaderbuilder
-
 
 
 
@@ -15,3 +13,5 @@ look into performance problems with current shader recreation/shaderbuilder
 # DONE
 look at enum, something wrong with relationship between ids and types
 is shaderfilterquality doing anything?
+look into performance problems with current shader recreation/shaderbuilder
+com.example in app name
