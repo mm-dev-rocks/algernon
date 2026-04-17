@@ -40,6 +40,7 @@ class ALGERNON {
 
     /// Container for shader tweaks, which are saved as 'preferences' for persistence between sessions.
     'shaderTweakValuesMap': [],
+    'selectedShaderIndex': [int, 0],
   };
 
   static const int finalAimFps = 30;

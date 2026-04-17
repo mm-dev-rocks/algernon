@@ -2,7 +2,7 @@
 
 enum TweakType {
   fftDataSmoothing(
-    label: 'FFT Smoothing',
+    label: 'Stability',
     description: 'Smoothing/interpolation between FFT bins.',
   ),
   uniformPushRange(
