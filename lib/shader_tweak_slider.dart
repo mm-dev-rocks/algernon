@@ -24,7 +24,7 @@ class ShaderTweakSlider extends StatelessWidget {
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
     );
-    Text label = Text(name);
+    Text label = Text(name, style: const TextStyle(color: Colors.white));
 
     return Column(children: [slider, label]);
   }

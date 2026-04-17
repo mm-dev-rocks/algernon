@@ -31,6 +31,29 @@ enum TweakType {
     uniform: 'u_foldCount',
     description:
         'Must be a positive integer; non-integer values produce asymmetric tears.',
+  ),
+  uniformRingDensity(
+    label: 'Ring Density',
+    uniform: 'u_ringDensity',
+    description:
+        'Baseline ring density: how many full ring cycles fit across the screen at silence. Higher = finer rings, more detail in the moiré pattern.',
+  ),
+  uniformRingContrast(
+    label: 'Ring Contrast',
+    uniform: 'u_ringContrast',
+    description:
+        'Controls how sharply the ring edges are defined. 1.0 = smooth sine gradient, higher values → harder, brighter ring edges.',
+  ),
+  uniformMaxOffset(
+    label: 'Max Offset',
+    uniform: 'u_maxOffset',
+    description:
+        'Maximum offset of each field centre from screen centre, in normalised units (0..1 space). At full bass energy both centres reach this distance from the middle, so the total spread is 2 × MAX_OFFSET.',
+  ),
+  uniformHueShift(
+    label: 'Hue Shift',
+    uniform: 'u_hueShift',
+    description: 'Shift. The. Hue.',
   );
 
   final String label;

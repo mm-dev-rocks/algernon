@@ -3,7 +3,8 @@
 
 // algernon_moire_grid.frag
 //
-// Visualisation strategy: moiré interference between two concentric circle fields.
+// Visualisation strategy: moiré interference between two concentric circle
+// fields.
 //
 // A single field of concentric circles (rings at regular radial intervals) is
 // a smooth, boring pattern. But overlay TWO such fields with their centres
@@ -31,23 +32,37 @@
 
 precision mediump float;
 
-uniform vec2      u_resolution;
+uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
+
+uniform float u_ringDensity;
+uniform float u_ringContrast;
+uniform float u_maxOffset;
+
+// Hue rotation in degrees. 0.0 = original colours.
+// Recommended range: 0.0 to 360.0 (wraps around the colour wheel).
+// Interesting fixed points: 120.0 (shifts red→green→blue),
+// 180.0 (full complement), 240.0, etc.
+uniform float u_hueShift;
 
 out vec4 fragColor;
 
-// Baseline ring density: how many full ring cycles fit across the screen
-// at silence. Higher = finer rings, more detail in the moiré pattern.
-const float RING_DENSITY   = 14.0;
+// --- Hue rotation helpers ---
 
-// Maximum offset of each field centre from screen centre, in normalised
-// units (0..1 space). At full bass energy both centres reach this distance
-// from the middle, so the total spread is 2 × MAX_OFFSET.
-const float MAX_OFFSET     = 0.22;
+vec3 rgb2hsv(vec3 c) {
+  vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+  vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+  vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+  float d = q.x - min(q.w, q.y);
+  float e = 1.0e-10;
+  return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
 
-// Controls how sharply the ring edges are defined.
-// 1.0 = smooth sine gradient, higher values → harder, brighter ring edges.
-const float RING_CONTRAST  = 1.8;
+vec3 hsv2rgb(vec3 c) {
+  vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+}
 
 // Helper: reads a single bin by float index and returns amplitude 0..1.
 // +0.5 texel-centre offset prevents bleeding — codebase convention.
@@ -69,25 +84,27 @@ void main() {
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
 
   // Centre and aspect-correct so circles are round on non-square screens.
-  vec2 p   = st - vec2(0.5, 0.5);
-  p.x     *= u_resolution.x / u_resolution.y;
+  vec2 p = st - vec2(0.5, 0.5);
+  p.x *= u_resolution.x / u_resolution.y;
 
   // --- FFT band averages ---
   //
   // Using averages over several adjacent bins reduces single-bin jitter and
   // gives each parameter a sense of weight/momentum.
-  float bassEnergy   = (sampleBin(2.0)  + sampleBin(4.0)  + sampleBin(6.0)  + sampleBin(8.0))  / 4.0;
-  float midEnergy    = (sampleBin(25.0) + sampleBin(35.0) + sampleBin(45.0))                    / 3.0;
-  float trebleEnergy = (sampleBin(90.0) + sampleBin(110.0)+ sampleBin(130.0))                   / 3.0;
+  float bassEnergy =
+      (sampleBin(2.0) + sampleBin(4.0) + sampleBin(6.0) + sampleBin(8.0)) / 4.0;
+  float midEnergy = (sampleBin(25.0) + sampleBin(35.0) + sampleBin(45.0)) / 3.0;
+  float trebleEnergy =
+      (sampleBin(90.0) + sampleBin(110.0) + sampleBin(130.0)) / 3.0;
 
   // --- Field centre positions ---
   //
   // Field A is displaced toward upper-left, field B toward lower-right.
   // Bass energy controls the separation — a kick drum physically pulls
   // the two centres apart, dramatically reshaping the moiré.
-  float offset   = bassEnergy * MAX_OFFSET;
-  vec2  centreA  = vec2(-offset,  offset * 0.6);   // upper-left quadrant
-  vec2  centreB  = vec2( offset, -offset * 0.6);   // lower-right quadrant
+  float offset = bassEnergy * u_maxOffset;
+  vec2 centreA = vec2(-offset, offset * 0.6); // upper-left quadrant
+  vec2 centreB = vec2(offset, -offset * 0.6); // lower-right quadrant
 
   // Mid energy adds a slow lateral drift to break left-right symmetry and
   // keep the pattern interesting during sustained mid-heavy passages.
@@ -98,7 +115,7 @@ void main() {
   //
   // Treble energy adds extra ring density: bright cymbals / hi-hats tighten
   // the concentric rings into fine detail, making the moiré more intricate.
-  float ringsPerUnit = RING_DENSITY + trebleEnergy * 10.0;
+  float ringsPerUnit = u_ringDensity + trebleEnergy * 10.0;
 
   // --- Evaluate both fields ---
   float fieldA = circleField(p, centreA, ringsPerUnit);
@@ -107,8 +124,8 @@ void main() {
   // Apply contrast curve to each field independently.
   // pow() with RING_CONTRAST > 1 darkens the troughs and brightens the crests,
   // sharpening the ring edges from a soft gradient into distinct bright bands.
-  fieldA = pow(fieldA, RING_CONTRAST);
-  fieldB = pow(fieldB, RING_CONTRAST);
+  fieldA = pow(fieldA, u_ringContrast);
+  fieldB = pow(fieldB, u_ringContrast);
 
   // --- Moiré: multiply the two fields ---
   //
@@ -125,16 +142,22 @@ void main() {
   // Field A contributes to the red/magenta channel, field B to blue/cyan.
   // Their overlap zone (the moiré bands) naturally produces purple/white
   // where both are simultaneously bright.
-  float r = fieldA * (0.5 + bassEnergy   * 0.5);
-  float g = moire  * (0.3 + midEnergy    * 0.7);   // moiré zones glow green
+  float r = fieldA * (0.5 + bassEnergy * 0.5);
+  float g = moire * (0.3 + midEnergy * 0.7); // moiré zones glow green
   float b = fieldB * (0.5 + trebleEnergy * 0.5);
 
   // Boost all channels slightly by overall loudness so the shader doesn't
   // go fully black during quiet passages.
-  float loudness = (bassEnergy + midEnergy + trebleEnergy) / 3.0;
+  float loudness = (bassEnergy + midEnergy + trebleEnergy) / 50.0;
   r = clamp(r + loudness * 0.04, 0.0, 1.0);
   g = clamp(g + loudness * 0.04, 0.0, 1.0);
   b = clamp(b + loudness * 0.04, 0.0, 1.0);
 
-  fragColor = vec4(r, g, b, 1.0);
+  // --- Hue rotation ---
+  vec3 col = vec3(r, g, b);
+  vec3 hsv = rgb2hsv(col);
+  hsv.x = fract(hsv.x + u_hueShift / 360.0); // rotate hue, wrap at 1.0
+  col = hsv2rgb(hsv);
+
+  fragColor = vec4(col, 1.0);
 }

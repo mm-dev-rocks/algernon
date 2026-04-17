@@ -12,8 +12,8 @@ class ShaderTweakModel {
     required this.tweakType,
     this.min = 0,
     this.max = 1,
-    this.divisions = 100,
     this.defaultVal = 0.75,
+    this.divisions,
   }) {
     /// A quirk of [AppState.getPreference] and [AppState.setPreference] is that they fail if any 'preference key'
     /// doesn't exist in [ALGERNON.defaultPreferences]. Apart from that they work well for our needs (saving tweaks to
@@ -27,7 +27,7 @@ class ShaderTweakModel {
   final TweakType tweakType;
   final double min;
   final double max;
-  final int divisions;
+  final int? divisions;
   final double defaultVal;
 
   /// [_currentVal] is stored as a preference so the app remembers settings.

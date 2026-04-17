@@ -77,11 +77,7 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
 
     return MaterialPageRoute<dynamic>(
       builder: (context) {
-        //final UiSizes ui = Screen.uiSizesFromContext(context);
-        return Padding(
-          padding: EdgeInsets.zero,
-          child: RepaintBoundary(child: page),
-        );
+        return RepaintBoundary(child: page);
       },
       settings: settings,
     );
@@ -105,6 +101,20 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
         //_setAppBarStateByRoute(AppState.currentRoute);
         return notification.canHandlePop;
       },
+      theme: ThemeData(
+        sliderTheme: SliderThemeData(
+          activeTrackColor: Colors.white.withValues(alpha: 0.2),
+          inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
+          thumbColor: Colors.white,
+          overlayColor: Colors.white.withValues(alpha: 0.2),
+          valueIndicatorColor: Colors.white,
+          trackHeight: 1.0,
+          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
+          overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
+          valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+          showValueIndicator: ShowValueIndicator.alwaysVisible,
+        ),
+      ),
       home: Scaffold(
         body: SafeArea(
           child: AppStateWidget(

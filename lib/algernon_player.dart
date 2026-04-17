@@ -83,6 +83,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     return Stack(
       children: [
+        /// Main visuals
         Positioned.fill(
           child: FittedBox(
             fit: BoxFit.cover,
@@ -100,6 +101,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             ),
           ),
         ),
+
+        /// Shader select/dropdown
         Positioned.directional(
           textDirection: TextDirection.ltr,
           bottom: 0,
@@ -108,6 +111,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           child: Row(
             children: [
               DropdownButton<ShaderMetaModel>(
+                dropdownColor: Colors.transparent,
+                style: const TextStyle(color: Colors.white),
                 value: _painterConfig.currentShaderMeta,
                 onChanged: (ShaderMetaModel? value) {
                   setState(() {
@@ -133,11 +138,17 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             ],
           ),
         ),
+
+        /// Shader-specific sliders
         Positioned.directional(
           textDirection: TextDirection.ltr,
+
+          /// TODO magic number
           top: 100,
           start: 0,
-          child: Row(
+          child: Column(
+            /// TODO magic number
+            spacing: 30,
             children: [
               ..._painterConfig.currentShaderMeta.shaderTweaks.entries
                   .where(
@@ -190,11 +201,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _initialiseSoundAndPlay() async {
-    await _soLoud.init(bufferSize: 512);
+    await _soLoud.init(bufferSize: 256);
     _soLoud.setVisualizationEnabled(true);
 
     await _soLoud.playSource(
-      asset: 'assets/Pointer Sisters - Automatic.mp3',
+      asset: 'assets/Public Image Limited - Rise.mp3',
+      //asset: 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
+      //asset: 'assets/Bob Dylan - Eternal Circle.mp3',
+      //asset: 'assets/Pointer Sisters - Automatic.mp3',
       //volume: 0.1,
       looping: true,
     );
