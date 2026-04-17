@@ -189,4 +189,42 @@ final List<ShaderMetaModel> shadersMetadata = [
       ),
     },
   ),
+  ShaderMetaModel(
+    friendlyName: 'Rings Radial 2',
+    id: 'rings_radial_2',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        id: 'rings_radial_2${TweakType.fftDataSmoothing.name}',
+        tweakType: TweakType.fftDataSmoothing,
+      ),
+      TweakType.uniformHueShift.name: ShaderTweakModel(
+        id: 'rings_radial_2${TweakType.uniformHueShift.name}',
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultVal: 200,
+      ),
+      TweakType.uniformHueRange.name: ShaderTweakModel(
+        id: 'rings_radial_2${TweakType.uniformHueRange.name}',
+        tweakType: TweakType.uniformHueRange,
+        min: 0,
+        max: 360,
+        defaultVal: 120,
+      ),
+      TweakType.uniformRingDensity.name: ShaderTweakModel(
+        id: 'rings_radial_2${TweakType.uniformRingDensity.name}',
+        tweakType: TweakType.uniformRingDensity,
+        min: 4,
+        max: 128,
+        defaultVal: 16,
+      ),
+      TweakType.uniformRingFill.name: ShaderTweakModel(
+        id: 'rings_radial_2${TweakType.uniformRingFill.name}',
+        tweakType: TweakType.uniformRingFill,
+        min: 0.05,
+        max: 1.1,
+        defaultVal: 0.75,
+      ),
+    },
+  ),
 ];

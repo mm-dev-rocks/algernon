@@ -15,7 +15,7 @@
 
 precision mediump float;
 
-uniform vec2      u_resolution;
+uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
 
 out vec4 fragColor;
@@ -26,7 +26,7 @@ const float RING_COUNT = 16.0;
 
 // Fraction of each ring's width that is the lit band vs the dark gap.
 // 0.8 = 80 % lit, 20 % gap. Purely aesthetic — adjust to taste.
-const float RING_FILL  = 0.8;
+const float RING_FILL = 0.8;
 
 void main() {
   // Mnemonic: st = 'space transform' — normalised 0..1 screen coords.
@@ -49,7 +49,7 @@ void main() {
   float ringIndex = floor(ringPosition);
 
   // Fractional position *within* this ring (0.0 = inner edge, 1.0 = outer).
-  float ringFrac  = fract(ringPosition);
+  float ringFrac = fract(ringPosition);
 
   // Clamp so pixels beyond the last ring (corners, etc.) stay black.
   if (ringIndex >= RING_COUNT) {
@@ -61,26 +61,30 @@ void main() {
   // bins. We sample at the midpoint of that block, matching the +0.5 offset
   // convention used elsewhere in this codebase.
   float binsPerRing = 256.0 / RING_COUNT;
-  float binIndex    = ringIndex * binsPerRing + binsPerRing * 0.5;
-  float binValue    = texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5)).r;
+  float binIndex = ringIndex * binsPerRing + binsPerRing * 0.5;
+  vec4 fftSample = texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5));
+  float binValue = fftSample.r;
+  // Unpack charge back to [-1, 1]
+  float charge = (fftSample.g - 0.5) * 2.0;
 
   // The lit band occupies the inner RING_FILL fraction of the ring.
   // Pixels in the outer gap fraction are always dark, creating separation
   // between rings regardless of audio level.
   float inBand = step(ringFrac, RING_FILL);
+  // float dynamicFill = RING_FILL + charge * 0.15;
+  // float inBand = step(ringFrac, clamp(dynamicFill, 0.0, 1.0));
 
   // Colour: map ring index to a hue shift from deep blue (bass) to cyan/green
   // (treble). Using simple RGB mixing rather than a full HSV conversion keeps
   // this shader free of trig-heavy code and maximises compatibility.
-  float hueT   = ringIndex / RING_COUNT;            // 0.0 (bass) .. 1.0 (treble)
-  float r      = 0.0;                               // no red — keeps it cool-toned
-  float g      = hueT * 0.8;                        // treble frequencies go green
-  float b      = 1.0 - hueT * 0.5;                 // bass frequencies are fully blue
+  float hueT = ringIndex / RING_COUNT; // 0.0 (bass) .. 1.0 (treble)
+  // float r = 0.0;                       // no red — keeps it cool-toned
+  float r = charge * 0.4;     // sudden hits blush red; drops go teal
+  float g = hueT * 0.8;       // treble frequencies go green
+  float b = 1.0 - hueT * 0.5; // bass frequencies are fully blue
 
   // Scale colour by the bin amplitude and band mask.
   // binValue drives brightness; inBand masks the gap between rings.
-  fragColor = vec4(r * binValue * inBand,
-                   g * binValue * inBand,
-                   b * binValue * inBand,
-                   1.0);
+  fragColor = vec4(r * binValue * inBand, g * binValue * inBand,
+                   b * binValue * inBand, 1.0);
 }

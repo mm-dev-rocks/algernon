@@ -29,6 +29,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   final _soLoud = SoLoud.instance;
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
 
+  /// Keep a rolling average of bins to be used for physics 'charges'
+  final Float32List _binAverages = Float32List(256); // rolling avg per bin
+
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
@@ -205,9 +208,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _soLoud.setVisualizationEnabled(true);
 
     await _soLoud.playSource(
-      asset: 'assets/Public Image Limited - Rise.mp3',
+      //asset: 'assets/Public Image Limited - Rise.mp3',
       //asset: 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
       //asset: 'assets/Bob Dylan - Eternal Circle.mp3',
+      asset: 'assets/Sister Sledge - Thinking Of You.mp3',
       //asset: 'assets/Pointer Sisters - Automatic.mp3',
       //volume: 0.1,
       looping: true,
@@ -270,9 +274,25 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     // already in that format). For now we just pass it in via the red channel, other colours are unused and alpha is
     // full/1.
     final pixels = Float32List(256 * 4);
+
+    // how slowly the average moves
+    const double binSmoothing = 0.8;
+    //const double binSmoothing = 0.92;
+
     for (int i = 0; i < 256; i++) {
-      pixels[i * 4 + 0] = fftData[i];
-      pixels[i * 4 + 1] = 0.0;
+      final double magnitude = fftData[i];
+
+      // Update rolling average
+      _binAverages[i] =
+          _binAverages[i] * binSmoothing + magnitude * (1.0 - binSmoothing);
+
+      // Signed charge: positive when louder than average, negative when quieter
+      // clamp to [-1, 1] then remap to [0, 1] for the texture
+      final double charge = (magnitude - _binAverages[i]).clamp(-1.0, 1.0);
+      final double chargeNormalised = (charge + 1.0) * 0.5;
+
+      pixels[i * 4 + 0] = magnitude; // R: raw magnitude (existing)
+      pixels[i * 4 + 1] = chargeNormalised; // G: signed charge
       pixels[i * 4 + 2] = 0.0;
       pixels[i * 4 + 3] = 1.0;
     }

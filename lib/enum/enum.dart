@@ -44,6 +44,16 @@ enum TweakType {
     description:
         'Controls how sharply the ring edges are defined. 1.0 = smooth sine gradient, higher values → harder, brighter ring edges.',
   ),
+  uniformRingFill(
+    label: 'Ring Fill',
+    uniform: 'u_ringFill',
+    description: '???',
+  ),
+  uniformHueRange(
+    label: 'Hue Range',
+    uniform: 'u_hueRange',
+    description: '???',
+  ),
   uniformMaxOffset(
     label: 'Max Offset',
     uniform: 'u_maxOffset',
