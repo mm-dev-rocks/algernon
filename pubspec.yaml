@@ -99,6 +99,7 @@ flutter:
     - shaders/rose_tunnel_quadrant.frag
     - shaders/oscilloscope_columns.frag
     - shaders/rings_radial.frag
+    - shaders/rings_radial_2.frag
     - shaders/warp_kaleido.frag
     - shaders/lissajous_web.frag
     - shaders/interference_waves.frag
@@ -113,6 +114,7 @@ flutter:
     - 'assets/Bob Dylan - Eternal Circle.mp3'
     - 'assets/South Street Player - Who Keeps Changing Your Mind.mp3'
     - 'assets/Public Image Limited - Rise.mp3'
+    - 'assets/Sister Sledge - Thinking Of You.mp3'
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
