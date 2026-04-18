@@ -102,6 +102,59 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
         return notification.canHandlePop;
       },
       theme: ThemeData(
+        brightness: Brightness.dark,
+        dropdownMenuTheme: Theme.of(context).dropdownMenuTheme.copyWith(
+          textStyle: const TextStyle(color: Colors.white),
+          menuStyle: MenuStyle(
+            padding: WidgetStateProperty<EdgeInsets?>.fromMap(
+              <WidgetStatesConstraint, EdgeInsets?>{
+                WidgetState.error: const EdgeInsets.all(6),
+                WidgetState.hovered & WidgetState.focused: const EdgeInsets.all(
+                  6,
+                ),
+                WidgetState.focused: const EdgeInsets.all(6),
+                ~WidgetState.disabled: const EdgeInsets.all(6),
+              },
+            ),
+            backgroundColor: WidgetStateColor.resolveWith((states) {
+              return Colors.transparent;
+            }),
+            shadowColor: WidgetStateColor.resolveWith((states) {
+              return Colors.transparent;
+            }),
+            //backgroundColor: WidgetStateColor.resolveWith((states) {
+            //  if (states.contains(WidgetState.pressed))
+            //    return Colors.blue[700]!;
+            //  if (states.contains(WidgetState.hovered))
+            //    return Colors.blue[400]!;
+            //  return Colors.blue; // default / normal state
+            //}),
+          ),
+        ),
+        //textTheme: Theme.of(context).textTheme.copyWith(
+        //  bodySmall: const TextStyle(color: Colors.white, fontSize: 16),
+        //  bodyMedium: const TextStyle(color: Colors.white, fontSize: 16),
+        //  bodyLarge: const TextStyle(color: Colors.white, fontSize: 16),
+        //  displaySmall: const TextStyle(color: Colors.white, fontSize: 16),
+        //  displayMedium: const TextStyle(color: Colors.white, fontSize: 16),
+        //  displayLarge: const TextStyle(color: Colors.white, fontSize: 16),
+        //  headlineSmall: const TextStyle(color: Colors.white, fontSize: 16),
+        //  headlineMedium: const TextStyle(color: Colors.white, fontSize: 16),
+        //  headlineLarge: const TextStyle(color: Colors.white, fontSize: 16),
+        //  labelSmall: const TextStyle(color: Colors.white, fontSize: 16),
+        //  labelMedium: const TextStyle(color: Colors.white, fontSize: 16),
+        //  labelLarge: const TextStyle(color: Colors.white, fontSize: 16),
+        //),
+        //menuButtonTheme: MenuButtonThemeData(
+        //  style: MenuItemButton.styleFrom(
+        //    textStyle: Theme.of(context).textTheme.labelLarge,
+        //  ),
+        //),
+        //elevatedButtonTheme: ElevatedButtonThemeData(
+        //  style: MenuItemButton.styleFrom(
+        //    textStyle: Theme.of(context).textTheme.labelLarge,
+        //  ),
+        //),
         sliderTheme: SliderThemeData(
           activeTrackColor: Colors.white.withValues(alpha: 0.2),
           inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
@@ -109,9 +162,9 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
           overlayColor: Colors.white.withValues(alpha: 0.2),
           valueIndicatorColor: Colors.white,
           trackHeight: 1.0,
-          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
-          overlayShape: RoundSliderOverlayShape(overlayRadius: 20.0),
-          valueIndicatorShape: PaddleSliderValueIndicatorShape(),
+          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
+          overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
+          valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
           showValueIndicator: ShowValueIndicator.alwaysVisible,
         ),
       ),
