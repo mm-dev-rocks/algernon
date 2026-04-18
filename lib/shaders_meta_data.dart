@@ -87,6 +87,9 @@ final List<ShaderMetaModel> shadersMetadata = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         id: 'lissajous_web_${TweakType.fftDataSmoothing.name}',
         tweakType: TweakType.fftDataSmoothing,
+        min: 0.9,
+        max: 0.999,
+        defaultVal: 0.95,
       ),
     },
   ),
@@ -196,6 +199,9 @@ final List<ShaderMetaModel> shadersMetadata = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         id: 'rings_radial_2${TweakType.fftDataSmoothing.name}',
         tweakType: TweakType.fftDataSmoothing,
+        min: 0.5,
+        max: 0.95,
+        defaultVal: 0.75,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
         id: 'rings_radial_2${TweakType.uniformHueShift.name}',
