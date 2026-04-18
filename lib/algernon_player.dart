@@ -46,6 +46,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   bool _isProcessing = false;
 
+  AudioSource? _currentSound;
+  SoundHandle? _currentSoundHandle;
+  //bool _isPlaying = false;
+
   late final Ticker _ticker;
   // Frame rate we aim for
   final Duration _fpsAimDuration = const Duration(
@@ -57,6 +61,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   void initState() {
     _ticker = createTicker(_onTick);
     _ticker.start();
+
+    _initialiseSoundAndPlay();
 
     /// [initState] can't be async, so we send image creation off as a microtask which will be carried out after the
     /// current flow of execution.
@@ -113,31 +119,38 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           end: 0,
           child: Row(
             children: [
-              DropdownButton<ShaderMetaModel>(
-                dropdownColor: Colors.transparent,
-                style: const TextStyle(color: Colors.white),
-                value: _painterConfig.currentShaderMeta,
-                onChanged: (ShaderMetaModel? value) {
-                  setState(() {
-                    _painterConfig.currentShaderMeta = value!;
-                  });
+              DropdownMenu<ShaderMetaModel>(
+                initialSelection: _painterConfig.currentShaderMeta,
+                onSelected: (ShaderMetaModel? value) {
+                  if (value != null) {
+                    setState(() {
+                      _painterConfig.currentShaderMeta = value;
+                    });
+                  }
                 },
-                items: ALGERNON.shadersMetadata
-                    .map<DropdownMenuItem<ShaderMetaModel>>((
-                      ShaderMetaModel shaderMeta,
-                    ) {
-                      return DropdownMenuItem<ShaderMetaModel>(
-                        value: shaderMeta,
-                        child: Text(shaderMeta.friendlyName),
-                      );
-                    })
+                dropdownMenuEntries: ALGERNON.shadersMetadata
+                    .map<DropdownMenuEntry<ShaderMetaModel>>(
+                      (ShaderMetaModel shaderMeta) =>
+                          DropdownMenuEntry<ShaderMetaModel>(
+                            value: shaderMeta,
+                            label: shaderMeta.friendlyName,
+                            style: MenuItemButton.styleFrom(
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                    )
                     .toList(),
               ),
               const Spacer(),
-              ElevatedButton(
-                onPressed: _initialiseSoundAndPlay,
-                child: const Text('PLAY'),
-              ),
+              if (_currentSoundHandle != null)
+                IconButton(
+                  onPressed: _togglePause,
+                  icon: Icon(
+                    _soLoud.getPause(_currentSoundHandle!)
+                        ? Icons.play_arrow
+                        : Icons.pause,
+                  ),
+                ),
             ],
           ),
         ),
@@ -203,19 +216,43 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     );
   }
 
+  void _togglePause() {
+    //if (_soLoud.getPause()) {}
+    if (_currentSoundHandle != null) {
+      _soLoud.pauseSwitch(_currentSoundHandle!);
+      setState(() {});
+    }
+  }
+
   void _initialiseSoundAndPlay() async {
     await _soLoud.init(bufferSize: 256);
     _soLoud.setVisualizationEnabled(true);
 
-    await _soLoud.playSource(
-      //asset: 'assets/Public Image Limited - Rise.mp3',
-      //asset: 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
-      //asset: 'assets/Bob Dylan - Eternal Circle.mp3',
-      asset: 'assets/Sister Sledge - Thinking Of You.mp3',
-      //asset: 'assets/Pointer Sisters - Automatic.mp3',
-      //volume: 0.1,
-      looping: true,
+    _currentSound = await _soLoud.loadAsset(
+      // 'assets/Public Image Limited - Rise.mp3',
+      'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
+      // 'assets/Bob Dylan - Eternal Circle.mp3',
+      //'assets/Sister Sledge - Thinking Of You.mp3',
+      // 'assets/Pointer Sisters - Automatic.mp3',
     );
+    if (_currentSound != null) {
+      _currentSoundHandle = _soLoud.play(
+        _currentSound!,
+        //volume: 0.1,
+        looping: true,
+      );
+      setState(() {});
+    }
+
+    //_currentSoundHandle = await _soLoud.playSource(
+    //  //asset: 'assets/Public Image Limited - Rise.mp3',
+    //  //asset: 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
+    //  //asset: 'assets/Bob Dylan - Eternal Circle.mp3',
+    //  asset: 'assets/Sister Sledge - Thinking Of You.mp3',
+    //  //asset: 'assets/Pointer Sisters - Automatic.mp3',
+    //  //volume: 0.1,
+    //  looping: true,
+    //);
     //await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
   }
 
