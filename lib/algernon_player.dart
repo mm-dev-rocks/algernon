@@ -236,7 +236,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       // 'assets/Pointer Sisters - Automatic.mp3',
     );
     if (_currentSound != null) {
-      _currentSoundHandle = _soLoud.play(
+      _currentSoundHandle = await _soLoud.play(
         _currentSound!,
         //volume: 0.1,
         looping: true,
