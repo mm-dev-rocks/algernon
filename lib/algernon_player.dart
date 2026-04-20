@@ -8,6 +8,7 @@ import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum/enum.dart';
 import 'package:algernon/painter_config_model.dart';
+import 'package:algernon/screen.dart';
 import 'package:algernon/shader_meta_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/shader_tweak_slider.dart';
@@ -86,6 +87,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   @override
   Widget build(BuildContext context) {
+    dynamic uiSizes = Screen.uiSizesFromContext(context);
+
     final ShaderTweakModel fftSmoothingTweak = _painterConfig
         .currentShaderMeta
         .shaderTweaks[TweakType.fftDataSmoothing.name]!;
@@ -163,13 +166,15 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           top: 0,
           bottom: 0,
           start: 0,
+
+          end: Screen.width(context) * 0.66,
           child: Center(
             child: Column(
               mainAxisSize: .min,
               crossAxisAlignment: .start,
 
               /// TODO magic number
-              spacing: 30,
+              spacing: uiSizes.paddingMedium,
               children: [
                 ..._painterConfig.currentShaderMeta.shaderTweaks.entries
                     .where(

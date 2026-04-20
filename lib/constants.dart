@@ -47,4 +47,26 @@ class ALGERNON {
 
   /// Shader meta info is in another file to keep this file maintainable.
   static final List<ShaderMetaModel> shadersMetadata = meta.shadersMetadata;
+
+  ///
+  ///
+  ///////////////////////
+  ///
+  /// UI / Layout
+  /// Responsive
+  ///
+  ///////////////////////
+
+  /*
+    From:
+    https://developer.android.com/guide/topics/large-screens/support-different-screen-sizes
+
+    Compact width 	width < 600dp 	99.96% of phones in portrait
+    Medium width 	600dp ≤ width < 840dp 	93.73% of tablets in portrait,
+
+    Large unfolded inner displays in portrait
+    Expanded width 	width ≥ 840dp 	97.22% of tablets in landscape,
+  */
+  static const double breakpointTiny = 400;
+  static const double breakpointCompact = 600;
 }

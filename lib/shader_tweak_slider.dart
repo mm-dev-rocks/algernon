@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/screen.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,8 @@ class ShaderTweakSlider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    dynamic uiSizes = Screen.uiSizesFromContext(context);
+
     Slider slider = Slider(
       min: shaderTweak.min,
       max: shaderTweak.max,
@@ -34,7 +37,16 @@ class ShaderTweakSlider extends StatelessWidget {
     return Column(
       //crossAxisAlignment: .start,
       children: [
-        Row(mainAxisSize: .min, children: [slider, infoIcon]),
+        Row(
+          //mainAxisSize: .min,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(left: uiSizes.paddingSmall),
+              child: infoIcon,
+            ),
+            Expanded(child: slider),
+          ],
+        ),
         label,
       ],
     );
