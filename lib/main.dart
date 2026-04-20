@@ -117,7 +117,8 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
               },
             ),
             backgroundColor: WidgetStateColor.resolveWith((states) {
-              return Colors.transparent;
+              return Colors.black.withValues(alpha: 0.7);
+              //return Colors.transparent;
             }),
             shadowColor: WidgetStateColor.resolveWith((states) {
               return Colors.transparent;

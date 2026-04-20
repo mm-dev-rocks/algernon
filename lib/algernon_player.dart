@@ -120,6 +120,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           child: Row(
             children: [
               DropdownMenu<ShaderMetaModel>(
+                requestFocusOnTap: false,
                 initialSelection: _painterConfig.currentShaderMeta,
                 onSelected: (ShaderMetaModel? value) {
                   if (value != null) {
@@ -160,33 +161,65 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           textDirection: TextDirection.ltr,
 
           /// TODO magic number
-          top: 100,
+          top: 0,
+          bottom: 0,
           start: 0,
-          child: Column(
-            /// TODO magic number
-            spacing: 30,
-            children: [
-              ..._painterConfig.currentShaderMeta.shaderTweaks.entries
-                  .where(
-                    (MapEntry<String, ShaderTweakModel> entry) =>
-                        entry.value.tweakType != TweakType.fftDataSmoothing,
-                  )
-                  .map(
-                    (MapEntry<String, ShaderTweakModel> entry) =>
-                        ShaderTweakSlider(
-                          shaderTweak: entry.value,
-                          onChanged: (double value) {
-                            if (_soLoudIsReady) {
-                              setState(() {
-                                entry.value.currentVal = value;
-                              });
-                            }
-                          },
-                        ),
-                  ),
-            ],
+          child: Center(
+            child: Column(
+              mainAxisSize: .min,
+              crossAxisAlignment: .start,
+
+              /// TODO magic number
+              spacing: 30,
+              children: [
+                ..._painterConfig.currentShaderMeta.shaderTweaks.entries
+                    .where(
+                      (MapEntry<String, ShaderTweakModel> entry) =>
+                          entry.value.tweakType != TweakType.fftDataSmoothing,
+                    )
+                    .map(
+                      (MapEntry<String, ShaderTweakModel> entry) =>
+                          ShaderTweakSlider(
+                            shaderTweak: entry.value,
+                            onChanged: (double value) {
+                              if (_soLoudIsReady) {
+                                setState(() {
+                                  entry.value.currentVal = value;
+                                });
+                              }
+                            },
+                          ),
+                    ),
+              ],
+            ),
           ),
         ),
+
+        /// Volume slider
+        Positioned.directional(
+          textDirection: TextDirection.ltr,
+
+          /// TODO magic number
+          top: 100,
+          bottom: 100,
+          end: 0,
+          child: RotatedBox(
+            quarterTurns: 1,
+            child: ShaderTweakSlider(
+              shaderTweak: fftSmoothingTweak,
+              onChanged: (double value) {
+                if (_soLoudIsReady) {
+                  setState(() {
+                    fftSmoothingTweak.currentVal = value;
+                    _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                  });
+                }
+              },
+            ),
+          ),
+        ),
+
+        /// FFT smoothing slider
         Positioned.directional(
           textDirection: TextDirection.ltr,
           top: 0,
