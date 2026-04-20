@@ -175,7 +175,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                     (MapEntry<String, ShaderTweakModel> entry) =>
                         ShaderTweakSlider(
                           shaderTweak: entry.value,
-                          name: entry.value.tweakType.label,
                           onChanged: (double value) {
                             if (_soLoudIsReady) {
                               setState(() {
@@ -198,7 +197,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
               Expanded(
                 child: ShaderTweakSlider(
                   shaderTweak: fftSmoothingTweak,
-                  name: TweakType.fftDataSmoothing.label,
                   onChanged: (double value) {
                     if (_soLoudIsReady) {
                       setState(() {
@@ -229,10 +227,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _soLoud.setVisualizationEnabled(true);
 
     _currentSound = await _soLoud.loadAsset(
+      //"assets/BEATPELLA HOUSE - Candy Thief.mp3",
       // 'assets/Public Image Limited - Rise.mp3',
-      'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
+      // 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
       // 'assets/Bob Dylan - Eternal Circle.mp3',
-      //'assets/Sister Sledge - Thinking Of You.mp3',
+      'assets/Sister Sledge - Thinking Of You.mp3',
       // 'assets/Pointer Sisters - Automatic.mp3',
     );
     if (_currentSound != null) {
@@ -245,17 +244,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       );
       setState(() {});
     }
-
-    //_currentSoundHandle = await _soLoud.playSource(
-    //  //asset: 'assets/Public Image Limited - Rise.mp3',
-    //  //asset: 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
-    //  //asset: 'assets/Bob Dylan - Eternal Circle.mp3',
-    //  asset: 'assets/Sister Sledge - Thinking Of You.mp3',
-    //  //asset: 'assets/Pointer Sisters - Automatic.mp3',
-    //  //volume: 0.1,
-    //  looping: true,
-    //);
-    //await _soLoud.playSource(asset: 'assets/Eternal Circle.mp3', looping: true);
   }
 
   /// Runs on every tick of [_ticker] as a callback (which works because this widget uses the

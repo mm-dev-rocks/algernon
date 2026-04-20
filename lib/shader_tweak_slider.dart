@@ -8,12 +8,10 @@ class ShaderTweakSlider extends StatelessWidget {
     super.key,
     required this.shaderTweak,
     required this.onChanged,
-    this.name = "Tweak Slider",
   });
 
   final ShaderTweakModel shaderTweak;
   final ValueChanged<double> onChanged;
-  final String name;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +22,15 @@ class ShaderTweakSlider extends StatelessWidget {
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
     );
-    Text label = Text(name, style: const TextStyle(color: Colors.white));
+    Text label = Text(
+      shaderTweak.tweakType.label,
+      style: const TextStyle(color: Colors.white),
+    );
+    Text description = Text(
+      shaderTweak.tweakType.description,
+      style: const TextStyle(color: Colors.white),
+    );
 
-    return Column(children: [slider, label]);
+    return Column(children: [slider, label, description]);
   }
 }
