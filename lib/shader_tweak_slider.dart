@@ -26,11 +26,17 @@ class ShaderTweakSlider extends StatelessWidget {
       shaderTweak.tweakType.label,
       style: const TextStyle(color: Colors.white),
     );
-    Text description = Text(
-      shaderTweak.tweakType.description,
-      style: const TextStyle(color: Colors.white),
+    Widget infoIcon = Tooltip(
+      message: shaderTweak.tweakType.description,
+      child: const Icon(Icons.info_outlined),
     );
 
-    return Column(children: [slider, label, description]);
+    return Column(
+      //crossAxisAlignment: .start,
+      children: [
+        Row(mainAxisSize: .min, children: [slider, infoIcon]),
+        label,
+      ],
+    );
   }
 }
