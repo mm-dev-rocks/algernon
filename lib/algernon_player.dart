@@ -207,23 +207,31 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           top: 100,
           bottom: 100,
           end: 0,
-          child: RotatedBox(
-            quarterTurns: 3,
-            child: Slider(
-              //shaderTweak: fftSmoothingTweak,
-              value: _currentSoundHandle != null
-                  ? _soLoud.getVolume(_currentSoundHandle!)
-                  : 1,
-              onChanged: (double value) {
-                if (_soLoudIsReady && _currentSoundHandle != null) {
-                  setState(() {
-                    _soLoud.setVolume(_currentSoundHandle!, value);
-                    //fftSmoothingTweak.currentVal = value;
-                    //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
-                  });
-                }
-              },
-            ),
+          child: Row(
+            children: [
+              const Tooltip(
+                message: 'Volume',
+                child: Icon(Icons.speaker_outlined),
+              ),
+              RotatedBox(
+                quarterTurns: 3,
+                child: Slider(
+                  //shaderTweak: fftSmoothingTweak,
+                  value: _currentSoundHandle != null
+                      ? _soLoud.getVolume(_currentSoundHandle!)
+                      : 1,
+                  onChanged: (double value) {
+                    if (_soLoudIsReady && _currentSoundHandle != null) {
+                      setState(() {
+                        _soLoud.setVolume(_currentSoundHandle!, value);
+                        //fftSmoothingTweak.currentVal = value;
+                        //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                      });
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
 
