@@ -23,9 +23,9 @@ precision mediump float;
 uniform vec2 u_resolution;
 uniform sampler2D u_fftData;
 
-// 0.09 - 0.5
 uniform float u_warpStrength;
 uniform float u_foldCount;
+uniform float u_attenuation;
 
 out vec4 fragColor;
 
@@ -125,7 +125,7 @@ void main() {
 
   // Attenuate pattern by distance from centre so the middle is always dark
   // (avoids a blown-out bright centre that would obscure the structure).
-  float radialFade = 1.0 - clamp(radius * 1.4, 0.0, 1.0);
+  float radialFade = 1.0 - clamp(radius * u_attenuation, 0.0, 1.0);
   pattern *= radialFade;
 
   // Final RGB: each channel is the audio band × the geometric pattern.
@@ -138,9 +138,9 @@ void main() {
   // Boost overall brightness slightly during loud passages by adding a small
   // fraction of the combined energy. Keeps the shader visible at low volumes.
   float loudness = (bass + mid + treble) / 3.0;
-  r += loudness * 0.08;
-  g += loudness * 0.08;
-  b += loudness * 0.08;
+  r += loudness * 0.09;
+  g += loudness * 0.09;
+  b += loudness * 0.09;
 
   fragColor =
       vec4(clamp(r, 0.0, 1.0), clamp(g, 0.0, 0.5), clamp(b, 0.0, 1.0), 1.0);

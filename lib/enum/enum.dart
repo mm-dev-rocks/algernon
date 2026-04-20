@@ -32,6 +32,11 @@ enum TweakType {
     description:
         'Must be a positive integer; non-integer values produce asymmetric tears.',
   ),
+  uniformAttenuation(
+    label: 'Attenuation',
+    uniform: 'u_attenuation',
+    description: 'Used to affect eg fading distance',
+  ),
   uniformRingDensity(
     label: 'Ring Density',
     uniform: 'u_ringDensity',

@@ -74,9 +74,18 @@ final List<ShaderMetaModel> shadersMetadata = [
         id: 'warp_kaleido_${TweakType.uniformFoldCount.name}',
         tweakType: TweakType.uniformFoldCount,
         min: 1,
-        max: 64,
-        divisions: 63,
-        defaultVal: 6,
+        max: 7,
+
+        /// Divisions should be difference between min and max to end up with whole integers
+        divisions: 6,
+        defaultVal: 3,
+      ),
+      TweakType.uniformAttenuation.name: ShaderTweakModel(
+        id: 'warp_kaleido_${TweakType.uniformAttenuation.name}',
+        tweakType: TweakType.uniformAttenuation,
+        min: 0.1,
+        max: 3,
+        defaultVal: 1.4,
       ),
     },
   ),
