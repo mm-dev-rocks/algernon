@@ -38,6 +38,12 @@ file chooser
 
 # BUGS
 
+Not experienced this yet but worth implementing workarounds
+https://github.com/alnitak/flutter_soloud/issues/126
+
+Black screen on Tab S4
+
+
 ---
 
 # DONE
