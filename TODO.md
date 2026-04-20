@@ -1,21 +1,15 @@
-fftSmoothing is not a normal tweak, stop trying to treat it as one
-
-tweaktype should it be handling above, and uniform?
-**more likely** only uniforms
 
 volume slider
 
 playback bar
 
-more friendly names for sliders
+more friendly names for shader sliders
 
 show slider descriptions somehow
 
 remember previous tune on startup
 
 onset detection
-
-play button toggle
 
 controls appear on tap, disappear after n seconds or on tap outside
 
@@ -68,3 +62,7 @@ occasional single:
 dark theme (eg for start screen)
 dropdown styles
 sliders stack vertically
+play button toggle
+fftSmoothing is not a normal tweak, stop trying to treat it as one
+tweaktype should it be handling above, and uniform?
+**more likely** only uniforms
