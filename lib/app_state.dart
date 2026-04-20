@@ -259,4 +259,33 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     log(str);
     SystemNavigator.pop();
   }
+
+  /// Debounce a function. [voidFunction] must not return anything. [callerKey] is used to form
+  /// a [Timer] variable name, so should be something unique otherwise different functions might in
+  /// theory clash.
+  static void debounceVoidFunction({
+    required String callerKey,
+    required Function voidFunction,
+    Duration debounceDuration = ALGERNON.defaultDebounceDuration,
+  }) {
+    String timerId = callerKey + voidFunction.hashCode.toString();
+    //AppState.log('timerId: $timerId');
+
+    /// Cancel any existing timers for the same function (this is where our debounce happens).
+    Timer? existingTimer = AppState.get(timerId);
+    if (existingTimer != null) {
+      existingTimer.cancel();
+    }
+
+    /// Save the timer in [AppState]
+    AppState.update(
+      timerId,
+      Timer(debounceDuration, () {
+        voidFunction.call();
+
+        /// After calling the debounced function, clean up the [Timer].
+        AppStateWidget._appState.remove(timerId);
+      }),
+    );
+  }
 }

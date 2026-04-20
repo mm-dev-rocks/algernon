@@ -44,9 +44,15 @@ class ALGERNON {
   };
 
   static const int finalAimFps = 30;
+  static const Duration hideControlsDelay = Duration(seconds: 10);
 
   /// Shader meta info is in another file to keep this file maintainable.
   static final List<ShaderMetaModel> shadersMetadata = meta.shadersMetadata;
+
+  static const Duration defaultDebounceDuration = Duration(milliseconds: 200);
+  static const Duration showControlsDebounceDuration = Duration(
+    milliseconds: 500,
+  );
 
   ///
   ///

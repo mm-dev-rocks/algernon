@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
+import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum/enum.dart';
 import 'package:algernon/painter_config_model.dart';
@@ -49,7 +50,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   AudioSource? _currentSound;
   SoundHandle? _currentSoundHandle;
-  //bool _isPlaying = false;
+
+  late Timer _hideControlsTimer;
+  bool _controlsAreVisible = true;
 
   late final Ticker _ticker;
   // Frame rate we aim for
@@ -71,6 +74,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       _zeroImage = await _getZeroImage();
       _zeroImageExists = true;
     });
+    _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
 
     super.initState();
   }
@@ -97,168 +101,178 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       children: [
         /// Main visuals
         Positioned.fill(
-          child: FittedBox(
-            fit: BoxFit.cover,
-            child: ListenableBuilder(
-              listenable: _painterConfig,
-              builder: (BuildContext context, Widget? child) {
-                return _zeroImageExists
-                    ? AlgernonShaderPainter(
-                        fftDataTexture:
-                            _painterConfig.fftDataImage ?? _zeroImage!,
-                        shaderMeta: _painterConfig.currentShaderMeta,
-                      )
-                    : const SizedBox.shrink();
-              },
+          child: GestureDetector(
+            onTap: _showControlsDebounced,
+            child: FittedBox(
+              fit: BoxFit.cover,
+              child: ListenableBuilder(
+                listenable: _painterConfig,
+                builder: (BuildContext context, Widget? child) {
+                  return _zeroImageExists
+                      ? AlgernonShaderPainter(
+                          fftDataTexture:
+                              _painterConfig.fftDataImage ?? _zeroImage!,
+                          shaderMeta: _painterConfig.currentShaderMeta,
+                        )
+                      : const SizedBox.shrink();
+                },
+              ),
             ),
           ),
         ),
 
         /// Shader select/dropdown
-        Positioned.directional(
-          textDirection: TextDirection.ltr,
-          bottom: 0,
-          start: 0,
-          end: 0,
-          child: Row(
-            children: [
-              DropdownMenu<ShaderMetaModel>(
-                requestFocusOnTap: false,
-                initialSelection: _painterConfig.currentShaderMeta,
-                onSelected: (ShaderMetaModel? value) {
-                  if (value != null) {
-                    setState(() {
-                      _painterConfig.currentShaderMeta = value;
-                    });
-                  }
-                },
-                dropdownMenuEntries: ALGERNON.shadersMetadata
-                    .map<DropdownMenuEntry<ShaderMetaModel>>(
-                      (ShaderMetaModel shaderMeta) =>
-                          DropdownMenuEntry<ShaderMetaModel>(
-                            value: shaderMeta,
-                            label: shaderMeta.friendlyName,
-                            style: MenuItemButton.styleFrom(
-                              foregroundColor: Colors.white,
-                            ),
-                          ),
-                    )
-                    .toList(),
-              ),
-              const Spacer(),
-              if (_currentSoundHandle != null)
-                IconButton(
-                  onPressed: _togglePause,
-                  icon: Icon(
-                    _soLoud.getPause(_currentSoundHandle!)
-                        ? Icons.play_arrow
-                        : Icons.pause,
-                  ),
-                ),
-            ],
-          ),
-        ),
-
-        /// Shader-specific sliders
-        Positioned.directional(
-          textDirection: TextDirection.ltr,
-
-          top: 0,
-          bottom: 0,
-          start: 0,
-
-          end: Screen.width(context) * 0.66,
-          child: Center(
-            child: Column(
-              mainAxisSize: .min,
-              crossAxisAlignment: .start,
-
-              /// TODO magic number
-              spacing: uiSizes.paddingMedium,
+        if (_controlsAreVisible)
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
+            bottom: 0,
+            start: 0,
+            end: 0,
+            child: Row(
               children: [
-                ..._painterConfig.currentShaderMeta.shaderTweaks.entries
-                    .where(
-                      (MapEntry<String, ShaderTweakModel> entry) =>
-                          entry.value.tweakType != TweakType.fftDataSmoothing,
-                    )
-                    .map(
-                      (MapEntry<String, ShaderTweakModel> entry) =>
-                          ShaderTweakSlider(
-                            shaderTweak: entry.value,
-                            onChanged: (double value) {
-                              if (_soLoudIsReady) {
-                                setState(() {
-                                  entry.value.currentVal = value;
-                                });
-                              }
-                            },
-                          ),
+                DropdownMenu<ShaderMetaModel>(
+                  requestFocusOnTap: false,
+                  initialSelection: _painterConfig.currentShaderMeta,
+                  onSelected: (ShaderMetaModel? value) {
+                    if (value != null) {
+                      setState(() {
+                        _painterConfig.currentShaderMeta = value;
+                      });
+                    }
+                  },
+                  dropdownMenuEntries: ALGERNON.shadersMetadata
+                      .map<DropdownMenuEntry<ShaderMetaModel>>(
+                        (ShaderMetaModel shaderMeta) =>
+                            DropdownMenuEntry<ShaderMetaModel>(
+                              value: shaderMeta,
+                              label: shaderMeta.friendlyName,
+                              style: MenuItemButton.styleFrom(
+                                foregroundColor: Colors.white,
+                              ),
+                            ),
+                      )
+                      .toList(),
+                ),
+                const Spacer(),
+                if (_currentSoundHandle != null)
+                  IconButton(
+                    onPressed: _togglePause,
+                    icon: Icon(
+                      _soLoud.getPause(_currentSoundHandle!)
+                          ? Icons.play_arrow
+                          : Icons.pause,
                     ),
+                  ),
               ],
             ),
           ),
-        ),
+
+        /// Shader-specific sliders
+        if (_controlsAreVisible)
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
+
+            top: 0,
+            bottom: 0,
+            start: 0,
+
+            end: Screen.width(context) * 0.66,
+            child: Center(
+              child: Column(
+                mainAxisSize: .min,
+                crossAxisAlignment: .start,
+
+                /// TODO magic number
+                spacing: uiSizes.paddingMedium,
+                children: [
+                  ..._painterConfig.currentShaderMeta.shaderTweaks.entries
+                      .where(
+                        (MapEntry<String, ShaderTweakModel> entry) =>
+                            entry.value.tweakType != TweakType.fftDataSmoothing,
+                      )
+                      .map(
+                        (MapEntry<String, ShaderTweakModel> entry) =>
+                            ShaderTweakSlider(
+                              shaderTweak: entry.value,
+                              onChanged: (double value) {
+                                if (_soLoudIsReady) {
+                                  setState(() {
+                                    entry.value.currentVal = value;
+                                  });
+                                }
+                                _showControlsDebounced();
+                              },
+                            ),
+                      ),
+                ],
+              ),
+            ),
+          ),
 
         /// Volume slider
-        Positioned.directional(
-          textDirection: TextDirection.ltr,
+        if (_controlsAreVisible)
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
 
-          /// TODO magic number
-          top: 100,
-          bottom: 100,
-          end: 0,
-          child: Row(
-            children: [
-              const Tooltip(
-                message: 'Volume',
-                child: Icon(Icons.speaker_outlined),
-              ),
-              RotatedBox(
-                quarterTurns: 3,
-                child: Slider(
-                  //shaderTweak: fftSmoothingTweak,
-                  value: _currentSoundHandle != null
-                      ? _soLoud.getVolume(_currentSoundHandle!)
-                      : 1,
-                  onChanged: (double value) {
-                    if (_soLoudIsReady && _currentSoundHandle != null) {
-                      setState(() {
-                        _soLoud.setVolume(_currentSoundHandle!, value);
-                        //fftSmoothingTweak.currentVal = value;
-                        //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
-                      });
-                    }
-                  },
+            /// TODO magic number
+            top: 100,
+            bottom: 100,
+            end: 0,
+            child: Row(
+              children: [
+                const Tooltip(
+                  message: 'Volume',
+                  child: Icon(Icons.speaker_outlined),
                 ),
-              ),
-            ],
+                RotatedBox(
+                  quarterTurns: 3,
+                  child: Slider(
+                    //shaderTweak: fftSmoothingTweak,
+                    value: _currentSoundHandle != null
+                        ? _soLoud.getVolume(_currentSoundHandle!)
+                        : 1,
+                    onChanged: (double value) {
+                      if (_soLoudIsReady && _currentSoundHandle != null) {
+                        setState(() {
+                          _soLoud.setVolume(_currentSoundHandle!, value);
+                          //fftSmoothingTweak.currentVal = value;
+                          //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                        });
+                      }
+                      _showControlsDebounced();
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
 
         /// FFT smoothing slider
-        Positioned.directional(
-          textDirection: TextDirection.ltr,
-          top: 0,
-          start: 0,
-          end: 0,
-          child: Row(
-            children: [
-              Expanded(
-                child: ShaderTweakSlider(
-                  shaderTweak: fftSmoothingTweak,
-                  onChanged: (double value) {
-                    if (_soLoudIsReady) {
-                      setState(() {
-                        fftSmoothingTweak.currentVal = value;
-                        _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
-                      });
-                    }
-                  },
+        if (_controlsAreVisible)
+          Positioned.directional(
+            textDirection: TextDirection.ltr,
+            top: 0,
+            start: 0,
+            end: 0,
+            child: Row(
+              children: [
+                Expanded(
+                  child: ShaderTweakSlider(
+                    shaderTweak: fftSmoothingTweak,
+                    onChanged: (double value) {
+                      if (_soLoudIsReady) {
+                        setState(() {
+                          fftSmoothingTweak.currentVal = value;
+                          _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                        });
+                      }
+                      _showControlsDebounced();
+                    },
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -389,5 +403,30 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     final pixels = Float32List(256 * 4);
     pixels.fillRange(0, pixels.length, 0.0);
     return await _shaderImageFromPixels(pixels);
+  }
+
+  void _showControlsDebounced() {
+    AppState.debounceVoidFunction(
+      callerKey: 'AlgernonPlayer._showControlsDebounced',
+      debounceDuration: ALGERNON.showControlsDebounceDuration,
+      voidFunction: _showControls,
+    );
+  }
+
+  void _showControls() {
+    AppState.log("_showControls()");
+    _hideControlsTimer.cancel();
+    _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
+    setState(() {
+      _controlsAreVisible = true;
+    });
+  }
+
+  void _hideControls() {
+    AppState.log("_hideControls()");
+    _hideControlsTimer.cancel();
+    setState(() {
+      _controlsAreVisible = false;
+    });
   }
 }
