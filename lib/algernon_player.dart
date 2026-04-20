@@ -160,7 +160,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         Positioned.directional(
           textDirection: TextDirection.ltr,
 
-          /// TODO magic number
           top: 0,
           bottom: 0,
           start: 0,
@@ -204,14 +203,18 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           bottom: 100,
           end: 0,
           child: RotatedBox(
-            quarterTurns: 1,
-            child: ShaderTweakSlider(
-              shaderTweak: fftSmoothingTweak,
+            quarterTurns: 3,
+            child: Slider(
+              //shaderTweak: fftSmoothingTweak,
+              value: _currentSoundHandle != null
+                  ? _soLoud.getVolume(_currentSoundHandle!)
+                  : 1,
               onChanged: (double value) {
-                if (_soLoudIsReady) {
+                if (_soLoudIsReady && _currentSoundHandle != null) {
                   setState(() {
-                    fftSmoothingTweak.currentVal = value;
-                    _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                    _soLoud.setVolume(_currentSoundHandle!, value);
+                    //fftSmoothingTweak.currentVal = value;
+                    //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
                   });
                 }
               },
@@ -330,6 +333,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   /// We have 256 bytes of data to pass, each representing a bin we got back from the FFT.
   Future<ui.Image> _imageFromFftData(Float32List fftData) async {
+    // In SoLoud, FFT data is processed late in the pipeline after the mixing stage, meaning the volume slider affects
+    // the intensity of the visuals. This is not what we want, so here we scale it to compensate for the current volume.
+    if (_currentSoundHandle != null) {
+      for (var i = 0; i < fftData.length; i++) {
+        fftData[i] /= _soLoud.getVolume(_currentSoundHandle!);
+      }
+    }
+
     // 256 pixels, each pixel needs R,G,B,A as floats, each of which is normalised between 0 and 1 (the FFT data is
     // already in that format). For now we just pass it in via the red channel, other colours are unused and alpha is
     // full/1.
