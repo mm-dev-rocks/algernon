@@ -196,6 +196,23 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
                   spacing: uiSizes.paddingMedium,
                   children: [
+                    ShaderTweakSlider(
+                      shaderTweak: fftSmoothingTweak,
+                      onChanged: (double value) {
+                        if (_soLoudIsReady) {
+                          setState(() {
+                            fftSmoothingTweak.currentVal = value;
+                            _soLoud.setFftSmoothing(
+                              fftSmoothingTweak.currentVal,
+                            );
+                            //AppState.log(
+                            //  "amplitude: $_trackAmplitude jumpiness: $_trackJumpiness smoothing: $value",
+                            //);
+                          });
+                        }
+                        _showControlsDebounced();
+                      },
+                    ),
                     ..._painterConfig.currentShaderMeta.shaderTweaks.entries
                         .where(
                           (MapEntry<String, ShaderTweakModel> entry) =>
@@ -247,36 +264,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       if (_soLoudIsReady && _currentSoundHandle != null) {
                         setState(() {
                           _soLoud.setVolume(_currentSoundHandle!, value);
-                        });
-                      }
-                      _showControlsDebounced();
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        /// FFT smoothing slider
-        if (_controlsAreVisible)
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
-            top: uiSizes.paddingMedium,
-            start: 0,
-            end: 0,
-            child: Row(
-              children: [
-                Expanded(
-                  child: ShaderTweakSlider(
-                    shaderTweak: fftSmoothingTweak,
-                    onChanged: (double value) {
-                      if (_soLoudIsReady) {
-                        setState(() {
-                          fftSmoothingTweak.currentVal = value;
-                          _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
-                          //AppState.log(
-                          //  "amplitude: $_trackAmplitude jumpiness: $_trackJumpiness smoothing: $value",
-                          //);
                         });
                       }
                       _showControlsDebounced();
