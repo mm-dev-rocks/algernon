@@ -34,8 +34,18 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Keep a rolling average of bins to be used for physics 'charges'
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
 
+  double _trackJumpiness = 0;
+  double _trackAmplitude = 0;
+
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
+
+  String _filePath = "assets/BEATPELLA HOUSE - Candy Thief.mp3";
+  //'assets/Public Image Limited - Rise.mp3';
+  // 'assets/South Street Player - Who Keeps Changing Your Mind.mp3';
+  //'assets/Bob Dylan - Eternal Circle.mp3';
+  // 'assets/Sister Sledge - Thinking Of You.mp3';
+  //'assets/Pointer Sisters - Automatic.mp3';
 
   /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
@@ -229,7 +239,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 RotatedBox(
                   quarterTurns: 3,
                   child: Slider(
-                    //shaderTweak: fftSmoothingTweak,
                     value: _currentSoundHandle != null
                         ? _soLoud.getVolume(_currentSoundHandle!)
                         : 1,
@@ -237,8 +246,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       if (_soLoudIsReady && _currentSoundHandle != null) {
                         setState(() {
                           _soLoud.setVolume(_currentSoundHandle!, value);
-                          //fftSmoothingTweak.currentVal = value;
-                          //_soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
                         });
                       }
                       _showControlsDebounced();
@@ -253,7 +260,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         if (_controlsAreVisible)
           Positioned.directional(
             textDirection: TextDirection.ltr,
-            top: 0,
+            top: uiSizes.paddingMedium,
             start: 0,
             end: 0,
             child: Row(
@@ -266,6 +273,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         setState(() {
                           fftSmoothingTweak.currentVal = value;
                           _soLoud.setFftSmoothing(fftSmoothingTweak.currentVal);
+                          //AppState.log(
+                          //  "amplitude: $_trackAmplitude jumpiness: $_trackJumpiness smoothing: $value",
+                          //);
                         });
                       }
                       _showControlsDebounced();
@@ -280,7 +290,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _togglePause() {
-    //if (_soLoud.getPause()) {}
     if (_currentSoundHandle != null) {
       _soLoud.pauseSwitch(_currentSoundHandle!);
       setState(() {});
@@ -288,17 +297,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _initialiseSoundAndPlay() async {
-    await _soLoud.init(bufferSize: 256);
+    await _soLoud.init(bufferSize: 1024);
     _soLoud.setVisualizationEnabled(true);
 
-    _currentSound = await _soLoud.loadAsset(
-      //"assets/BEATPELLA HOUSE - Candy Thief.mp3",
-      //'assets/Public Image Limited - Rise.mp3',
-      // 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
-      'assets/Bob Dylan - Eternal Circle.mp3',
-      // 'assets/Sister Sledge - Thinking Of You.mp3',
-      // 'assets/Pointer Sisters - Automatic.mp3',
-    );
+    _currentSound = await _soLoud.loadAsset(_filePath);
+    analyseFile(_filePath);
     if (_currentSound != null) {
       // After SoLoud 4, [play()] is sync
       //_currentSoundHandle = await _soLoud.play(
@@ -307,6 +310,16 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         //volume: 0.1,
         looping: true,
       );
+
+      /// TODO Fix mess/DRY
+      /// Ensure smoothing gets set to saved value as it doesn't work in the same way as other shader tweaks.
+      _soLoud.setFftSmoothing(
+        _painterConfig
+            .currentShaderMeta
+            .shaderTweaks[TweakType.fftDataSmoothing.name]!
+            .currentVal,
+      );
+
       setState(() {});
     }
   }
@@ -371,8 +384,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     }
 
     // 256 pixels, each pixel needs R,G,B,A as floats, each of which is normalised between 0 and 1 (the FFT data is
-    // already in that format). For now we just pass it in via the red channel, other colours are unused and alpha is
-    // full/1.
+    // already in that format). We pass FFT bins in via the red channel.
     final pixels = Float32List(256 * 4);
 
     // how slowly the average moves
@@ -391,9 +403,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       final double charge = (magnitude - _binAverages[i]).clamp(-1.0, 1.0);
       final double chargeNormalised = (charge + 1.0) * 0.5;
 
-      pixels[i * 4 + 0] = magnitude; // R: raw magnitude (existing)
-      pixels[i * 4 + 1] = chargeNormalised; // G: signed charge
+      // R: raw magnitude
+      pixels[i * 4 + 0] = magnitude;
+      // G: signed charge
+      pixels[i * 4 + 1] = chargeNormalised;
+      // Unused
       pixels[i * 4 + 2] = 0.0;
+      // Alpha full
       pixels[i * 4 + 3] = 1.0;
     }
 
@@ -430,5 +446,38 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     setState(() {
       _controlsAreVisible = false;
     });
+  }
+
+  Future<void> analyseFile(String filePath) async {
+    // 1000 evenly-spaced points from seconds 10–40
+    // already runs off the main thread internally
+    final samples = await SoLoud.instance.readSamplesFromFile(
+      filePath,
+      1000,
+      startTime: 10.0,
+      endTime: 40.0,
+      average: true, // each point is an average of its surrounding region
+    );
+
+    _trackJumpiness = _computeJumpiness(samples);
+    debugPrint('_trackJumpiness: $_trackJumpiness');
+    _trackAmplitude = _computeAmplitude(samples);
+    debugPrint('_trackAmplitude: $_trackAmplitude');
+  }
+
+  double _computeJumpiness(Float32List samples) {
+    double total = 0;
+    for (int i = 1; i < samples.length; i++) {
+      total += (samples[i] - samples[i - 1]).abs();
+    }
+    return total / samples.length;
+  }
+
+  double _computeAmplitude(Float32List samples) {
+    double total = 0;
+    for (int i = 0; i < samples.length; i++) {
+      total += samples[i].abs();
+    }
+    return total / samples.length;
   }
 }
