@@ -182,11 +182,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         if (_controlsAreVisible)
           Positioned.directional(
             textDirection: TextDirection.ltr,
-
             top: 0,
             bottom: 0,
             start: 0,
-
             end: Screen.width(context) * 0.66,
             child: Center(
               child: FocusTraversalGroup(
@@ -196,6 +194,42 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
                   spacing: uiSizes.paddingMedium,
                   children: [
+                    Row(
+                      mainAxisSize: .max,
+                      children: List.generate(
+                        ALGERNON.totalMemorySlots,
+                        (int index) => Expanded(
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.memory_outlined,
+                              color:
+                                  (index ==
+                                      AppState.getPreference(
+                                        'selectedMemorySlotIndex',
+                                      ))
+                                  ? Colors.white
+                                  : Colors.white.withValues(
+                                      alpha: ALGERNON.disabledControlOpacity,
+                                    ),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                AppState.setPreference(
+                                  'selectedMemorySlotIndex',
+                                  index,
+                                );
+                                _soLoud.setFftSmoothing(
+                                  fftSmoothingTweak.currentVal,
+                                );
+                              });
+                              _showControlsDebounced();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    /// FFT smoothing
                     ShaderTweakSlider(
                       shaderTweak: fftSmoothingTweak,
                       onChanged: (double value) {
@@ -205,14 +239,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                             _soLoud.setFftSmoothing(
                               fftSmoothingTweak.currentVal,
                             );
-                            //AppState.log(
-                            //  "amplitude: $_trackAmplitude jumpiness: $_trackJumpiness smoothing: $value",
-                            //);
                           });
                         }
                         _showControlsDebounced();
                       },
                     ),
+
+                    /// Shader-specific tweaks
                     ..._painterConfig.currentShaderMeta.shaderTweaks.entries
                         .where(
                           (MapEntry<String, ShaderTweakModel> entry) =>

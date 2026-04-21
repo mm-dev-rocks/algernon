@@ -41,7 +41,12 @@ class ALGERNON {
     /// Container for shader tweaks, which are saved as 'preferences' for persistence between sessions.
     'shaderTweakValuesMap': [],
     'selectedShaderIndex': [int, 0],
+    'selectedMemorySlotIndex': [int, 0],
   };
+
+  static const int totalMemorySlots = 5;
+  
+  static const double disabledControlOpacity = 0.3;
 
   static const int finalAimFps = 30;
   static const Duration hideControlsDelay = Duration(seconds: 10);
@@ -51,7 +56,7 @@ class ALGERNON {
 
   static const Duration defaultDebounceDuration = Duration(milliseconds: 200);
   static const Duration showControlsDebounceDuration = Duration(
-    milliseconds: 500,
+    milliseconds: 150,
   );
 
   ///

@@ -10,7 +10,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'rose_tunnel_quadrant',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'rose_tunnel_quadrant_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'rose_tunnel_quadrant',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -20,7 +20,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'blocks_spiral',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'blocks_spiral_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'blocks_spiral',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -30,7 +30,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'blocks_simple',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'blocks_simple_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'blocks_simple',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -40,7 +40,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'oscilloscope_columns',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'oscilloscope_columns_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'oscilloscope_columns',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -50,7 +50,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'rings_radial',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'rings_radial_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'rings_radial',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -60,18 +60,18 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'warp_kaleido',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'warp_kaleido_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'warp_kaleido',
         tweakType: TweakType.fftDataSmoothing,
       ),
       TweakType.uniformWarpStrength.name: ShaderTweakModel(
-        id: 'warp_kaleido_${TweakType.uniformWarpStrength.name}',
+        shaderId: 'warp_kaleido',
         tweakType: TweakType.uniformWarpStrength,
         min: 0.01,
         max: 0.2,
         defaultVal: 0.1,
       ),
       TweakType.uniformFoldCount.name: ShaderTweakModel(
-        id: 'warp_kaleido_${TweakType.uniformFoldCount.name}',
+        shaderId: 'warp_kaleido',
         tweakType: TweakType.uniformFoldCount,
         min: 1,
         max: 7,
@@ -81,7 +81,7 @@ final List<ShaderMetaModel> shadersMetadata = [
         defaultVal: 3,
       ),
       TweakType.uniformAttenuation.name: ShaderTweakModel(
-        id: 'warp_kaleido_${TweakType.uniformAttenuation.name}',
+        shaderId: 'warp_kaleido',
         tweakType: TweakType.uniformAttenuation,
         min: 0.1,
         max: 3,
@@ -94,11 +94,11 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'lissajous_web',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'lissajous_web_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'lissajous_web',
         tweakType: TweakType.fftDataSmoothing,
         min: 0.97,
         max: 0.999,
-        defaultVal: 0.95,
+        defaultVal: 0.98,
       ),
     },
   ),
@@ -107,7 +107,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'interference_waves',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'interference_waves_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'interference_waves',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -117,25 +117,25 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'voronoi_cells',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'voronoi_cells_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'voronoi_cells',
         tweakType: TweakType.fftDataSmoothing,
       ),
       TweakType.uniformPushRange.name: ShaderTweakModel(
-        id: 'voronoi_cells_${TweakType.uniformPushRange.name}',
+        shaderId: 'voronoi_cells',
         tweakType: TweakType.uniformPushRange,
         min: 0.05,
         max: 0.5,
         defaultVal: 0.18,
       ),
       TweakType.uniformBorderWidth.name: ShaderTweakModel(
-        id: 'voronoi_cells_${TweakType.uniformBorderWidth.name}',
+        shaderId: 'voronoi_cells',
         tweakType: TweakType.uniformBorderWidth,
         min: 0.01,
         max: 0.06,
         defaultVal: 0.02,
       ),
       TweakType.uniformBaseRadius.name: ShaderTweakModel(
-        id: 'voronoi_cells_${TweakType.uniformBaseRadius.name}',
+        shaderId: 'voronoi_cells',
         tweakType: TweakType.uniformBaseRadius,
         min: 0.03,
         max: 0.85,
@@ -148,32 +148,32 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'moire_grid',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'moire_grid_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'moire_grid',
         tweakType: TweakType.fftDataSmoothing,
       ),
       TweakType.uniformRingDensity.name: ShaderTweakModel(
-        id: 'moire_grid_${TweakType.uniformRingDensity.name}',
+        shaderId: 'moire_grid',
         tweakType: TweakType.uniformRingDensity,
         min: 1,
         max: 30,
         defaultVal: 14,
       ),
       TweakType.uniformRingContrast.name: ShaderTweakModel(
-        id: 'moire_grid_${TweakType.uniformRingContrast.name}',
+        shaderId: 'moire_grid',
         tweakType: TweakType.uniformRingContrast,
         min: 0.1,
         max: 2,
         defaultVal: 1.8,
       ),
       TweakType.uniformMaxOffset.name: ShaderTweakModel(
-        id: 'moire_grid_${TweakType.uniformMaxOffset.name}',
+        shaderId: 'moire_grid',
         tweakType: TweakType.uniformMaxOffset,
         min: 0.01,
         max: 0.33,
         defaultVal: 0.22,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
-        id: 'moire_grid_${TweakType.uniformHueShift.name}',
+        shaderId: 'moire_grid',
         tweakType: TweakType.uniformHueShift,
         min: 0,
         max: 360,
@@ -186,7 +186,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'polar_warp',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'polar_warp_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'polar_warp',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -196,7 +196,7 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'domain_tiles',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'domain_tiles_${TweakType.fftDataSmoothing.name}',
+        shaderId: 'domain_tiles',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -206,35 +206,35 @@ final List<ShaderMetaModel> shadersMetadata = [
     id: 'rings_radial_2',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        id: 'rings_radial_2${TweakType.fftDataSmoothing.name}',
+        shaderId: 'rings_radial_2',
         tweakType: TweakType.fftDataSmoothing,
         min: 0.5,
         max: 0.95,
         defaultVal: 0.75,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
-        id: 'rings_radial_2${TweakType.uniformHueShift.name}',
+        shaderId: 'rings_radial_2',
         tweakType: TweakType.uniformHueShift,
         min: 0,
         max: 360,
         defaultVal: 200,
       ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
-        id: 'rings_radial_2${TweakType.uniformHueRange.name}',
+        shaderId: 'rings_radial_2',
         tweakType: TweakType.uniformHueRange,
         min: 0,
         max: 360,
         defaultVal: 120,
       ),
       TweakType.uniformRingDensity.name: ShaderTweakModel(
-        id: 'rings_radial_2${TweakType.uniformRingDensity.name}',
+        shaderId: 'rings_radial_2',
         tweakType: TweakType.uniformRingDensity,
         min: 4,
         max: 128,
         defaultVal: 16,
       ),
       TweakType.uniformRingFill.name: ShaderTweakModel(
-        id: 'rings_radial_2${TweakType.uniformRingFill.name}',
+        shaderId: 'rings_radial_2',
         tweakType: TweakType.uniformRingFill,
         min: 0.05,
         max: 1.1,
