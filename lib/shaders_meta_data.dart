@@ -6,11 +6,11 @@ import 'package:algernon/shader_tweak_model.dart';
 
 final List<ShaderMetaModel> shadersMetadata = [
   ShaderMetaModel(
-    friendlyName: 'Rose Tunnel',
-    id: 'rose_tunnel_quadrant',
+    friendlyName: 'Blocks Simple',
+    id: 'blocks_simple',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'rose_tunnel_quadrant',
+        shaderId: 'blocks_simple',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
@@ -26,35 +26,35 @@ final List<ShaderMetaModel> shadersMetadata = [
     },
   ),
   ShaderMetaModel(
-    friendlyName: 'Blocks Simple',
-    id: 'blocks_simple',
+    friendlyName: 'Rose Tunnel',
+    id: 'rose_tunnel_quadrant',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'blocks_simple',
+        shaderId: 'rose_tunnel_quadrant',
         tweakType: TweakType.fftDataSmoothing,
       ),
     },
   ),
-  ShaderMetaModel(
-    friendlyName: 'Oscilloscope Columns',
-    id: 'oscilloscope_columns',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'oscilloscope_columns',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
-  ShaderMetaModel(
-    friendlyName: 'Rings Radial',
-    id: 'rings_radial',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'rings_radial',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
+  //ShaderMetaModel(
+  //  friendlyName: 'Oscilloscope Columns',
+  //  id: 'oscilloscope_columns',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'oscilloscope_columns',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
+  //ShaderMetaModel(
+  //  friendlyName: 'Rings Radial',
+  //  id: 'rings_radial',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'rings_radial',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
   ShaderMetaModel(
     friendlyName: 'Warp Kaleido',
     id: 'warp_kaleido',
@@ -103,16 +103,6 @@ final List<ShaderMetaModel> shadersMetadata = [
     },
   ),
   ShaderMetaModel(
-    friendlyName: 'Interference Waves',
-    id: 'interference_waves',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'interference_waves',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
-  ShaderMetaModel(
     friendlyName: 'Voronoi Cells',
     id: 'voronoi_cells',
     shaderTweaks: {
@@ -140,6 +130,47 @@ final List<ShaderMetaModel> shadersMetadata = [
         min: 0.03,
         max: 0.85,
         defaultVal: 0.30,
+      ),
+    },
+  ),
+  ShaderMetaModel(
+    friendlyName: 'Rings Radial 2',
+    id: 'rings_radial_2',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.fftDataSmoothing,
+        min: 0.5,
+        max: 0.95,
+        defaultVal: 0.75,
+      ),
+      TweakType.uniformHueShift.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultVal: 200,
+      ),
+      TweakType.uniformHueRange.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformHueRange,
+        min: 0,
+        max: 360,
+        defaultVal: 120,
+      ),
+      TweakType.uniformRingDensity.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformRingDensity,
+        min: 4,
+        max: 128,
+        defaultVal: 16,
+      ),
+      TweakType.uniformRingFill.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformRingFill,
+        min: 0.05,
+        max: 1.1,
+        defaultVal: 0.75,
       ),
     },
   ),
@@ -202,43 +233,12 @@ final List<ShaderMetaModel> shadersMetadata = [
     },
   ),
   ShaderMetaModel(
-    friendlyName: 'Rings Radial 2',
-    id: 'rings_radial_2',
+    friendlyName: 'Interference Waves',
+    id: 'interference_waves',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
+        shaderId: 'interference_waves',
         tweakType: TweakType.fftDataSmoothing,
-        min: 0.5,
-        max: 0.95,
-        defaultVal: 0.75,
-      ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultVal: 200,
-      ),
-      TweakType.uniformHueRange.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformHueRange,
-        min: 0,
-        max: 360,
-        defaultVal: 120,
-      ),
-      TweakType.uniformRingDensity.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformRingDensity,
-        min: 4,
-        max: 128,
-        defaultVal: 16,
-      ),
-      TweakType.uniformRingFill.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformRingFill,
-        min: 0.05,
-        max: 1.1,
-        defaultVal: 0.75,
       ),
     },
   ),
