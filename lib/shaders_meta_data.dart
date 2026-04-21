@@ -96,7 +96,7 @@ final List<ShaderMetaModel> shadersMetadata = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         id: 'lissajous_web_${TweakType.fftDataSmoothing.name}',
         tweakType: TweakType.fftDataSmoothing,
-        min: 0.9,
+        min: 0.97,
         max: 0.999,
         defaultVal: 0.95,
       ),
