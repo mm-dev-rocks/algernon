@@ -80,4 +80,13 @@ class ALGERNON {
   */
   static const double breakpointTiny = 400;
   static const double breakpointCompact = 600;
+
+  static const List<String> audioTrackFilePaths = [
+    "assets/BEATPELLA HOUSE - Candy Thief.mp3",
+    'assets/Public Image Limited - Rise.mp3',
+    'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
+    'assets/Bob Dylan - Eternal Circle.mp3',
+    'assets/Sister Sledge - Thinking Of You.mp3',
+    'assets/Pointer Sisters - Automatic.mp3',
+  ];
 }

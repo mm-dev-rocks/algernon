@@ -22,7 +22,7 @@ class MemorySlotButton extends StatelessWidget {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
       onTap: onPressed,
-      customBorder: const RoundedRectangleBorder(), // keeps the ripple tidy
+      customBorder: const RoundedRectangleBorder(),
       child: Tooltip(
         message: 'Memory slot $index',
         child: Container(

@@ -41,12 +41,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
-  String _filePath = "assets/BEATPELLA HOUSE - Candy Thief.mp3";
-  //'assets/Public Image Limited - Rise.mp3';
-  // 'assets/South Street Player - Who Keeps Changing Your Mind.mp3';
-  //'assets/Bob Dylan - Eternal Circle.mp3';
-  // 'assets/Sister Sledge - Thinking Of You.mp3';
-  //'assets/Pointer Sisters - Automatic.mp3';
+  String _filePath = ALGERNON.audioTrackFilePaths.first;
 
   /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
@@ -171,6 +166,35 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       .toList(),
                 ),
                 const Spacer(),
+                DropdownMenu<String>(
+                  requestFocusOnTap: false,
+                  initialSelection: _filePath,
+                  onSelected: (String? value) async {
+                    if (value != null) {
+                      if (_currentSoundHandle != null) {
+                        await _soLoud.stop(_currentSoundHandle!);
+                      }
+                      setState(() {
+                        _filePath = value;
+                        Future.microtask(() {
+                          _initialiseSoundAndPlay();
+                          _showControlsDebounced();
+                        });
+                      });
+                    }
+                  },
+                  dropdownMenuEntries: ALGERNON.audioTrackFilePaths
+                      .map<DropdownMenuEntry<String>>(
+                        (String filePath) => DropdownMenuEntry<String>(
+                          value: filePath,
+                          label: filePath,
+                          style: MenuItemButton.styleFrom(
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
                 if (_currentSoundHandle != null)
                   IconButton(
                     onPressed: _togglePause,
@@ -320,8 +344,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _initialiseSoundAndPlay() async {
-    await _soLoud.init(bufferSize: 1024);
-    _soLoud.setVisualizationEnabled(true);
+    if (!_soLoudIsReady) {
+      await _soLoud.init(bufferSize: 1024);
+      _soLoud.setVisualizationEnabled(true);
+    }
 
     _currentSound = await _soLoud.loadAsset(_filePath);
     analyseFile(_filePath);
