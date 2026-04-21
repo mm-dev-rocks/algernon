@@ -24,6 +24,8 @@ class ShaderTweakSlider extends StatelessWidget {
       value: shaderTweak.currentVal,
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
+      label: shaderTweak.currentVal.toString(),
+      showValueIndicator: ShowValueIndicator.onDrag,
     );
     Text label = Text(
       shaderTweak.tweakType.label,
