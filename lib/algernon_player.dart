@@ -149,6 +149,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         _painterConfig.currentShaderMeta = value;
                       });
                     }
+                    _showControlsDebounced();
                   },
                   dropdownMenuEntries: ALGERNON.shadersMetadata
                       .map<DropdownMenuEntry<ShaderMetaModel>>(
