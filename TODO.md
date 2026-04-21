@@ -1,23 +1,21 @@
-
-volume slider
-
 playback bar
 
 more friendly names for shader sliders
-
-show slider descriptions somehow
 
 remember previous tune on startup
 
 onset detection
 
-controls appear on tap, disappear after n seconds or on tap outside
+slider for 'binSmoothing' from player?
 
 mic input
 
 kb shortcuts don't work on fftsmoothing slider
 
+memory slots for all slider tweaks for a shader + FFT smoothing
+
 tidy up main.js
+tidy up screen.js
 
 bin range adjustment
 
@@ -32,11 +30,21 @@ file chooser
 
 # BUGS
 
+changing memory slot must update fft smoothing
+
+fft slider looks correct by saved value but doesn't actually take effect until clicking to confirm
+
+volume = 0 / black screen
+
+null checks on soundhandle in AlgernonPlayer
+
 Not experienced this yet but worth implementing workarounds
 https://github.com/alnitak/flutter_soloud/issues/126
 
 Black screen on Tab S4
 
+mac/ios builds
+https://docs.page/alnitak/flutter_soloud_docs/get_started/setup#ios-and-macos-configuration
 
 ---
 
@@ -66,3 +74,6 @@ play button toggle
 fftSmoothing is not a normal tweak, stop trying to treat it as one
 tweaktype should it be handling above, and uniform?
 **more likely** only uniforms
+volume slider
+show slider descriptions somehow
+controls appear on tap, disappear after n seconds or on tap outside
