@@ -45,11 +45,11 @@ class ALGERNON {
   };
 
   static const int totalMemorySlots = 5;
-  
+
   static const double disabledControlOpacity = 0.3;
 
   static const int finalAimFps = 30;
-  static const Duration hideControlsDelay = Duration(seconds: 10);
+  static const Duration hideControlsDelay = Duration(seconds: 8);
 
   /// Shader meta info is in another file to keep this file maintainable.
   static final List<ShaderMetaModel> shadersMetadata = meta.shadersMetadata;

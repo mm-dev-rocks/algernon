@@ -8,6 +8,7 @@ import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum/enum.dart';
+import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/shader_meta_model.dart';
@@ -111,21 +112,26 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       children: [
         /// Main visuals
         Positioned.fill(
-          child: GestureDetector(
-            onTap: _showControlsDebounced,
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: ListenableBuilder(
-                listenable: _painterConfig,
-                builder: (BuildContext context, Widget? child) {
-                  return _zeroImageExists
-                      ? AlgernonShaderPainter(
-                          fftDataTexture:
-                              _painterConfig.fftDataImage ?? _zeroImage!,
-                          shaderMeta: _painterConfig.currentShaderMeta,
-                        )
-                      : const SizedBox.shrink();
-                },
+          child: MouseRegion(
+            onHover: (_) {
+              _showControlsDebounced();
+            },
+            child: GestureDetector(
+              onTap: _showControlsDebounced,
+              child: FittedBox(
+                fit: BoxFit.cover,
+                child: ListenableBuilder(
+                  listenable: _painterConfig,
+                  builder: (BuildContext context, Widget? child) {
+                    return _zeroImageExists
+                        ? AlgernonShaderPainter(
+                            fftDataTexture:
+                                _painterConfig.fftDataImage ?? _zeroImage!,
+                            shaderMeta: _painterConfig.currentShaderMeta,
+                          )
+                        : const SizedBox.shrink();
+                  },
+                ),
               ),
             ),
           ),
@@ -194,36 +200,32 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
                   spacing: uiSizes.paddingMedium,
                   children: [
-                    Row(
-                      mainAxisSize: .max,
-                      children: List.generate(
-                        ALGERNON.totalMemorySlots,
-                        (int index) => Expanded(
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.memory_outlined,
-                              color:
-                                  (index ==
-                                      AppState.getPreference(
-                                        'selectedMemorySlotIndex',
-                                      ))
-                                  ? Colors.white
-                                  : Colors.white.withValues(
-                                      alpha: ALGERNON.disabledControlOpacity,
-                                    ),
+                    Padding(
+                      padding: EdgeInsets.only(
+                        left: uiSizes.paddingLarge,
+                        right: uiSizes.paddingLarge,
+                      ),
+                      child: Row(
+                        mainAxisSize: .max,
+                        spacing: uiSizes.paddingLarge,
+                        children: List.generate(
+                          ALGERNON.totalMemorySlots,
+                          (int index) => Expanded(
+                            child: MemorySlotButton(
+                              index: index,
+                              onPressed: () {
+                                setState(() {
+                                  AppState.setPreference(
+                                    'selectedMemorySlotIndex',
+                                    index,
+                                  );
+                                  _soLoud.setFftSmoothing(
+                                    fftSmoothingTweak.currentVal,
+                                  );
+                                });
+                                _showControlsDebounced();
+                              },
                             ),
-                            onPressed: () {
-                              setState(() {
-                                AppState.setPreference(
-                                  'selectedMemorySlotIndex',
-                                  index,
-                                );
-                                _soLoud.setFftSmoothing(
-                                  fftSmoothingTweak.currentVal,
-                                );
-                              });
-                              _showControlsDebounced();
-                            },
                           ),
                         ),
                       ),
