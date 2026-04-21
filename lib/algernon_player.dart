@@ -178,33 +178,35 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
             end: Screen.width(context) * 0.66,
             child: Center(
-              child: Column(
-                mainAxisSize: .min,
-                crossAxisAlignment: .start,
+              child: FocusTraversalGroup(
+                child: Column(
+                  mainAxisSize: .min,
+                  crossAxisAlignment: .start,
 
-                /// TODO magic number
-                spacing: uiSizes.paddingMedium,
-                children: [
-                  ..._painterConfig.currentShaderMeta.shaderTweaks.entries
-                      .where(
-                        (MapEntry<String, ShaderTweakModel> entry) =>
-                            entry.value.tweakType != TweakType.fftDataSmoothing,
-                      )
-                      .map(
-                        (MapEntry<String, ShaderTweakModel> entry) =>
-                            ShaderTweakSlider(
-                              shaderTweak: entry.value,
-                              onChanged: (double value) {
-                                if (_soLoudIsReady) {
-                                  setState(() {
-                                    entry.value.currentVal = value;
-                                  });
-                                }
-                                _showControlsDebounced();
-                              },
-                            ),
-                      ),
-                ],
+                  spacing: uiSizes.paddingMedium,
+                  children: [
+                    ..._painterConfig.currentShaderMeta.shaderTweaks.entries
+                        .where(
+                          (MapEntry<String, ShaderTweakModel> entry) =>
+                              entry.value.tweakType !=
+                              TweakType.fftDataSmoothing,
+                        )
+                        .map(
+                          (MapEntry<String, ShaderTweakModel> entry) =>
+                              ShaderTweakSlider(
+                                shaderTweak: entry.value,
+                                onChanged: (double value) {
+                                  if (_soLoudIsReady) {
+                                    setState(() {
+                                      entry.value.currentVal = value;
+                                    });
+                                  }
+                                  _showControlsDebounced();
+                                },
+                              ),
+                        ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -291,10 +293,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     _currentSound = await _soLoud.loadAsset(
       //"assets/BEATPELLA HOUSE - Candy Thief.mp3",
-      // 'assets/Public Image Limited - Rise.mp3',
+      //'assets/Public Image Limited - Rise.mp3',
       // 'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
-      // 'assets/Bob Dylan - Eternal Circle.mp3',
-      'assets/Sister Sledge - Thinking Of You.mp3',
+      'assets/Bob Dylan - Eternal Circle.mp3',
+      // 'assets/Sister Sledge - Thinking Of You.mp3',
       // 'assets/Pointer Sisters - Automatic.mp3',
     );
     if (_currentSound != null) {
