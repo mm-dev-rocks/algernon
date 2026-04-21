@@ -42,6 +42,7 @@ class ALGERNON {
     'shaderTweakValuesMap': [],
     'selectedShaderIndex': [int, 0],
     'selectedMemorySlotIndex': [int, 0],
+    'selectedAudioFilePathIndex': [int, 0],
   };
 
   static const int totalMemorySlots = 5;

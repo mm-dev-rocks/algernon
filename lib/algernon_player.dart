@@ -41,7 +41,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   bool get _soLoudIsReady =>
       _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
 
-  String _filePath = ALGERNON.audioTrackFilePaths.first;
+  String _filePath =
+      ALGERNON.audioTrackFilePaths[AppState.getPreference(
+        'selectedAudioFilePathIndex',
+      )];
 
   /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
@@ -175,6 +178,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         await _soLoud.stop(_currentSoundHandle!);
                       }
                       setState(() {
+                        AppState.setPreference(
+                          'selectedAudioFilePathIndex',
+                          ALGERNON.audioTrackFilePaths.indexOf(value),
+                        );
                         _filePath = value;
                         Future.microtask(() {
                           _initialiseSoundAndPlay();
