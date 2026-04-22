@@ -108,6 +108,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   @override
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
+    Size screenSize = Screen.size(context);
 
     /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
     /// [ListenableBuilder]. The FFT Smoothing slider is different as it doesn't affect the shaders directly, but
@@ -152,207 +153,214 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           ),
         ),
 
-        /// Shader select/dropdown
-        if (_controlsAreVisible)
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
-            bottom: 0,
-            start: 0,
-            end: 0,
-            child: Row(
-              children: [
-                DropdownMenu<ShaderModel>(
-                  requestFocusOnTap: false,
-                  initialSelection: _painterConfig.currentShader,
-                  onSelected: (ShaderModel? value) {
-                    if (value != null) {
-                      setState(() {
-                        _painterConfig.currentShader = value;
-                      });
-                    }
-                    _showControlsThenHideDebounced();
-                  },
-                  dropdownMenuEntries: ALGERNON.shadersData
-                      .map<DropdownMenuEntry<ShaderModel>>(
-                        (ShaderModel shaderMeta) =>
-                            DropdownMenuEntry<ShaderModel>(
-                              value: shaderMeta,
-                              label: shaderMeta.friendlyName,
-                              style: MenuItemButton.styleFrom(
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                      )
-                      .toList(),
-                ),
-                const Spacer(),
-                DropdownMenu<String>(
-                  requestFocusOnTap: false,
-                  initialSelection: _filePath,
-                  onSelected: (String? value) async {
-                    if (value != null) {
-                      if (_currentSoundHandle != null) {
-                        await _soLoud.stop(_currentSoundHandle!);
-                      }
-                      setState(() {
-                        _filePath = value;
-                        AppState.setPreference(
-                          'selectedAudioFilePathIndex',
-                          ALGERNON.audioTrackFilePaths.indexOf(_filePath),
-                        );
-                        Future.microtask(() {
-                          _initialiseSoundAndPlay();
-                        });
-                      });
-                    }
-                    _showControlsThenHideDebounced();
-                  },
-                  dropdownMenuEntries: ALGERNON.audioTrackFilePaths
-                      .map<DropdownMenuEntry<String>>(
-                        (String filePath) => DropdownMenuEntry<String>(
-                          value: filePath,
-                          label: filePath,
-                          style: MenuItemButton.styleFrom(
-                            foregroundColor: Colors.white,
-                          ),
-                        ),
-                      )
-                      .toList(),
-                ),
-                if (_currentSoundHandle != null)
-                  IconButton(
-                    onPressed: _togglePause,
-                    icon: Icon(
-                      _soLoud.getPause(_currentSoundHandle!)
-                          ? Icons.play_arrow
-                          : Icons.pause,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-
-        /// Shader-specific controls block
-        if (_controlsAreVisible)
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
-            top: 0,
-            bottom: 0,
-            start: 0,
-            end: Screen.width(context) * 0.66,
-            child: Center(
-              child: FocusTraversalGroup(
-                child: Column(
-                  mainAxisSize: .min,
-                  crossAxisAlignment: .start,
-
-                  spacing: uiSizes.paddingMedium,
+        /// Fade controls in or out
+        AnimatedOpacity(
+          opacity: _controlsAreVisible ? 1.0 : 0.0,
+          duration: _controlsAreVisible
+              ? ALGERNON.showControlsFadeDuration
+              : ALGERNON.hideControlsFadeDuration,
+          child: Stack(
+            children: [
+              /// Shader select/dropdown
+              Positioned.directional(
+                textDirection: TextDirection.ltr,
+                bottom: 0,
+                start: 0,
+                end: 0,
+                child: Row(
                   children: [
-                    /// Memory slot buttons
-                    Padding(
-                      padding: EdgeInsets.only(
-                        left: uiSizes.paddingLarge,
-                        right: uiSizes.paddingLarge,
-                      ),
-                      child: Row(
-                        mainAxisSize: .max,
-                        spacing: uiSizes.paddingLarge,
-                        children: List.generate(
-                          ALGERNON.totalMemorySlots,
-                          (int index) => Expanded(
-                            child: MemorySlotButton(
-                              index: index,
-                              onPressed: () {
-                                AppState.setPreference(
-                                  'selectedMemorySlotIndex',
-                                  index,
-                                );
-                                _showControlsThenHideDebounced();
-                                setState(() {
-                                  // Rebuild to make sure the latest [selectedMemorySlotIndex] is picked up for the
-                                  // smoothing slider.
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    /// FFT smoothing
-                    ShaderTweakSlider(
-                      shaderTweak: _fftSmoothingTweak,
-                      onChanged: (double value) {
-                        if (_soLoudIsReady) {
+                    DropdownMenu<ShaderModel>(
+                      requestFocusOnTap: false,
+                      initialSelection: _painterConfig.currentShader,
+                      onSelected: (ShaderModel? value) {
+                        if (value != null) {
                           setState(() {
-                            _fftSmoothingTweak.storedValue = value;
+                            _painterConfig.currentShader = value;
                           });
                         }
                         _showControlsThenHideDebounced();
                       },
+                      dropdownMenuEntries: ALGERNON.shadersData
+                          .map<DropdownMenuEntry<ShaderModel>>(
+                            (ShaderModel shaderMeta) =>
+                                DropdownMenuEntry<ShaderModel>(
+                                  value: shaderMeta,
+                                  label: shaderMeta.friendlyName,
+                                  style: MenuItemButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                          )
+                          .toList(),
                     ),
-
-                    /// Shader-specific tweaks
-                    ..._painterConfig.currentShader.shaderTweaks.entries
-                        .where(
-                          (MapEntry<String, ShaderTweakModel> entry) =>
-                              entry.value.tweakType !=
-                              TweakType.fftDataSmoothing,
-                        )
-                        .map(
-                          (MapEntry<String, ShaderTweakModel> entry) =>
-                              ShaderTweakSlider(
-                                shaderTweak: entry.value,
-                                onChanged: (double value) {
-                                  if (_soLoudIsReady) {
-                                    setState(() {
-                                      entry.value.storedValue = value;
-                                    });
-                                  }
-                                  _showControlsThenHideDebounced();
-                                },
+                    const Spacer(),
+                    DropdownMenu<String>(
+                      requestFocusOnTap: false,
+                      initialSelection: _filePath,
+                      onSelected: (String? value) async {
+                        if (value != null) {
+                          if (_currentSoundHandle != null) {
+                            await _soLoud.stop(_currentSoundHandle!);
+                          }
+                          setState(() {
+                            _filePath = value;
+                            AppState.setPreference(
+                              'selectedAudioFilePathIndex',
+                              ALGERNON.audioTrackFilePaths.indexOf(_filePath),
+                            );
+                            Future.microtask(() {
+                              _initialiseSoundAndPlay();
+                            });
+                          });
+                        }
+                        _showControlsThenHideDebounced();
+                      },
+                      dropdownMenuEntries: ALGERNON.audioTrackFilePaths
+                          .map<DropdownMenuEntry<String>>(
+                            (String filePath) => DropdownMenuEntry<String>(
+                              value: filePath,
+                              label: filePath,
+                              style: MenuItemButton.styleFrom(
+                                foregroundColor: Colors.white,
                               ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    if (_currentSoundHandle != null)
+                      IconButton(
+                        onPressed: _togglePause,
+                        icon: Icon(
+                          _soLoud.getPause(_currentSoundHandle!)
+                              ? Icons.play_arrow
+                              : Icons.pause,
                         ),
+                      ),
                   ],
                 ),
               ),
-            ),
-          ),
 
-        /// Volume slider
-        if (_controlsAreVisible)
-          Positioned.directional(
-            textDirection: TextDirection.ltr,
+              /// Shader-specific controls block
+              Positioned.directional(
+                textDirection: TextDirection.ltr,
+                top: 0,
+                bottom: 0,
+                start: 0,
+                width: screenSize.width * 0.33,
+                child: Center(
+                  child: FocusTraversalGroup(
+                    child: Column(
+                      mainAxisSize: .min,
+                      crossAxisAlignment: .start,
 
-            /// TODO magic number
-            top: 100,
-            bottom: 100,
-            end: 0,
-            child: Row(
-              children: [
-                const Tooltip(
-                  message: 'Volume',
-                  child: Icon(Icons.speaker_outlined),
-                ),
-                RotatedBox(
-                  quarterTurns: 3,
-                  child: Slider(
-                    value: _currentSoundHandle != null
-                        ? _soLoud.getVolume(_currentSoundHandle!)
-                        : 1,
-                    onChanged: (double value) {
-                      if (_soLoudIsReady && _currentSoundHandle != null) {
-                        setState(() {
-                          _soLoud.setVolume(_currentSoundHandle!, value);
-                        });
-                      }
-                      _showControlsThenHideDebounced();
-                    },
+                      spacing: uiSizes.paddingMedium,
+                      children: [
+                        /// Memory slot buttons
+                        Padding(
+                          padding: EdgeInsets.only(
+                            left: uiSizes.paddingLarge,
+                            right: uiSizes.paddingLarge,
+                          ),
+                          child: Row(
+                            mainAxisSize: .max,
+                            spacing: uiSizes.paddingLarge,
+                            children: List.generate(
+                              ALGERNON.totalMemorySlots,
+                              (int index) => Expanded(
+                                child: MemorySlotButton(
+                                  index: index,
+                                  onPressed: () {
+                                    AppState.setPreference(
+                                      'selectedMemorySlotIndex',
+                                      index,
+                                    );
+                                    _showControlsThenHideDebounced();
+                                    setState(() {
+                                      // Rebuild to make sure the latest [selectedMemorySlotIndex] is picked up for the
+                                      // smoothing slider.
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+
+                        /// FFT smoothing
+                        ShaderTweakSlider(
+                          shaderTweak: _fftSmoothingTweak,
+                          onChanged: (double value) {
+                            if (_soLoudIsReady) {
+                              setState(() {
+                                _fftSmoothingTweak.storedValue = value;
+                              });
+                            }
+                            _showControlsThenHideDebounced();
+                          },
+                        ),
+
+                        /// Shader-specific tweaks
+                        ..._painterConfig.currentShader.shaderTweaks.entries
+                            .where(
+                              (MapEntry<String, ShaderTweakModel> entry) =>
+                                  entry.value.tweakType !=
+                                  TweakType.fftDataSmoothing,
+                            )
+                            .map(
+                              (MapEntry<String, ShaderTweakModel> entry) =>
+                                  ShaderTweakSlider(
+                                    shaderTweak: entry.value,
+                                    onChanged: (double value) {
+                                      if (_soLoudIsReady) {
+                                        setState(() {
+                                          entry.value.storedValue = value;
+                                        });
+                                      }
+                                      _showControlsThenHideDebounced();
+                                    },
+                                  ),
+                            ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+
+              /// Volume slider
+              Positioned.directional(
+                textDirection: TextDirection.ltr,
+
+                top: screenSize.height * 0.25,
+                bottom: screenSize.height * 0.25,
+                end: 0,
+                child: Row(
+                  children: [
+                    const Tooltip(
+                      message: 'Volume',
+                      child: Icon(Icons.speaker_outlined),
+                    ),
+                    RotatedBox(
+                      quarterTurns: 3,
+                      child: Slider(
+                        value: _currentSoundHandle != null
+                            ? _soLoud.getVolume(_currentSoundHandle!)
+                            : 1,
+                        onChanged: (double value) {
+                          if (_soLoudIsReady && _currentSoundHandle != null) {
+                            setState(() {
+                              _soLoud.setVolume(_currentSoundHandle!, value);
+                            });
+                          }
+                          _showControlsThenHideDebounced();
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
