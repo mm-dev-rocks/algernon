@@ -21,10 +21,10 @@ class ShaderTweakSlider extends StatelessWidget {
     Slider slider = Slider(
       min: shaderTweak.min,
       max: shaderTweak.max,
-      value: shaderTweak.currentVal,
+      value: shaderTweak.storedValue,
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
-      label: shaderTweak.currentVal.toString(),
+      label: shaderTweak.storedValue.toString(),
       showValueIndicator: ShowValueIndicator.onDrag,
     );
     Text label = Text(

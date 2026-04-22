@@ -2,10 +2,10 @@
 
 import 'package:algernon/shader_tweak_model.dart';
 
-/// Each shader in the app should have a respective [ShaderMetaModel].
+/// Each shader in the app should have a respective [ShaderModel].
 /// Sets up some config defaults and provides a place to store user settings.
-class ShaderMetaModel {
-  const ShaderMetaModel({
+class ShaderModel {
+  const ShaderModel({
     required this.friendlyName,
     required this.id,
     this.shaderTweaks = const {},

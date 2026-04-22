@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:algernon/shaders_meta_data.dart' as meta;
@@ -53,7 +53,7 @@ class ALGERNON {
   static const Duration hideControlsDelay = Duration(seconds: 8);
 
   /// Shader meta info is in another file to keep this file maintainable.
-  static final List<ShaderMetaModel> shadersMetadata = meta.shadersMetadata;
+  static final List<ShaderModel> shadersData = meta.shadersData;
 
   static const Duration defaultDebounceDuration = Duration(milliseconds: 200);
   static const Duration showControlsDebounceDuration = Duration(

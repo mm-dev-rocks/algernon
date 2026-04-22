@@ -11,7 +11,7 @@ import 'package:algernon/enum/enum.dart';
 import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/screen.dart';
-import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/shader_tweak_slider.dart';
 import 'package:flutter/material.dart';
@@ -35,7 +35,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Keep a rolling average of bins to be used for physics 'charges'
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
 
+  /// Unused for now but might be useful later
+  // ignore: unused_field
   double _trackJumpiness = 0;
+  // ignore: unused_field
   double _trackAmplitude = 0;
 
   bool get _soLoudIsReady =>
@@ -104,7 +107,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     dynamic uiSizes = Screen.uiSizesFromContext(context);
 
     final ShaderTweakModel fftSmoothingTweak = _painterConfig
-        .currentShaderMeta
+        .currentShader
         .shaderTweaks[TweakType.fftDataSmoothing.name]!;
 
     return Stack(
@@ -127,7 +130,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                             elapsedSeconds: _elapsedSeconds,
                             fftDataTexture:
                                 _painterConfig.fftDataImage ?? _zeroImage!,
-                            shaderMeta: _painterConfig.currentShaderMeta,
+                            shaderMeta: _painterConfig.currentShader,
                           )
                         : const SizedBox.shrink();
                   },
@@ -146,21 +149,21 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             end: 0,
             child: Row(
               children: [
-                DropdownMenu<ShaderMetaModel>(
+                DropdownMenu<ShaderModel>(
                   requestFocusOnTap: false,
-                  initialSelection: _painterConfig.currentShaderMeta,
-                  onSelected: (ShaderMetaModel? value) {
+                  initialSelection: _painterConfig.currentShader,
+                  onSelected: (ShaderModel? value) {
                     if (value != null) {
                       setState(() {
-                        _painterConfig.currentShaderMeta = value;
+                        _painterConfig.currentShader = value;
                       });
                     }
                     _showControlsDebounced();
                   },
-                  dropdownMenuEntries: ALGERNON.shadersMetadata
-                      .map<DropdownMenuEntry<ShaderMetaModel>>(
-                        (ShaderMetaModel shaderMeta) =>
-                            DropdownMenuEntry<ShaderMetaModel>(
+                  dropdownMenuEntries: ALGERNON.shadersData
+                      .map<DropdownMenuEntry<ShaderModel>>(
+                        (ShaderModel shaderMeta) =>
+                            DropdownMenuEntry<ShaderModel>(
                               value: shaderMeta,
                               label: shaderMeta.friendlyName,
                               style: MenuItemButton.styleFrom(
@@ -253,7 +256,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                                 );
                                 setState(() {
                                   _soLoud.setFftSmoothing(
-                                    fftSmoothingTweak.currentVal,
+                                    fftSmoothingTweak.storedValue,
                                   );
                                 });
                                 _showControlsDebounced();
@@ -270,9 +273,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       onChanged: (double value) {
                         if (_soLoudIsReady) {
                           setState(() {
-                            fftSmoothingTweak.currentVal = value;
+                            fftSmoothingTweak.storedValue = value;
                             _soLoud.setFftSmoothing(
-                              fftSmoothingTweak.currentVal,
+                              fftSmoothingTweak.storedValue,
                             );
                           });
                         }
@@ -281,7 +284,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                     ),
 
                     /// Shader-specific tweaks
-                    ..._painterConfig.currentShaderMeta.shaderTweaks.entries
+                    ..._painterConfig.currentShader.shaderTweaks.entries
                         .where(
                           (MapEntry<String, ShaderTweakModel> entry) =>
                               entry.value.tweakType !=
@@ -294,7 +297,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                                 onChanged: (double value) {
                                   if (_soLoudIsReady) {
                                     setState(() {
-                                      entry.value.currentVal = value;
+                                      entry.value.storedValue = value;
                                     });
                                   }
                                   _showControlsDebounced();
@@ -373,9 +376,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       /// Ensure smoothing gets set to saved value as it doesn't work in the same way as other shader tweaks.
       _soLoud.setFftSmoothing(
         _painterConfig
-            .currentShaderMeta
+            .currentShader
             .shaderTweaks[TweakType.fftDataSmoothing.name]!
-            .currentVal,
+            .storedValue,
       );
 
       setState(() {});

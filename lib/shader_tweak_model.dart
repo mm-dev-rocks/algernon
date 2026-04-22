@@ -12,7 +12,7 @@ class ShaderTweakModel {
     required this.tweakType,
     this.min = 0,
     this.max = 1,
-    this.defaultVal = 0.75,
+    this.defaultValue = 0.75,
     this.divisions,
   }) {
     /// A quirk of [AppState.getPreference] and [AppState.setPreference] is that they fail if any 'preference key'
@@ -21,10 +21,14 @@ class ShaderTweakModel {
     /// exist. Normally things like this would be set in the constants file but there are too many of these and
     /// shaders/tweaks are likely to increase in number over the lifetime of the app.
     /// We must do this for each memory slot.
-    for (int i = 0; i < ALGERNON.totalMemorySlots; i++) {
-      String preferenceId = _preferenceIdFromMemorySlotIndex(i);
+    for (
+      int slotIndex = 0;
+      slotIndex < ALGERNON.totalMemorySlots;
+      slotIndex++
+    ) {
+      String preferenceId = _preferenceIdFromMemorySlotIndex(slotIndex);
       if (!ALGERNON.defaultPreferences.containsKey(preferenceId)) {
-        ALGERNON.defaultPreferences[preferenceId] = [double, defaultVal];
+        ALGERNON.defaultPreferences[preferenceId] = [double, defaultValue];
       }
     }
   }
@@ -34,11 +38,11 @@ class ShaderTweakModel {
   final double min;
   final double max;
   final int? divisions;
-  final double defaultVal;
+  final double defaultValue;
 
-  /// [_currentVal] is stored as a preference so the app remembers settings.
-  double get currentVal => AppState.getPreference(_preferenceId);
-  set currentVal(double value) {
+  /// [_storedValue] is stored as a preference so the app remembers settings.
+  double get storedValue => AppState.getPreference(_preferenceId);
+  set storedValue(double value) {
     AppState.setPreference(_preferenceId, value);
   }
 
@@ -47,6 +51,6 @@ class ShaderTweakModel {
   );
 
   /// Canon function for deriving full name of this tweak, including current memory slot, shader id and tweak type.
-  String _preferenceIdFromMemorySlotIndex(int index) =>
-      "m${index}-$shaderId-${tweakType.name}";
+  String _preferenceIdFromMemorySlotIndex(int slotIndex) =>
+      "m$slotIndex-$shaderId-${tweakType.name}";
 }

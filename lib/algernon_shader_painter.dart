@@ -2,7 +2,7 @@
 import 'dart:ui' as ui;
 
 import 'package:algernon/enum/enum.dart';
-import 'package:algernon/shader_meta_model.dart';
+import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
@@ -16,7 +16,7 @@ class AlgernonShaderPainter extends StatelessWidget {
     required this.elapsedSeconds,
   });
   final ui.Image fftDataTexture;
-  final ShaderMetaModel shaderMeta;
+  final ShaderModel shaderMeta;
   final double elapsedSeconds;
 
   @override
@@ -71,7 +71,7 @@ class ShaderPainter extends CustomPainter {
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
       try {
-        shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.currentVal);
+        shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.storedValue);
       } on ArgumentError catch (_) {
         // Shader switch in progress (ie user has changed selection in dropdown)... skip an update
       }
@@ -83,7 +83,6 @@ class ShaderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ShaderPainter oldDelegate) {
-    return oldDelegate.fftDataTexture != fftDataTexture ||
-        oldDelegate.elapsedSeconds != elapsedSeconds;
+    return oldDelegate.fftDataTexture != fftDataTexture;
   }
 }
