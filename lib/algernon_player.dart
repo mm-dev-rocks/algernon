@@ -53,6 +53,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
   /// [AlgernonShaderPainter] to rebuild.
   final PainterConfigModel _painterConfig = PainterConfigModel();
+  late ShaderTweakModel _fftSmoothingTweak;
 
   /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start).
   late ui.Image? _zeroImage;
@@ -81,6 +82,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     _initialiseSoundAndPlay();
 
+    _updateFftSmoothingTweak();
+
     /// [initState] can't be async, so we send image creation off as a microtask which will be carried out after the
     /// current flow of execution.
     Future<void>.microtask(() async {
@@ -106,22 +109,31 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
 
-    final ShaderTweakModel fftSmoothingTweak = _painterConfig
-        .currentShader
-        .shaderTweaks[TweakType.fftDataSmoothing.name]!;
+    /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
+    /// [ListenableBuilder]. The FFT Smoothing slider is different as it doesn't affect the shaders directly, but
+    /// instead acts on the [SoLoud] instance to smooth its bin data before we pass it to the [AlgernonShaderPainter].
+    /// When a new shader is chosen, we need to make sure the current smoothing setting carries over. So we call
+    /// [SetState()], which causes this (re)build to happen.
+    /// [_painterConfig.currentShader] is guaranteed to always be up-to-date with the latest memory slot and shader.
+    if (_soLoudIsReady) {
+      _updateFftSmoothingTweak();
+      _soLoud.setFftSmoothing(_fftSmoothingTweak.storedValue);
+    }
 
     return Stack(
       children: [
-        /// Main visuals
         Positioned.fill(
           child: MouseRegion(
             onHover: (_) {
-              _showControlsDebounced();
+              _showControlsThenHideDebounced();
             },
             child: GestureDetector(
-              onTap: _showControlsDebounced,
+              onTap: _showControlsThenHideDebounced,
               child: FittedBox(
                 fit: BoxFit.cover,
+
+                /// Main visuals
+                /// This [ListenableBuilder] rebuilds whenever any [ShaderTweakModel] changes.
                 child: ListenableBuilder(
                   listenable: _painterConfig,
                   builder: (BuildContext context, Widget? child) {
@@ -158,7 +170,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         _painterConfig.currentShader = value;
                       });
                     }
-                    _showControlsDebounced();
+                    _showControlsThenHideDebounced();
                   },
                   dropdownMenuEntries: ALGERNON.shadersData
                       .map<DropdownMenuEntry<ShaderModel>>(
@@ -183,17 +195,17 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         await _soLoud.stop(_currentSoundHandle!);
                       }
                       setState(() {
+                        _filePath = value;
                         AppState.setPreference(
                           'selectedAudioFilePathIndex',
-                          ALGERNON.audioTrackFilePaths.indexOf(value),
+                          ALGERNON.audioTrackFilePaths.indexOf(_filePath),
                         );
-                        _filePath = value;
                         Future.microtask(() {
                           _initialiseSoundAndPlay();
-                          _showControlsDebounced();
                         });
                       });
                     }
+                    _showControlsThenHideDebounced();
                   },
                   dropdownMenuEntries: ALGERNON.audioTrackFilePaths
                       .map<DropdownMenuEntry<String>>(
@@ -220,7 +232,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
             ),
           ),
 
-        /// Shader-specific sliders
+        /// Shader-specific controls block
         if (_controlsAreVisible)
           Positioned.directional(
             textDirection: TextDirection.ltr,
@@ -236,6 +248,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
                   spacing: uiSizes.paddingMedium,
                   children: [
+                    /// Memory slot buttons
                     Padding(
                       padding: EdgeInsets.only(
                         left: uiSizes.paddingLarge,
@@ -254,12 +267,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                                   'selectedMemorySlotIndex',
                                   index,
                                 );
+                                _showControlsThenHideDebounced();
                                 setState(() {
-                                  _soLoud.setFftSmoothing(
-                                    fftSmoothingTweak.storedValue,
-                                  );
+                                  // Rebuild to make sure the latest [selectedMemorySlotIndex] is picked up for the
+                                  // smoothing slider.
                                 });
-                                _showControlsDebounced();
                               },
                             ),
                           ),
@@ -269,17 +281,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
                     /// FFT smoothing
                     ShaderTweakSlider(
-                      shaderTweak: fftSmoothingTweak,
+                      shaderTweak: _fftSmoothingTweak,
                       onChanged: (double value) {
                         if (_soLoudIsReady) {
                           setState(() {
-                            fftSmoothingTweak.storedValue = value;
-                            _soLoud.setFftSmoothing(
-                              fftSmoothingTweak.storedValue,
-                            );
+                            _fftSmoothingTweak.storedValue = value;
                           });
                         }
-                        _showControlsDebounced();
+                        _showControlsThenHideDebounced();
                       },
                     ),
 
@@ -300,7 +309,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                                       entry.value.storedValue = value;
                                     });
                                   }
-                                  _showControlsDebounced();
+                                  _showControlsThenHideDebounced();
                                 },
                               ),
                         ),
@@ -337,7 +346,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                           _soLoud.setVolume(_currentSoundHandle!, value);
                         });
                       }
-                      _showControlsDebounced();
+                      _showControlsThenHideDebounced();
                     },
                   ),
                 ),
@@ -348,10 +357,19 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     );
   }
 
+  /// Make sure we are using the correct smoothing tweak for the current shader.
+  void _updateFftSmoothingTweak() {
+    _fftSmoothingTweak = _painterConfig
+        .currentShader
+        .shaderTweaks[TweakType.fftDataSmoothing.name]!;
+  }
+
   void _togglePause() {
     if (_currentSoundHandle != null) {
       _soLoud.pauseSwitch(_currentSoundHandle!);
-      setState(() {});
+      setState(() {
+        /// Rebuild to update state of the toggle button
+      });
     }
   }
 
@@ -364,24 +382,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _currentSound = await _soLoud.loadAsset(_filePath);
     analyseFile(_filePath);
     if (_currentSound != null) {
-      // After SoLoud 4, [play()] is sync
-      //_currentSoundHandle = await _soLoud.play(
-      _currentSoundHandle = _soLoud.play(
-        _currentSound!,
-        //volume: 0.1,
-        looping: true,
-      );
-
-      /// TODO Fix mess/DRY
-      /// Ensure smoothing gets set to saved value as it doesn't work in the same way as other shader tweaks.
-      _soLoud.setFftSmoothing(
-        _painterConfig
-            .currentShader
-            .shaderTweaks[TweakType.fftDataSmoothing.name]!
-            .storedValue,
-      );
-
-      setState(() {});
+      _currentSoundHandle = _soLoud.play(_currentSound!, looping: true);
     }
   }
 
@@ -451,6 +452,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     // already in that format). We pass FFT bins in via the red channel.
     final pixels = Float32List(256 * 4);
 
+    /// TODO is this working?
     // how slowly the average moves
     //const double binSmoothing = 0.8;
     const double binSmoothing = 0.1;
@@ -488,16 +490,16 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     return await _shaderImageFromPixels(pixels);
   }
 
-  void _showControlsDebounced() {
+  void _showControlsThenHideDebounced() {
     AppState.debounceVoidFunction(
-      callerKey: 'AlgernonPlayer._showControlsDebounced',
+      callerKey: 'AlgernonPlayer._showControlsThenHideDebounced',
       debounceDuration: ALGERNON.showControlsDebounceDuration,
-      voidFunction: _showControls,
+      voidFunction: _showControlsThenHide,
     );
   }
 
-  void _showControls() {
-    //AppState.log("_showControls()");
+  void _showControlsThenHide() {
+    //AppState.log("_showControlsThenHide()");
     _hideControlsTimer.cancel();
     _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
     setState(() {
@@ -514,14 +516,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   Future<void> analyseFile(String filePath) async {
-    // 1000 evenly-spaced points from seconds 10–40
-    // already runs off the main thread internally
+    // 1000 evenly-spaced points from seconds 10–40 (runs off the main thread internally)
     final samples = await SoLoud.instance.readSamplesFromFile(
       filePath,
       1000,
       startTime: 10.0,
       endTime: 40.0,
-      average: true, // each point is an average of its surrounding region
+      // each point is an average of its surrounding region
+      average: true,
     );
 
     _trackJumpiness = _computeJumpiness(samples);
