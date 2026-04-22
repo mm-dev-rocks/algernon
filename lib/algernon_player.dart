@@ -169,63 +169,64 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 end: 0,
                 child: Row(
                   children: [
-                    DropdownMenu<ShaderModel>(
-                      requestFocusOnTap: false,
-                      initialSelection: _painterConfig.currentShader,
-                      onSelected: (ShaderModel? value) {
-                        if (value != null) {
-                          setState(() {
-                            _painterConfig.currentShader = value;
-                          });
-                        }
-                        _showControlsThenHideDebounced();
-                      },
-                      dropdownMenuEntries: ALGERNON.shadersData
-                          .map<DropdownMenuEntry<ShaderModel>>(
-                            (ShaderModel shaderMeta) =>
-                                DropdownMenuEntry<ShaderModel>(
-                                  value: shaderMeta,
-                                  label: shaderMeta.friendlyName,
-                                  style: MenuItemButton.styleFrom(
-                                    foregroundColor: Colors.white,
-                                  ),
-                                ),
-                          )
-                          .toList(),
-                    ),
-                    const Spacer(),
-                    DropdownMenu<String>(
-                      requestFocusOnTap: false,
-                      initialSelection: _filePath,
-                      onSelected: (String? value) async {
-                        if (value != null) {
-                          if (_currentSoundHandle != null) {
-                            await _soLoud.stop(_currentSoundHandle!);
+                    Flexible(
+                      child: DropdownMenu<ShaderModel>(
+                        width: double.infinity,
+                        requestFocusOnTap: false,
+                        initialSelection: _painterConfig.currentShader,
+                        onSelected: (ShaderModel? value) {
+                          if (value != null) {
+                            setState(() {
+                              _painterConfig.currentShader = value;
+                            });
                           }
-                          setState(() {
+                          _showControlsThenHideDebounced();
+                        },
+                        dropdownMenuEntries: ALGERNON.shadersData
+                            .map<DropdownMenuEntry<ShaderModel>>(
+                              (ShaderModel shaderMeta) =>
+                                  DropdownMenuEntry<ShaderModel>(
+                                    value: shaderMeta,
+                                    label: shaderMeta.friendlyName,
+                                    style: MenuItemButton.styleFrom(
+                                      foregroundColor: Colors.white,
+                                    ),
+                                  ),
+                            )
+                            .toList(),
+                      ),
+                    ),
+                    Flexible(
+                      child: DropdownMenu<String>(
+                        width: double.infinity,
+                        requestFocusOnTap: false,
+                        initialSelection: _filePath,
+                        onSelected: (String? value) async {
+                          if (value != null) {
+                            if (_currentSoundHandle != null) {
+                              await _soLoud.stop(_currentSoundHandle!);
+                            }
                             _filePath = value;
                             AppState.setPreference(
                               'selectedAudioFilePathIndex',
                               ALGERNON.audioTrackFilePaths.indexOf(_filePath),
                             );
-                            Future.microtask(() {
-                              _initialiseSoundAndPlay();
-                            });
-                          });
-                        }
-                        _showControlsThenHideDebounced();
-                      },
-                      dropdownMenuEntries: ALGERNON.audioTrackFilePaths
-                          .map<DropdownMenuEntry<String>>(
-                            (String filePath) => DropdownMenuEntry<String>(
-                              value: filePath,
-                              label: filePath,
-                              style: MenuItemButton.styleFrom(
-                                foregroundColor: Colors.white,
+                            _initialiseSoundAndPlay();
+                          }
+                          _showControlsThenHideDebounced();
+                        },
+                        dropdownMenuEntries: ALGERNON.audioTrackFilePaths
+                            .map<DropdownMenuEntry<String>>(
+                              (String filePath) => DropdownMenuEntry<String>(
+                                value: filePath,
+                                label: filePath,
+                                style: MenuItemButton.styleFrom(
+                                  foregroundColor: Colors.white,
+                                ),
                               ),
-                            ),
-                          )
-                          .toList(),
+                            )
+                            .toList(),
+                      ),
                     ),
                     if (_currentSoundHandle != null)
                       IconButton(
@@ -391,6 +392,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     analyseFile(_filePath);
     if (_currentSound != null) {
       _currentSoundHandle = _soLoud.play(_currentSound!, looping: true);
+      setState(() {
+        /// Rebuild to update state of the toggle button
+      });
     }
   }
 
