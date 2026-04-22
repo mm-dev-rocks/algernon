@@ -1,4 +1,3 @@
-
 more friendly names for shader sliders
 
 onset detection
@@ -29,12 +28,6 @@ file chooser
 
 # BUGS
 
-play button gets clipped on narrow screen
-
-changing memory slot must update fft smoothing
-changing shader something doesn't update correctly, need to log all values
-
-fft slider looks correct by saved value but doesn't actually take effect until clicking to confirm
 
 volume = 0 / black screen
 
@@ -81,3 +74,7 @@ show slider descriptions somehow
 controls appear on tap, disappear after n seconds or on tap outside
 remember previous tune on startup
 memory slots for all slider tweaks for a shader + FFT smoothing
+changing memory slot must update fft smoothing
+play button gets clipped on narrow screen
+changing shader something doesn't update correctly, need to log all values
+fft slider looks correct by saved value but doesn't actually take effect until clicking to confirm

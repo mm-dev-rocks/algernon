@@ -13,32 +13,22 @@ if &shortmess =~ 'A'
 else
   set shortmess=aoO
 endif
-badd +86 lib/algernon_player.dart
-badd +28 lib/algernon_shader_painter.dart
-badd +1 lib/app_state.dart
-badd +76 lib/constants.dart
-badd +39 lib/painter_config_model.dart
-badd +1 lib/shader_meta_model.dart
-badd +38 lib/shader_tweak_model.dart
-badd +23 lib/shader_tweak_slider.dart
-badd +34 lib/enum/enum.dart
-badd +8 TODO.md
+badd +56 lib/constants.dart
+badd +381 lib/algernon_player.dart
+badd +15 lib/shader_tweak_model.dart
+badd +14 TODO.md
+badd +81 lib/shaders_meta_data.dart
+badd +1 lib/enum/enum.dart
+badd +115 pubspec.yaml
+badd +22 lib/painter_config_model.dart
+badd +74 lib/algernon_shader_painter.dart
+badd +16 lib/shader_model.dart
+badd +27 lib/shader_tweak_slider.dart
 argglobal
 %argdel
-$argadd lib/algernon_player.dart
-$argadd lib/algernon_shader_painter.dart
-$argadd lib/app_state.dart
 $argadd lib/constants.dart
-$argadd lib/painter_config_model.dart
-$argadd lib/shader_meta_model.dart
-$argadd lib/shader_tweak_model.dart
-edit TODO.md
+edit pubspec.yaml
 argglobal
-if bufexists(fnamemodify("TODO.md", ":p")) | buffer TODO.md | else | edit TODO.md | endif
-if &buftype ==# 'terminal'
-  silent file TODO.md
-endif
-balt lib/constants.dart
 setlocal foldmethod=manual
 setlocal foldexpr=0
 setlocal foldmarker={{{,}}}
@@ -49,12 +39,12 @@ setlocal foldnestmax=20
 setlocal nofoldenable
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 8 - ((7 * winheight(0) + 16) / 33)
+let s:l = 115 - ((17 * winheight(0) + 18) / 36)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 8
-normal! 038|
+keepjumps 115
+normal! 015|
 tabnext 1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -68,7 +58,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 doautoall SessionLoadPost
 unlet SessionLoad
 " vim: set ft=vim :
