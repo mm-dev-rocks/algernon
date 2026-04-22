@@ -21,6 +21,7 @@
 precision mediump float;
 
 uniform vec2 u_resolution;
+uniform float u_time;
 uniform sampler2D u_fftData;
 
 uniform float u_warpStrength;
