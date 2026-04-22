@@ -69,6 +69,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     microseconds: 1000000 ~/ ALGERNON.finalAimFps,
   );
   Duration _lastTimestamp = Duration.zero;
+  double _elapsedSeconds = 0;
 
   @override
   void initState() {
@@ -123,6 +124,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                   builder: (BuildContext context, Widget? child) {
                     return _zeroImageExists
                         ? AlgernonShaderPainter(
+                            elapsedSeconds: _elapsedSeconds,
                             fftDataTexture:
                                 _painterConfig.fftDataImage ?? _zeroImage!,
                             shaderMeta: _painterConfig.currentShaderMeta,
@@ -245,11 +247,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                             child: MemorySlotButton(
                               index: index,
                               onPressed: () {
+                                AppState.setPreference(
+                                  'selectedMemorySlotIndex',
+                                  index,
+                                );
                                 setState(() {
-                                  AppState.setPreference(
-                                    'selectedMemorySlotIndex',
-                                    index,
-                                  );
                                   _soLoud.setFftSmoothing(
                                     fftSmoothingTweak.currentVal,
                                   );
@@ -394,6 +396,9 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
         _isProcessing = true;
         try {
           _audioData.updateSamples();
+
+          _elapsedSeconds = elapsed.inMicroseconds / 1000000.0;
+
           final oldImage = _painterConfig.fftDataImage;
           _painterConfig.fftDataImage = await _imageFromFftData(
             /// We use `AudioData(GetSamplesKind.linear)`:
@@ -444,7 +449,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     final pixels = Float32List(256 * 4);
 
     // how slowly the average moves
-    const double binSmoothing = 0.8;
+    //const double binSmoothing = 0.8;
+    const double binSmoothing = 0.1;
     //const double binSmoothing = 0.92;
 
     for (int i = 0; i < 256; i++) {
@@ -488,7 +494,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _showControls() {
-    AppState.log("_showControls()");
+    //AppState.log("_showControls()");
     _hideControlsTimer.cancel();
     _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
     setState(() {
@@ -497,7 +503,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   }
 
   void _hideControls() {
-    AppState.log("_hideControls()");
+    //AppState.log("_hideControls()");
     _hideControlsTimer.cancel();
     setState(() {
       _controlsAreVisible = false;
@@ -516,9 +522,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     );
 
     _trackJumpiness = _computeJumpiness(samples);
-    debugPrint('_trackJumpiness: $_trackJumpiness');
     _trackAmplitude = _computeAmplitude(samples);
-    debugPrint('_trackAmplitude: $_trackAmplitude');
   }
 
   double _computeJumpiness(Float32List samples) {

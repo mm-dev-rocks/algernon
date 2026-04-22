@@ -13,9 +13,11 @@ class AlgernonShaderPainter extends StatelessWidget {
     super.key,
     required this.fftDataTexture,
     required this.shaderMeta,
+    required this.elapsedSeconds,
   });
   final ui.Image fftDataTexture;
   final ShaderMetaModel shaderMeta;
+  final double elapsedSeconds;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,7 @@ class AlgernonShaderPainter extends StatelessWidget {
         painter: ShaderPainter(
           shader: shader,
           fftDataTexture: fftDataTexture,
+          elapsedSeconds: elapsedSeconds,
           shaderTweaks: Map.fromEntries(
             shaderMeta.shaderTweaks.entries.where(
               (e) => e.value.tweakType != TweakType.fftDataSmoothing,
@@ -48,21 +51,22 @@ class ShaderPainter extends CustomPainter {
     required this.shader,
     required this.fftDataTexture,
     required this.shaderTweaks,
+    required this.elapsedSeconds,
   });
   final ui.FragmentShader shader;
   final ui.Image fftDataTexture;
   final Map<String, ShaderTweakModel> shaderTweaks;
+  final double elapsedSeconds;
 
   @override
   void paint(Canvas canvas, Size size) {
     // Floats in a shader are set sequentially. This includes floats which are part of other variables, so if there is a
     // vec2 (which contains 2 floats), the way to set it is to [setFloat()] twice.
-
-    // The first uniform in the shader is [u_resolution], which is a vec2
     shader
-      ..setFloat(0, size.width)
-      ..setFloat(1, size.height)
-      // There's only one sampler
+      ..getUniformFloat('u_resolution', 0).set(size.width)
+      ..getUniformFloat('u_resolution', 1).set(size.height)
+      ..getUniformFloat('u_time').set(elapsedSeconds)
+      // There's only one sampler so we can access that easily by its index (0)
       ..setImageSampler(0, fftDataTexture, filterQuality: FilterQuality.low);
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
@@ -79,6 +83,7 @@ class ShaderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ShaderPainter oldDelegate) {
-    return oldDelegate.fftDataTexture != fftDataTexture;
+    return oldDelegate.fftDataTexture != fftDataTexture ||
+        oldDelegate.elapsedSeconds != elapsedSeconds;
   }
 }

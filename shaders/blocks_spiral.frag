@@ -2,6 +2,7 @@
 #include <flutter/runtime_effect.glsl>
 
 uniform vec2 u_resolution;
+uniform float u_time;
 uniform sampler2D u_fftData;
 out vec4 fragColor;
 

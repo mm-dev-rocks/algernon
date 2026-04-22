@@ -97,14 +97,18 @@ void main() {
   float trebleEnergy =
       (sampleBin(90.0) + sampleBin(110.0) + sampleBin(130.0)) / 3.0;
 
+  vec4 fftSample = texture(u_fftData, vec2((35 + 0.5) / 256.0, 0.5));
+  // float magnitude = fftSample.r;             // 0..1, raw bin energy
+  float charge = (fftSample.g - 0.5) * 2.0; // -1..1, louder-than-avg > 0
+
   // --- Field centre positions ---
   //
   // Field A is displaced toward upper-left, field B toward lower-right.
   // Bass energy controls the separation — a kick drum physically pulls
   // the two centres apart, dramatically reshaping the moiré.
   float offset = bassEnergy * u_maxOffset;
-  vec2 centreA = vec2(-offset, offset * 0.6); // upper-left quadrant
-  vec2 centreB = vec2(offset, -offset * 0.6); // lower-right quadrant
+  vec2 centreA = vec2(-offset * charge, offset * 0.6); // upper-left quadrant
+  vec2 centreB = vec2(offset, -offset * 0.6 * charge); // lower-right quadrant
 
   // Mid energy adds a slow lateral drift to break left-right symmetry and
   // keep the pattern interesting during sustained mid-heavy passages.

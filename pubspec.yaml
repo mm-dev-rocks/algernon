@@ -109,6 +109,10 @@ flutter:
     - shaders/moire_grid.frag
     - shaders/polar_warp.frag
     - shaders/domain_tiles.frag
+    - shaders/slime_trails.frag
+    - shaders/root_system.frag
+    - shaders/murmuration.frag
+    - shaders/fluid_ink.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:

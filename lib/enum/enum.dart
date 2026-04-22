@@ -69,6 +69,46 @@ enum TweakType {
     label: 'Hue Shift',
     uniform: 'u_hueShift',
     description: 'Shift. The. Hue.',
+  ),
+  uniformArmCount(
+    label: 'Arm Count',
+    uniform: 'u_armCount',
+    description:
+        'Number of spiral arms. Even numbers give point-symmetric patterns; odd numbers give more organic asymmetric spirals.',
+  ),
+  uniformArmContrast(
+    label: 'Arm Contrast',
+    uniform: 'u_armContrast',
+    description:
+        'Controls the sharpness of the spiral arm edges. 1.0 = smooth cosine gradient, higher values → sharper arm boundaries.',
+  ),
+  uniformMaxTwist(
+    label: 'Maximum Twist',
+    uniform: 'u_maxTwist',
+    description:
+        'Maximum twist in radians that a bin at full amplitude can apply to its ring. pi (3.14) = half a full rotation; 2*pi = one full rotation per ring.',
+  ),
+  uniformBandCount(
+    label: 'Band Count',
+    uniform: 'u_bandCount',
+    description:
+        'How many radial bands to map across the 256 FFT bins. 32 gives smooth transitions between adjacent rings while still showing fine per-ring variation. Must divide evenly into 256.',
+  ),
+  uniformBlobCount(
+    label: 'Blob Count',
+    uniform: 'u_blobCount',
+    description: '???',
+  ),
+  uniformBlobSize(
+    label: 'Blob Size',
+    uniform: 'u_blobSize',
+    description: '???',
+  ),
+  uniformSpeed(label: 'Speed', uniform: 'u_speed', description: '???'),
+  uniformBranchDepth(
+    label: 'Branch Depth',
+    uniform: 'u_branchDepth',
+    description: '???',
   );
 
   final String label;

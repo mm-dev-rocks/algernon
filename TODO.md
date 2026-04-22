@@ -1,18 +1,15 @@
-playback bar
 
 more friendly names for shader sliders
-
-remember previous tune on startup
 
 onset detection
 
 slider for 'binSmoothing' from player?
 
+wire up charge to another couple of shaders
+
 mic input
 
 kb shortcuts don't work on fftsmoothing slider
-
-memory slots for all slider tweaks for a shader + FFT smoothing
 
 tidy up main.js
 tidy up screen.js
@@ -21,6 +18,8 @@ bin range adjustment
 
 physics based shaders
 
+
+playback bar
 file chooser
     1 or multiple
     multiple creates playlist
@@ -30,7 +29,10 @@ file chooser
 
 # BUGS
 
+play button gets clipped on narrow screen
+
 changing memory slot must update fft smoothing
+changing shader something doesn't update correctly, need to log all values
 
 fft slider looks correct by saved value but doesn't actually take effect until clicking to confirm
 
@@ -77,3 +79,5 @@ tweaktype should it be handling above, and uniform?
 volume slider
 show slider descriptions somehow
 controls appear on tap, disappear after n seconds or on tap outside
+remember previous tune on startup
+memory slots for all slider tweaks for a shader + FFT smoothing
