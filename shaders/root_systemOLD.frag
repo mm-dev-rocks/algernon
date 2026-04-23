@@ -8,8 +8,7 @@
 //                     min: 3.0   max: 12.0   default: 6.0   divisions: 9
 //
 //   u_branchDepth   — TweakType.uniformBranchDepth (NEW enum value needed)
-//                     min: 1.0   max: 3.0   default: 2.0   divisions: 2
-//                     1 = arms only, 2 = +sub-branches, 3 = +sub-sub-branches
+//                     min: 1.0   max: 4.0   default: 2.0   divisions: 3
 //
 //   u_hueShift      — TweakType.uniformHueShift (already exists)
 //                     min: 0.0   max: 360.0   default: 30.0
@@ -65,10 +64,12 @@ float lineSDF(vec2 p, vec2 a, vec2 b, float width) {
   vec2 ab = b - a;
   vec2 ap = p - a;
   float t = clamp(dot(ap, ab) / dot(ab, ab), 0.0, 1.0);
-  float dist = length(ap - ab * t);
-  return 1.0 - smoothstep(0.0, width, dist);
+  return smoothstep(width, 0.0, length(ap - ab * t));
 }
 
+// Returns the sway angle offset for a point at distance t (0..1) along an arm.
+// Using u_time directly gives smooth continuous animation.
+// Multiple sine terms at different frequencies give the curling organic shape.
 float armSway(float fi, float t) {
   float slowSway = sin(u_time * 0.7 + fi * 1.37 + t * 1.1) * 0.6 +
                    sin(u_time * 0.3 + fi * 2.71 + t * 0.8) * 0.3;
@@ -84,12 +85,11 @@ void main() {
   vec2 fcLow = sampleBin(8.0);
   vec2 fcHigh = sampleBin(200.0);
 
-  // Precompute the low-frequency combined sway modifier
-  float fcLowMod = fcLow.x * 0.8 + fcLow.y * 0.4;
-
   float glowTotal = 0.0;
   vec3 colTotal = vec3(0.0);
 
+  // int nArms   = int(clamp(u_armCount,    3.0, 12.0));
+  // int nDepths = int(clamp(u_branchDepth, 1.0,  4.0));
   int nArms = int(u_armCount);
   int nDepths = int(u_branchDepth);
 
@@ -108,20 +108,19 @@ void main() {
     float hue = u_hueShift + (fi / float(nArms)) * 60.0 + fcArm.y * 25.0;
     float val = clamp(fcArm.x * 1.6 + 0.1, 0.0, 1.0);
     float sat = 0.9 - fcArm.x * 0.2;
-
-    // Precompute colours for all three depth levels — hoisted out of segment
-    // loops
     vec3 armCol = hsv2rgb(hue, sat, val);
-    vec3 bCol = hsv2rgb(hue + 20.0 * sign(fcArm.y), sat, val * 0.8);
-    vec3 b2Col = hsv2rgb(hue + 35.0 * sign(fcArm.y), sat, val * 0.6);
 
-    // --- Depth 1: main arm (4 segments) ---
-    float segLen = armLen / 4.0;
+    // Draw the arm as 8 short segments, each at a slightly different sway
+    // angle. This approximates a smooth curve — the more segments, the smoother
+    // the curl.
     vec2 segStart = vec2(0.0);
+    float segLen = armLen / 8.0;
 
-    for (int seg = 0; seg < 4; seg++) {
-      float t = float(seg) / 4.0;
-      float angle = baseAngle + armSway(fi, t) + fcLowMod * sin(t * 3.14);
+    for (int seg = 0; seg < 8; seg++) {
+      float t = float(seg) / 8.0;
+      float angle = baseAngle + armSway(fi, t) +
+                    (fcLow.x * 0.8 + fcLow.y * 0.4) * sin(t * 3.14);
+
       vec2 segEnd = segStart + vec2(cos(angle), sin(angle)) * segLen;
 
       float g = lineSDF(p, segStart, segEnd, mainWidth * (1.0 - t * 0.4));
@@ -131,38 +130,45 @@ void main() {
       segStart = segEnd;
     }
 
-    // segStart now holds the arm tip — no need to recalculate
-    vec2 tip = segStart;
+    // Sub-branches sprout from the tip of each arm segment
+    if (nDepths >= 1) {
+      // Recalculate tip position for branch origin
+      vec2 tip = vec2(0.0);
+      for (int seg = 0; seg < 8; seg++) {
+        float t = float(seg) / 8.0;
+        float angle = baseAngle + armSway(fi, t) +
+                      (fcLow.x * 0.8 + fcLow.y * 0.4) * sin(t * 3.14);
+        tip += vec2(cos(angle), sin(angle)) * segLen;
+      }
 
-    // --- Depth 2: sub-branches from arm tip (3 segments each) ---
-    if (nDepths >= 2) {
+      // Two branches from the tip
       for (int sub = 0; sub < 2; sub++) {
         float bHash = hash(fi * 17.3 + float(sub) * 3.1);
         float bAngle =
             baseAngle + armSway(fi, 1.0) + (bHash - 0.5) * 2.0 + fcArm.y * 0.3;
 
         float bLen = armLen * 0.45;
-        float bSegLen = bLen / 3.0;
+        float bSegLen = bLen / 5.0;
         vec2 bStart = tip;
 
-        for (int bseg = 0; bseg < 3; bseg++) {
-          float bt = float(bseg) / 3.0;
+        for (int bseg = 0; bseg < 5; bseg++) {
+          float bt = float(bseg) / 5.0;
           float ba = bAngle + armSway(fi + float(sub) * 3.7, bt) * 0.6 +
                      sin(u_time * 1.4 + fi * 2.1 + bt * 2.0 + float(sub)) *
                          0.3 * fcHigh.x;
+
           vec2 bEnd = bStart + vec2(cos(ba), sin(ba)) * bSegLen;
 
           float bg =
               lineSDF(p, bStart, bEnd, mainWidth * 0.5 * (1.0 - bt * 0.5));
           glowTotal += bg;
-          colTotal += bCol * bg;
+          colTotal += hsv2rgb(hue + 20.0 * sign(fcArm.y), sat, val * 0.8) * bg;
 
           bStart = bEnd;
         }
 
-        // --- Depth 3: sub-sub-branches from sub-branch tips (2 segments each)
-        // ---
-        if (nDepths >= 3) {
+        // Depth 2 — branches from branch tips
+        if (nDepths >= 2) {
           vec2 bTip = bStart;
           for (int sub2 = 0; sub2 < 2; sub2++) {
             float b2Hash =
@@ -172,18 +178,20 @@ void main() {
                             (b2Hash - 0.5) * 1.8;
 
             float b2Len = bLen * 0.45;
-            float b2SegLen = b2Len / 2.0;
+            float b2SegLen = b2Len / 4.0;
             vec2 b2Start = bTip;
 
-            for (int b2seg = 0; b2seg < 2; b2seg++) {
-              float b2t = float(b2seg) / 2.0;
+            for (int b2seg = 0; b2seg < 4; b2seg++) {
+              float b2t = float(b2seg) / 4.0;
               float b2a = b2Angle + armSway(fi + float(sub2) * 7.1, b2t) * 0.4;
+
               vec2 b2End = b2Start + vec2(cos(b2a), sin(b2a)) * b2SegLen;
 
               float b2g = lineSDF(p, b2Start, b2End,
                                   mainWidth * 0.25 * (1.0 - b2t * 0.5));
               glowTotal += b2g;
-              colTotal += b2Col * b2g;
+              colTotal +=
+                  hsv2rgb(hue + 35.0 * sign(fcArm.y), sat, val * 0.6) * b2g;
 
               b2Start = b2End;
             }
@@ -195,7 +203,7 @@ void main() {
 
   glowTotal = min(glowTotal, 3.0);
   vec3 colour = (glowTotal > 0.001) ? colTotal / glowTotal : vec3(0.0);
-  float brightness = clamp(glowTotal, 0.0, 0.3);
+  float brightness = clamp(glowTotal, 0.0, 1.0);
   float halo = clamp(glowTotal * 0.3, 0.0, 0.4);
 
   fragColor = vec4(colour * brightness + hsv2rgb(u_hueShift, 0.6, halo), 1.0);

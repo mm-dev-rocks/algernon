@@ -34,6 +34,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   /// Keep a rolling average of bins to be used for physics 'charges'
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
+  /// TODO is this working?
+  // how slowly the average moves
+  //double _binSmoothing = 0.8;
+  double _binSmoothing = 0.92;
+  //double _binSmoothing = 0.1;
 
   /// Unused for now but might be useful later
   // ignore: unused_field
@@ -323,6 +328,33 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 ),
               ),
 
+              /// Bin smoothing slider
+              //PositionedDirectional(
+              //  top: screenSize.height * 0.25,
+              //  bottom: screenSize.height * 0.25,
+              //  end: 200,
+              //  child: Row(
+              //    children: [
+              //      const Tooltip(
+              //        message: 'Bin Smoothing',
+              //        child: Icon(Icons.speaker_outlined),
+              //      ),
+              //      RotatedBox(
+              //        quarterTurns: 3,
+              //        child: Slider(
+              //          value: _binSmoothing,
+              //          min: 0.1,
+              //          max: 1,
+              //          onChanged: (double value) {
+              //            _binSmoothing = value;
+              //            _showControlsThenHideDebounced();
+              //          },
+              //        ),
+              //      ),
+              //    ],
+              //  ),
+              //),
+
               /// Volume slider
               PositionedDirectional(
                 top: screenSize.height * 0.25,
@@ -458,18 +490,12 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     // already in that format). We pass FFT bins in via the red channel.
     final pixels = Float32List(256 * 4);
 
-    /// TODO is this working?
-    // how slowly the average moves
-    //const double binSmoothing = 0.8;
-    const double binSmoothing = 0.1;
-    //const double binSmoothing = 0.92;
-
     for (int i = 0; i < 256; i++) {
       final double magnitude = fftData[i];
 
       // Update rolling average
       _binAverages[i] =
-          _binAverages[i] * binSmoothing + magnitude * (1.0 - binSmoothing);
+          _binAverages[i] * _binSmoothing + magnitude * (1.0 - _binSmoothing);
 
       // Signed charge: positive when louder than average, negative when quieter
       // clamp to [-1, 1] then remap to [0, 1] for the texture

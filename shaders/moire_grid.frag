@@ -100,7 +100,7 @@ void main() {
 
   vec4 fftSample = texture(u_fftData, vec2((35 + 0.5) / 256.0, 0.5));
   // float magnitude = fftSample.r;             // 0..1, raw bin energy
-  float charge = (fftSample.g - 0.5) * 2.0; // -1..1, louder-than-avg > 0
+  float charge = (fftSample.g - 0.5) * 5.0; // -1..1, louder-than-avg > 0
 
   // --- Field centre positions ---
   //
@@ -108,13 +108,21 @@ void main() {
   // Bass energy controls the separation — a kick drum physically pulls
   // the two centres apart, dramatically reshaping the moiré.
   float offset = bassEnergy * u_maxOffset;
-  vec2 centreA = vec2(-offset * charge, offset * 0.6); // upper-left quadrant
-  vec2 centreB = vec2(offset, -offset * 0.6 * charge); // lower-right quadrant
+  vec2 centreA = vec2(-offset, offset * 0.6); // upper-left quadrant
+  vec2 centreB = vec2(offset, -offset * 0.6); // lower-right quadrant
 
   // Mid energy adds a slow lateral drift to break left-right symmetry and
   // keep the pattern interesting during sustained mid-heavy passages.
   centreA.x -= midEnergy * 0.08;
   centreB.x += midEnergy * 0.08;
+
+  float angle = charge * 3; // scale to taste
+  float cosA = cos(angle);
+  float sinA = sin(angle);
+
+  mat2 rot = mat2(cosA, -sinA, sinA, cosA);
+  centreA = rot * centreA;
+  centreB = rot * centreB;
 
   // --- Ring density ---
   //
@@ -140,7 +148,7 @@ void main() {
   // toward zero — destructive interference. The beating between the two
   // incommensurate ring spacings (they are at the same density but different
   // centres) produces the moiré.
-  float moire = fieldA * fieldB;
+  float moire = fieldA * fieldB * charge;
 
   // --- Colour ---
   //

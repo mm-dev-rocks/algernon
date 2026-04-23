@@ -188,7 +188,7 @@ void main() {
   float fieldBin = (cellID.x / u_ringDensity * 0.5 + 0.5) * 200.0;
   vec2 fcLocal = sampleBin(fieldBin);
 
-  float hue = u_hueShift + hueT * 120.0 + fcLocal.y * 20.0;
+  float hue = u_hueShift + hueT * 40.0 + fcLocal.y * 20.0;
   float val = clamp(fcLocal.x * 1.8 + 0.15, 0.0, 1.0);
   float sat = 0.85;
 
