@@ -22,7 +22,7 @@ class MemorySlotButton extends StatelessWidget {
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
       onTap: onPressed,
-      customBorder: const RoundedRectangleBorder(),
+      //customBorder: const RoundedRectangleBorder(),
       child: Tooltip(
         message: 'Memory slot $index',
         child: Container(
@@ -38,6 +38,7 @@ class MemorySlotButton extends StatelessWidget {
             index.toString(),
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.labelLarge,
+            overflow: TextOverflow.clip,
           ),
         ),
       ),

@@ -109,6 +109,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
     Size screenSize = Screen.size(context);
+    bool screenIsCompact = Screen.isCompact(context);
 
     /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
     /// [ListenableBuilder]. The FFT Smoothing slider is different as it doesn't affect the shaders directly, but
@@ -162,8 +163,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
           child: Stack(
             children: [
               /// Shader select/dropdown
-              Positioned.directional(
-                textDirection: TextDirection.ltr,
+              PositionedDirectional(
                 bottom: 0,
                 start: 0,
                 end: 0,
@@ -242,12 +242,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
               ),
 
               /// Shader-specific controls block
-              Positioned.directional(
-                textDirection: TextDirection.ltr,
+              PositionedDirectional(
                 top: 0,
                 bottom: 0,
                 start: 0,
-                width: screenSize.width * 0.33,
+                width: screenSize.width * 0.333,
                 child: Center(
                   child: FocusTraversalGroup(
                     child: Column(
@@ -258,13 +257,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       children: [
                         /// Memory slot buttons
                         Padding(
-                          padding: EdgeInsets.only(
-                            left: uiSizes.paddingLarge,
-                            right: uiSizes.paddingLarge,
-                          ),
+                          padding: EdgeInsets.only(left: uiSizes.paddingSmall),
                           child: Row(
                             mainAxisSize: .max,
-                            spacing: uiSizes.paddingLarge,
+                            mainAxisAlignment: .spaceBetween,
                             children: List.generate(
                               ALGERNON.totalMemorySlots,
                               (int index) => Expanded(
@@ -328,9 +324,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
               ),
 
               /// Volume slider
-              Positioned.directional(
-                textDirection: TextDirection.ltr,
-
+              PositionedDirectional(
                 top: screenSize.height * 0.25,
                 bottom: screenSize.height * 0.25,
                 end: 0,
