@@ -13,14 +13,10 @@ import 'pages/root_page.dart';
 
 /// Main app entry point / main class.
 Future<void> main() async {
-  //debugRepaintRainbowEnabled = true;
   WidgetsFlutterBinding.ensureInitialized();
 
   /// App preferences [SharedPreferencesWithCache] require async setup
   await AppState.initPreferences();
-
-  // Necessary initialization for package:media_kit.
-  //MediaKit.ensureInitialized();
 
   runApp(const AlgernonApp());
 }
@@ -33,12 +29,7 @@ class AlgernonApp extends StatefulWidget {
   State<AlgernonApp> createState() => _AlgernonAppState();
 }
 
-class _AlgernonAppState extends AppState<AlgernonApp> {
-  /// We want to rebuild when 'preferences' changes, so the widgets eg
-  /// checkboxes show their correct current state.
-  @override
-  List<String>? listenForChanges = ['themeChange'];
-
+class _AlgernonAppState extends State<AlgernonApp> {
   /// [_navigatorKey] is used to refer to the state of a specific Navigator.
   ///
   /// It will be assigned as the [key] to our main Navigator below, then when
@@ -68,9 +59,6 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
       case ALGERNON.routeRoot:
         page = const RootPage();
         break;
-      //case ALGERNON.routePreferences:
-      //  page = const Preferences();
-      //  break;
       default:
         throw Exception('UNKNOWN NAVIGATION ROUTE: ${settings.name}');
     }
@@ -87,18 +75,10 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
   Widget build(BuildContext context) {
     AppState.log("main BUILD");
 
-    /// This [main] widget rebuilds when the theme changes so this is as good a place as any to
-    /// call the [AlgernonAudioHandler.updateNotification] method.
-    //AlgernonAudioHandler.updateNotification();
-
     return MaterialApp(
       title: ALGERNON.appName,
-      //theme: ThemeHelper.getFlexSchemeFromColorOptionsKey(
-      //    AppState.getPreference("colorScheme"), context),
       debugShowCheckedModeBanner: false,
-      //themeAnimationDuration: Duration.zero,
       onNavigationNotification: (notification) {
-        //_setAppBarStateByRoute(AppState.currentRoute);
         return notification.canHandlePop;
       },
       theme: ThemeData(
@@ -118,44 +98,12 @@ class _AlgernonAppState extends AppState<AlgernonApp> {
             ),
             backgroundColor: WidgetStateColor.resolveWith((states) {
               return Colors.black.withValues(alpha: 0.7);
-              //return Colors.transparent;
             }),
             shadowColor: WidgetStateColor.resolveWith((states) {
               return Colors.transparent;
             }),
-            //backgroundColor: WidgetStateColor.resolveWith((states) {
-            //  if (states.contains(WidgetState.pressed))
-            //    return Colors.blue[700]!;
-            //  if (states.contains(WidgetState.hovered))
-            //    return Colors.blue[400]!;
-            //  return Colors.blue; // default / normal state
-            //}),
           ),
         ),
-        //textTheme: Theme.of(context).textTheme.copyWith(
-        //  bodySmall: const TextStyle(color: Colors.white, fontSize: 16),
-        //  bodyMedium: const TextStyle(color: Colors.white, fontSize: 16),
-        //  bodyLarge: const TextStyle(color: Colors.white, fontSize: 16),
-        //  displaySmall: const TextStyle(color: Colors.white, fontSize: 16),
-        //  displayMedium: const TextStyle(color: Colors.white, fontSize: 16),
-        //  displayLarge: const TextStyle(color: Colors.white, fontSize: 16),
-        //  headlineSmall: const TextStyle(color: Colors.white, fontSize: 16),
-        //  headlineMedium: const TextStyle(color: Colors.white, fontSize: 16),
-        //  headlineLarge: const TextStyle(color: Colors.white, fontSize: 16),
-        //  labelSmall: const TextStyle(color: Colors.white, fontSize: 16),
-        //  labelMedium: const TextStyle(color: Colors.white, fontSize: 16),
-        //  labelLarge: const TextStyle(color: Colors.white, fontSize: 16),
-        //),
-        //menuButtonTheme: MenuButtonThemeData(
-        //  style: MenuItemButton.styleFrom(
-        //    textStyle: Theme.of(context).textTheme.labelLarge,
-        //  ),
-        //),
-        //elevatedButtonTheme: ElevatedButtonThemeData(
-        //  style: MenuItemButton.styleFrom(
-        //    textStyle: Theme.of(context).textTheme.labelLarge,
-        //  ),
-        //),
         sliderTheme: SliderThemeData(
           activeTrackColor: Colors.white.withValues(alpha: 0.2),
           inactiveTrackColor: Colors.white.withValues(alpha: 0.2),

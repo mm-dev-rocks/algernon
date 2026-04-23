@@ -2,21 +2,11 @@ more friendly names for shader sliders
 
 onset detection
 
-slider for 'binSmoothing' from player?
-
-wire up charge to another couple of shaders
-
 mic input
 
 kb shortcuts don't work on fftsmoothing slider
 
-tidy up main.js
-tidy up screen.js
-
 bin range adjustment
-
-physics based shaders
-
 
 playback bar
 file chooser
@@ -78,3 +68,8 @@ changing memory slot must update fft smoothing
 play button gets clipped on narrow screen
 changing shader something doesn't update correctly, need to log all values
 fft slider looks correct by saved value but doesn't actually take effect until clicking to confirm
+slider for 'binSmoothing' from player?
+wire up charge to another couple of shaders
+physics based shaders
+tidy up main.js
+tidy up screen.js

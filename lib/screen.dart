@@ -45,8 +45,6 @@ class Screen {
   }
 
   static UiSizes uiSizesCompact = UiSizes(
-    smallDurationLetterSpacing: 2.8,
-    progressBarSpacing: 3,
     //
     paddingExtraSmall: 4,
     paddingSmall: 6,
@@ -56,8 +54,6 @@ class Screen {
     //
     customIconSize: 26,
     //
-    quickChooserControlTopRowHeight: 69,
-    quickChooserControlBottomRowHeight: 41,
     buttonStyle: ElevatedButton.styleFrom(
       visualDensity: VisualDensity.compact,
       padding: const EdgeInsets.all(1),
@@ -72,33 +68,9 @@ class Screen {
       bottom: 8,
       left: 8,
     ),
-    dialogInsets: const EdgeInsets.all(50),
-    chapterProgressTextStyle: const TextStyle(
-      fontFamily: 'FixedWidthNumbers',
-      fontSize: 13,
-    ),
-    chapterDurationTextStyle: const TextStyle(
-      fontFamily: 'FixedWidthNumbers',
-      fontSize: 13,
-    ),
-    preferenceItem: const {
-      'between': 19.0,
-      'sectionGap': 38.0,
-      'outerPadding': EdgeInsets.only(),
-      'titlePadding': EdgeInsets.only(),
-      'descriptionPadding': EdgeInsets.only(top: 6),
-    },
-    deleteIconButtonIconSize: 18,
-    brightnessChooserIconSize: 12,
-    themeColorChipSize: const Size(25, 25),
-    bookItemDetailedThumbWidth: 100,
-    fontSizeChapterNumber: 12,
-    fontHeightChapterNumber: 1.3,
   );
 
   static UiSizes uiSizesStandard = UiSizes(
-    smallDurationLetterSpacing: 1.5,
-    progressBarSpacing: 5,
     //
     paddingExtraSmall: 8,
     paddingSmall: 10,
@@ -108,8 +80,6 @@ class Screen {
     //
     customIconSize: 38,
     //
-    quickChooserControlTopRowHeight: 85,
-    quickChooserControlBottomRowHeight: 50,
     buttonStyle: ElevatedButton.styleFrom(
       visualDensity: VisualDensity.compact,
       padding: const EdgeInsets.all(14),
@@ -124,28 +94,6 @@ class Screen {
       bottom: 10,
       left: 10,
     ),
-    dialogInsets: const EdgeInsets.all(100),
-    chapterProgressTextStyle: const TextStyle(
-      fontFamily: 'FixedWidthNumbers',
-      fontSize: 13,
-    ),
-    chapterDurationTextStyle: const TextStyle(
-      fontFamily: 'FixedWidthNumbers',
-      fontSize: 13,
-    ),
-    preferenceItem: const {
-      'between': 50.0,
-      'sectionGap': 100.0,
-      'outerPadding': EdgeInsets.only(),
-      'titlePadding': EdgeInsets.only(),
-      'descriptionPadding': EdgeInsets.only(top: 10),
-    },
-    deleteIconButtonIconSize: 18,
-    brightnessChooserIconSize: 18,
-    themeColorChipSize: const Size(30, 30),
-    bookItemDetailedThumbWidth: 150,
-    fontSizeChapterNumber: 13,
-    fontHeightChapterNumber: 1.25,
   );
 }
 
@@ -153,38 +101,19 @@ class Screen {
 /// based on eg whether we want a compact or standard layout.
 class UiSizes {
   UiSizes({
-    required this.smallDurationLetterSpacing,
     required this.paddingExtraSmall,
     required this.paddingSmall,
     required this.paddingMedium,
     required this.paddingLarge,
     required this.paddingExtraLarge,
     required this.paddingInputText,
-    required this.progressBarSpacing,
     required this.customIconSize,
-    required this.quickChooserControlTopRowHeight,
-    required this.quickChooserControlBottomRowHeight,
     required this.buttonStyle,
-    required this.chapterProgressTextStyle,
-    required this.dialogInsets,
-    required this.chapterDurationTextStyle,
-    required this.preferenceItem,
-    required this.deleteIconButtonIconSize,
-    required this.brightnessChooserIconSize,
-    required this.themeColorChipSize,
-    required this.bookItemDetailedThumbWidth,
     required this.floatingActionButtonSize,
     required this.floatingActionButtonBarOverflow,
     required this.elevatedButtonSize,
-    required this.fontSizeChapterNumber,
-    required this.fontHeightChapterNumber,
   });
 
-  final double fontSizeChapterNumber;
-  final double fontHeightChapterNumber;
-  final double smallDurationLetterSpacing;
-
-  final double progressBarSpacing;
   final double paddingExtraSmall;
   final double paddingSmall;
   final double paddingMedium;
@@ -196,20 +125,9 @@ class UiSizes {
   final Size floatingActionButtonSize;
   final double floatingActionButtonBarOverflow;
 
-  final EdgeInsets dialogInsets;
   final EdgeInsets paddingInputText;
 
   final double customIconSize;
 
-  final double quickChooserControlTopRowHeight;
-  final double quickChooserControlBottomRowHeight;
   final ButtonStyle buttonStyle;
-  final TextStyle chapterProgressTextStyle;
-  final TextStyle chapterDurationTextStyle;
-  final Map preferenceItem;
-
-  final double deleteIconButtonIconSize;
-  final double brightnessChooserIconSize;
-  final Size themeColorChipSize;
-  final double bookItemDetailedThumbWidth;
 }
