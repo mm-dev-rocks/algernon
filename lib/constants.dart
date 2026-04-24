@@ -52,6 +52,8 @@ class ALGERNON {
 
   static const int finalAimFps = 30;
 
+  static const String autoCountPrefSuffix = 'auto';
+
   static const double magnitudeChargeSmoothing = 0.92;
   static const int energyZoneBlendBuckets = 7;
 

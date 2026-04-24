@@ -84,7 +84,7 @@ void main() {
   vec3 colourAcc = vec3(0.0);
   float weightAcc = 0.0;
 
-  int nBlobs = u_blobCount == 0.0 ? energyDerivedCount() : int(u_blobCount);
+  int nBlobs = u_blobCount == -1.0 ? energyDerivedCount() : int(u_blobCount);
 
   for (int i = 0; i < 8; i++) {
     if (i >= nBlobs)

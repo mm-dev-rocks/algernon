@@ -76,6 +76,10 @@ class ShaderPainter extends CustomPainter {
           /// know the min/max values for some internal calculations.
           shader.getUniformFloat('u_energyMin').set(tweak.min);
           shader.getUniformFloat('u_energyMax').set(tweak.max);
+
+          /// Set the uniform to -1 as a signal to the shader that it should use the energy data to derive this count
+          /// (the [isEnergyUniform] tweak will never have a value of -1 in normal usage).
+          shader.getUniformFloat(tweak.tweakType.uniform!).set(-1);
         } else {
           shader
               .getUniformFloat(tweak.tweakType.uniform!)

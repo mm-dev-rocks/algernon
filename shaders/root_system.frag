@@ -101,7 +101,7 @@ void main() {
   vec3 colTotal = vec3(0.0);
 
   // int nArms = int(u_armCount);
-  int nArms = u_armCount == 0.0 ? energyDerivedCount() : int(u_armCount);
+  int nArms = u_armCount == -1.0 ? energyDerivedCount() : int(u_armCount);
   int nDepths = int(u_branchDepth);
 
   for (int arm = 0; arm < 999; arm++) {
@@ -204,7 +204,7 @@ void main() {
     }
   }
 
-  glowTotal = min(glowTotal, 3.0);
+  glowTotal = min(glowTotal, 15.0);
   vec3 colour = (glowTotal > 0.001) ? colTotal / glowTotal : vec3(0.0);
   float brightness = clamp(glowTotal, 0.0, 0.3);
   float halo = clamp(glowTotal * 0.3, 0.0, 0.4);

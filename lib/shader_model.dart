@@ -24,9 +24,9 @@ class ShaderModel {
 
   /// If an 'energy uniform' tweak exists, calibrate the audio track to it.
   void calibrateAudioEnergy() {
-    ShaderTweakModel? energyUniformTweak = shaderTweaks.values.firstWhere(
-      (tweak) => tweak.isEnergyUniform,
-    );
+    ShaderTweakModel? energyUniformTweak = shaderTweaks.values
+        .where((tweak) => tweak.isEnergyUniform)
+        .firstOrNull;
 
     if (energyUniformTweak != null) {
       int min = energyUniformTweak.min.toInt();
@@ -39,5 +39,15 @@ class ShaderModel {
         max: max,
       );
     }
+  }
+
+  @override
+  String toString() {
+    return '''
+$id
+  $friendlyName
+  $assetKey
+  ${shaderTweaks.entries.map((entry) => '${entry.value.toString()}\n')}
+''';
   }
 }

@@ -32,7 +32,7 @@ class ShaderTweakModel {
         ALGERNON.defaultPreferences[preferenceId] = [double, defaultValue];
       }
       String useEnergyDerivedCountId =
-          '${_preferenceIdFromMemorySlotIndex(slotIndex)}-useEnergyDerivedCount';
+          '${_preferenceIdFromMemorySlotIndex(slotIndex)}-${ALGERNON.autoCountPrefSuffix}';
       if (!ALGERNON.defaultPreferences.containsKey(useEnergyDerivedCountId)) {
         ALGERNON.defaultPreferences[useEnergyDerivedCountId] = [bool, false];
       }
@@ -61,7 +61,8 @@ class ShaderTweakModel {
     AppState.setPreference(_useEnergyDerivedCountId, value);
   }
 
-  String get _useEnergyDerivedCountId => '$_preferenceId-useEnergyDerivedCount';
+  String get _useEnergyDerivedCountId =>
+      '$_preferenceId-${ALGERNON.autoCountPrefSuffix}';
 
   String get _preferenceId => _preferenceIdFromMemorySlotIndex(
     AppState.getPreference('selectedMemorySlotIndex'),
@@ -70,4 +71,9 @@ class ShaderTweakModel {
   /// Canon function for deriving full name of this tweak, including current memory slot, shader id and tweak type.
   String _preferenceIdFromMemorySlotIndex(int slotIndex) =>
       "m$slotIndex-$shaderId-${tweakType.name}";
+
+  @override
+  String toString() {
+    return 'shaderId:  $shaderId, tweakType:  $tweakType, min:  $min, max:  $max, divisions:  $divisions, defaultValue:  $defaultValue, isEnergyUniform:  $isEnergyUniform';
+  }
 }

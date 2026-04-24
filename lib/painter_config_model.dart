@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 class PainterConfigModel with ChangeNotifier {
   /// [_fftDataImage] stores the latest data from the FFT, in an image format for efficient passthrough to the shader later.
   ui.Image? _fftDataImage;
+  //
   ui.Image? get fftDataImage => _fftDataImage;
   set fftDataImage(ui.Image image) {
     _fftDataImage = image;
@@ -17,6 +18,7 @@ class PainterConfigModel with ChangeNotifier {
   /// [_currentShader] tracks which shader is currently in use.
   ShaderModel _currentShader =
       ALGERNON.shadersData[AppState.getPreference('selectedShaderIndex')];
+  //
   ShaderModel get currentShader => _currentShader;
   set currentShader(ShaderModel shaderMeta) {
     _currentShader = shaderMeta;

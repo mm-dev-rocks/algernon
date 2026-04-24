@@ -1,7 +1,5 @@
 more friendly names for shader sliders
 
-onset detection
-
 mic input
 
 kb shortcuts don't work on fftsmoothing slider
@@ -18,6 +16,7 @@ file chooser
 
 # BUGS
 
+sometimes shader are messed up when changing shaders eg polar_warp
 
 volume = 0 / black screen
 
@@ -73,3 +72,4 @@ wire up charge to another couple of shaders
 physics based shaders
 tidy up main.js
 tidy up screen.js
+onset detection

@@ -30,7 +30,7 @@ class AudioAnalysis {
     required Duration trackDuration,
   }) async {
     const int numberOfRawSamplesToRead = 5000;
-    const int numberOfHighResolutionBuckets = 200;
+    const int numberOfHighResolutionBuckets = 100;
 
     final Stopwatch stopwatch = Stopwatch()..start();
 
