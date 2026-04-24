@@ -2,11 +2,13 @@ more friendly names for shader sliders
 
 mic input
 
+copy/paste memory slots
+    drag+drop
+
 kb shortcuts don't work on fftsmoothing slider
 
 bin range adjustment
 
-playback bar
 file chooser
     1 or multiple
     multiple creates playlist
@@ -73,3 +75,4 @@ physics based shaders
 tidy up main.js
 tidy up screen.js
 onset detection
+playback bar

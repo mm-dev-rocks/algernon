@@ -29,6 +29,7 @@ uniform float u_energyMin;
 uniform float u_energyMax;
 
 uniform float u_armCount;
+uniform float u_baseRadius;
 uniform float u_branchDepth;
 uniform float u_hueShift;
 uniform float u_maxTwist;
@@ -91,7 +92,7 @@ void main() {
   float asp = u_resolution.x / u_resolution.y;
   vec2 p = (st - 0.5) * vec2(asp, 1.0);
 
-  vec2 fcLow = sampleBin(8.0);
+  vec2 fcLow = sampleBin(12.0);
   vec2 fcHigh = sampleBin(200.0);
 
   // Precompute the low-frequency combined sway modifier
@@ -113,7 +114,8 @@ void main() {
 
     float armBin = fi * (64.0 / float(nArms));
     vec2 fcArm = sampleBin(armBin);
-    float armLen = clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, 0.55);
+    float armLen =
+        clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, u_baseRadius);
     float mainWidth = 0.012 + fcArm.x * 0.006;
 
     float hue = u_hueShift + (fi / float(nArms)) * 60.0 + fcArm.y * 25.0;
@@ -204,7 +206,7 @@ void main() {
     }
   }
 
-  glowTotal = min(glowTotal, 15.0);
+  glowTotal = min(glowTotal, 1.5);
   vec3 colour = (glowTotal > 0.001) ? colTotal / glowTotal : vec3(0.0);
   float brightness = clamp(glowTotal, 0.0, 0.3);
   float halo = clamp(glowTotal * 0.3, 0.0, 0.4);

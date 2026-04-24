@@ -32,6 +32,9 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
+uniform float u_energyMin;
+uniform float u_energyMax;
+
 uniform float u_armCount;
 uniform float u_maxTwist;
 uniform float u_bandCount;
@@ -42,6 +45,13 @@ out vec4 fragColor;
 
 // pi — defined locally, not relying on any extension constants.
 const float PI = 3.14159265;
+
+int energyDerivedCount() {
+  float countRange = float(u_energyMax - u_energyMin);
+  float count = float(u_energyMin) +
+                texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * countRange;
+  return int(round(count));
+}
 
 void main() {
   // Mnemonic: st = 'space transform' — normalised 0..1 screen coords.
@@ -59,16 +69,17 @@ void main() {
   float radius = length(p) * 0.66;
   float angle = atan(p.y, p.x); // -pi..pi
 
+  int nBands = u_bandCount == -1.0 ? energyDerivedCount() : int(u_bandCount);
   // --- Per-ring twist ---
   //
   // Map this fragment's radius to a radial band index (0..BAND_COUNT-1).
   // We treat 0.5 as "full radius" — the edge midpoints of a square canvas.
   // Beyond that (screen corners) the band index saturates at BAND_COUNT-1.
-  float bandIndex = clamp(radius * 2.0 * u_bandCount, 0.0, u_bandCount - 1.0);
+  float bandIndex = clamp(radius * 2.0 * nBands, 0.0, nBands - 1.0);
 
-  // Map band index to a bin index, spreading u_bandCount bands evenly across
+  // Map band index to a bin index, spreading nBands bands evenly across
   // the 256 bins so bass covers the inner rings, treble the outer.
-  float binsPerBand = 256.0 / u_bandCount;
+  float binsPerBand = 256.0 / nBands;
   float binIndex = floor(bandIndex) * binsPerBand + binsPerBand * 0.5;
   vec4 fftSample = texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5));
   float magnitude = fftSample.r;             // 0..1, raw bin energy
