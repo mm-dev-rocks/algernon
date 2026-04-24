@@ -12,8 +12,9 @@ class ShaderTweakModel {
     required this.tweakType,
     this.min = 0,
     this.max = 1,
-    this.defaultValue = 0.75,
     this.divisions,
+    this.defaultValue = 0.75,
+    this.isEnergyUniform = false,
   }) {
     /// A quirk of [AppState.getPreference] and [AppState.setPreference] is that they fail if any 'preference key'
     /// doesn't exist in [ALGERNON.defaultPreferences]. Apart from that they work well for our needs (saving tweaks to
@@ -30,6 +31,11 @@ class ShaderTweakModel {
       if (!ALGERNON.defaultPreferences.containsKey(preferenceId)) {
         ALGERNON.defaultPreferences[preferenceId] = [double, defaultValue];
       }
+      String useEnergyDerivedCountId =
+          '${_preferenceIdFromMemorySlotIndex(slotIndex)}-useEnergyDerivedCount';
+      if (!ALGERNON.defaultPreferences.containsKey(useEnergyDerivedCountId)) {
+        ALGERNON.defaultPreferences[useEnergyDerivedCountId] = [bool, false];
+      }
     }
   }
 
@@ -39,12 +45,23 @@ class ShaderTweakModel {
   final double max;
   final int? divisions;
   final double defaultValue;
+  final bool isEnergyUniform;
 
   /// [_storedValue] is stored as a preference so the app remembers settings.
   double get storedValue => AppState.getPreference(_preferenceId);
   set storedValue(double value) {
     AppState.setPreference(_preferenceId, value);
   }
+
+  /// [_useEnergyDerivedCount] decided whether to use energy from the audio track for any special count variables in the
+  /// shader.
+  bool get useEnergyDerivedCount =>
+      AppState.getPreference(_useEnergyDerivedCountId);
+  set useEnergyDerivedCount(bool value) {
+    AppState.setPreference(_useEnergyDerivedCountId, value);
+  }
+
+  String get _useEnergyDerivedCountId => '$_preferenceId-useEnergyDerivedCount';
 
   String get _preferenceId => _preferenceIdFromMemorySlotIndex(
     AppState.getPreference('selectedMemorySlotIndex'),

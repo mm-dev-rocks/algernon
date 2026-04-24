@@ -28,7 +28,12 @@ class MemorySlotButton extends StatelessWidget {
         child: Container(
           width: double.infinity,
           decoration: isSelected
-              ? BoxDecoration(border: Border.all(color: Colors.white, width: 2))
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white,
+                    width: ALGERNON.buttonBorderThickness,
+                  ),
+                )
               : BoxDecoration(
                   color: Colors.white.withValues(
                     alpha: ALGERNON.disabledControlOpacity,

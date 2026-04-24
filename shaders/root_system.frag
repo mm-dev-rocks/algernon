@@ -25,6 +25,9 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
+uniform float u_energyMin;
+uniform float u_energyMax;
+
 uniform float u_armCount;
 uniform float u_branchDepth;
 uniform float u_hueShift;
@@ -76,6 +79,13 @@ float armSway(float fi, float t) {
   return (slowSway + fastJitter) * u_maxTwist;
 }
 
+int energyDerivedCount() {
+  float countRange = float(u_energyMax - u_energyMin);
+  float count = float(u_energyMin) +
+                texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * countRange;
+  return int(round(count));
+}
+
 void main() {
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
   float asp = u_resolution.x / u_resolution.y;
@@ -90,10 +100,11 @@ void main() {
   float glowTotal = 0.0;
   vec3 colTotal = vec3(0.0);
 
-  int nArms = int(u_armCount);
+  // int nArms = int(u_armCount);
+  int nArms = u_armCount == 0.0 ? energyDerivedCount() : int(u_armCount);
   int nDepths = int(u_branchDepth);
 
-  for (int arm = 0; arm < 12; arm++) {
+  for (int arm = 0; arm < 999; arm++) {
     if (arm >= nArms)
       break;
 

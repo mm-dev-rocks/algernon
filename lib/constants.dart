@@ -47,9 +47,13 @@ class ALGERNON {
 
   static const int totalMemorySlots = 5;
 
-  static const double disabledControlOpacity = 0.3;
+  static const double disabledControlOpacity = 0.2;
+  static const double buttonBorderThickness = 2;
 
   static const int finalAimFps = 30;
+
+  static const double magnitudeChargeSmoothing = 0.92;
+  static const int energyZoneBlendBuckets = 7;
 
   /// Shader meta info is in another file to keep this file maintainable.
   static final List<ShaderModel> shadersData = meta.shadersData;

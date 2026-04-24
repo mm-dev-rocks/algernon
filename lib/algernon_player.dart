@@ -6,6 +6,7 @@ import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/app_state.dart';
+import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum/enum.dart';
 import 'package:algernon/memory_slot_button.dart';
@@ -28,26 +29,15 @@ class AlgernonPlayer extends StatefulWidget {
 class _AlgernonPlayerState extends State<AlgernonPlayer>
     with SingleTickerProviderStateMixin {
   //
-  /// Initialise SoLoud and tell it how we want to receive audio data
-  final _soLoud = SoLoud.instance;
+  /// Tell [SoLoud] how we want to receive audio data
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
 
   /// Keep a rolling average of bins to be used for physics 'charges'
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
-  /// TODO is this working?
-  // how slowly the average moves
-  //double _binSmoothing = 0.8;
-  double _binSmoothing = 0.92;
-  //double _binSmoothing = 0.1;
-
-  /// Unused for now but might be useful later
-  // ignore: unused_field
-  double _trackJumpiness = 0;
-  // ignore: unused_field
-  double _trackAmplitude = 0;
 
   bool get _soLoudIsReady =>
-      _soLoud.isInitialized && _soLoud.getVisualizationEnabled();
+      SoLoud.instance.isInitialized &&
+      SoLoud.instance.getVisualizationEnabled();
 
   String _filePath =
       ALGERNON.audioTrackFilePaths[AppState.getPreference(
@@ -105,7 +95,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _ticker.stop();
     _audioData.dispose();
     _painterConfig.dispose();
-    _soLoud.deinit();
+    SoLoud.instance.deinit();
 
     super.dispose();
   }
@@ -114,7 +104,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
     Size screenSize = Screen.size(context);
-    bool screenIsCompact = Screen.isCompact(context);
+    //bool screenIsCompact = Screen.isCompact(context);
 
     /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
     /// [ListenableBuilder]. The FFT Smoothing slider is different as it doesn't affect the shaders directly, but
@@ -124,7 +114,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     /// [_painterConfig.currentShader] is guaranteed to always be up-to-date with the latest memory slot and shader.
     if (_soLoudIsReady) {
       _updateFftSmoothingTweak();
-      _soLoud.setFftSmoothing(_fftSmoothingTweak.storedValue);
+      SoLoud.instance.setFftSmoothing(_fftSmoothingTweak.storedValue);
     }
 
     return Stack(
@@ -209,7 +199,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                         onSelected: (String? value) async {
                           if (value != null) {
                             if (_currentSoundHandle != null) {
-                              await _soLoud.stop(_currentSoundHandle!);
+                              await SoLoud.instance.stop(_currentSoundHandle!);
                             }
                             _filePath = value;
                             AppState.setPreference(
@@ -237,7 +227,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       IconButton(
                         onPressed: _togglePause,
                         icon: Icon(
-                          _soLoud.getPause(_currentSoundHandle!)
+                          SoLoud.instance.getPause(_currentSoundHandle!)
                               ? Icons.play_arrow
                               : Icons.pause,
                         ),
@@ -312,13 +302,23 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                               (MapEntry<String, ShaderTweakModel> entry) =>
                                   ShaderTweakSlider(
                                     shaderTweak: entry.value,
-                                    onChanged: (double value) {
-                                      if (_soLoudIsReady) {
-                                        setState(() {
-                                          entry.value.storedValue = value;
-                                        });
-                                      }
-                                      _showControlsThenHideDebounced();
+                                    onChanged:
+                                        (entry.value.isEnergyUniform &&
+                                            entry.value.useEnergyDerivedCount)
+                                        ? null
+                                        : (double value) {
+                                            if (_soLoudIsReady) {
+                                              setState(() {
+                                                entry.value.storedValue = value;
+                                              });
+                                            }
+                                            _showControlsThenHideDebounced();
+                                          },
+                                    onAutoButtonPressed: () {
+                                      setState(() {
+                                        entry.value.useEnergyDerivedCount =
+                                            !entry.value.useEnergyDerivedCount;
+                                      });
                                     },
                                   ),
                             ),
@@ -327,33 +327,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                   ),
                 ),
               ),
-
-              /// Bin smoothing slider
-              //PositionedDirectional(
-              //  top: screenSize.height * 0.25,
-              //  bottom: screenSize.height * 0.25,
-              //  end: 200,
-              //  child: Row(
-              //    children: [
-              //      const Tooltip(
-              //        message: 'Bin Smoothing',
-              //        child: Icon(Icons.speaker_outlined),
-              //      ),
-              //      RotatedBox(
-              //        quarterTurns: 3,
-              //        child: Slider(
-              //          value: _binSmoothing,
-              //          min: 0.1,
-              //          max: 1,
-              //          onChanged: (double value) {
-              //            _binSmoothing = value;
-              //            _showControlsThenHideDebounced();
-              //          },
-              //        ),
-              //      ),
-              //    ],
-              //  ),
-              //),
 
               /// Volume slider
               PositionedDirectional(
@@ -370,12 +343,15 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                       quarterTurns: 3,
                       child: Slider(
                         value: _currentSoundHandle != null
-                            ? _soLoud.getVolume(_currentSoundHandle!)
+                            ? SoLoud.instance.getVolume(_currentSoundHandle!)
                             : 1,
                         onChanged: (double value) {
                           if (_soLoudIsReady && _currentSoundHandle != null) {
                             setState(() {
-                              _soLoud.setVolume(_currentSoundHandle!, value);
+                              SoLoud.instance.setVolume(
+                                _currentSoundHandle!,
+                                value,
+                              );
                             });
                           }
                           _showControlsThenHideDebounced();
@@ -401,7 +377,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   void _togglePause() {
     if (_currentSoundHandle != null) {
-      _soLoud.pauseSwitch(_currentSoundHandle!);
+      SoLoud.instance.pauseSwitch(_currentSoundHandle!);
       setState(() {
         /// Rebuild to update state of the toggle button
       });
@@ -410,14 +386,20 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   void _initialiseSoundAndPlay() async {
     if (!_soLoudIsReady) {
-      await _soLoud.init(bufferSize: 1024);
-      _soLoud.setVisualizationEnabled(true);
+      await SoLoud.instance.init(bufferSize: 1024);
+      SoLoud.instance.setVisualizationEnabled(true);
     }
 
-    _currentSound = await _soLoud.loadAsset(_filePath);
-    analyseFile(_filePath);
+    _currentSound = await SoLoud.instance.loadAsset(_filePath);
+    await AudioAnalysis.analyseTrackOnLoad(
+      filePath: _filePath,
+      trackDuration: SoLoud.instance.getLength(_currentSound!),
+    );
+
+    _painterConfig.currentShader.calibrateAudioEnergy();
+
     if (_currentSound != null) {
-      _currentSoundHandle = _soLoud.play(_currentSound!, looping: true);
+      _currentSoundHandle = SoLoud.instance.play(_currentSound!, looping: true);
       setState(() {
         /// Rebuild to update state of the toggle button
       });
@@ -482,7 +464,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     // the intensity of the visuals. This is not what we want, so here we scale it to compensate for the current volume.
     if (_currentSoundHandle != null) {
       for (var i = 0; i < fftData.length; i++) {
-        fftData[i] /= _soLoud.getVolume(_currentSoundHandle!);
+        fftData[i] /= SoLoud.instance.getVolume(_currentSoundHandle!);
       }
     }
 
@@ -495,19 +477,31 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
       // Update rolling average
       _binAverages[i] =
-          _binAverages[i] * _binSmoothing + magnitude * (1.0 - _binSmoothing);
+          _binAverages[i] * ALGERNON.magnitudeChargeSmoothing +
+          magnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
 
       // Signed charge: positive when louder than average, negative when quieter
       // clamp to [-1, 1] then remap to [0, 1] for the texture
       final double charge = (magnitude - _binAverages[i]).clamp(-1.0, 1.0);
       final double chargeNormalised = (charge + 1.0) * 0.5;
+      final double energy = _currentSoundHandle == null
+          ? 0
+          : AudioAnalysis.normalisedEnergyValueAtPosition(
+              playbackPosition: SoLoud.instance.getPosition(
+                _currentSoundHandle!,
+              ),
+            );
+
+      //if (energy > 0) {
+      //  debugPrint('energy: $energy');
+      //}
 
       // R: raw magnitude
       pixels[i * 4 + 0] = magnitude;
       // G: signed charge
       pixels[i * 4 + 1] = chargeNormalised;
-      // Unused
-      pixels[i * 4 + 2] = 0.0;
+      // B: energy from quantised buckets
+      pixels[i * 4 + 2] = energy;
       // Alpha full
       pixels[i * 4 + 3] = 1.0;
     }
@@ -545,36 +539,5 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     setState(() {
       _controlsAreVisible = false;
     });
-  }
-
-  Future<void> analyseFile(String filePath) async {
-    // 1000 evenly-spaced points from seconds 10–40 (runs off the main thread internally)
-    final samples = await SoLoud.instance.readSamplesFromFile(
-      filePath,
-      1000,
-      startTime: 10.0,
-      endTime: 40.0,
-      // each point is an average of its surrounding region
-      average: true,
-    );
-
-    _trackJumpiness = _computeJumpiness(samples);
-    _trackAmplitude = _computeAmplitude(samples);
-  }
-
-  double _computeJumpiness(Float32List samples) {
-    double total = 0;
-    for (int i = 1; i < samples.length; i++) {
-      total += (samples[i] - samples[i - 1]).abs();
-    }
-    return total / samples.length;
-  }
-
-  double _computeAmplitude(Float32List samples) {
-    double total = 0;
-    for (int i = 0; i < samples.length; i++) {
-      total += samples[i].abs();
-    }
-    return total / samples.length;
   }
 }

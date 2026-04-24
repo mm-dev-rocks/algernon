@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/constants.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,12 @@ class ShaderTweakSlider extends StatelessWidget {
     super.key,
     required this.shaderTweak,
     required this.onChanged,
+    this.onAutoButtonPressed,
   });
 
   final ShaderTweakModel shaderTweak;
-  final ValueChanged<double> onChanged;
+  final ValueChanged<double>? onChanged;
+  final VoidCallback? onAutoButtonPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -27,26 +30,54 @@ class ShaderTweakSlider extends StatelessWidget {
       label: shaderTweak.storedValue.toString(),
       showValueIndicator: ShowValueIndicator.onDrag,
     );
-    Text label = Text(
-      shaderTweak.tweakType.label,
-      style: const TextStyle(color: Colors.white),
+    Widget label = IgnorePointer(
+      child: Text(
+        shaderTweak.tweakType.label,
+        style: const TextStyle(color: Colors.white),
+      ),
     );
     Widget infoIcon = Tooltip(
       message: shaderTweak.tweakType.description,
       child: const Icon(Icons.info_outlined),
     );
+    Widget autoCountButton = SizedBox(
+      /// TODO magic numbers
+      width: 42,
+      height: 42,
+      child: shaderTweak.isEnergyUniform
+          ? Container(
+              decoration: shaderTweak.useEnergyDerivedCount
+                  ? BoxDecoration(
+                      border: Border.all(
+                        color: Colors.white,
+                        width: ALGERNON.buttonBorderThickness,
+                      ),
+                    )
+                  : BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: ALGERNON.disabledControlOpacity,
+                      ),
+                    ),
+              child: IconButton(
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.auto_mode),
+                tooltip: 'Auto: Ignore slider and adjust based on audio energy',
+                onPressed: onAutoButtonPressed,
+              ),
+            )
+          : const SizedBox.shrink(),
+    );
 
     return Column(
-      //crossAxisAlignment: .start,
       children: [
         Row(
-          //mainAxisSize: .min,
           children: [
             Padding(
               padding: EdgeInsets.only(left: uiSizes.paddingSmall),
               child: infoIcon,
             ),
             Expanded(child: slider),
+            autoCountButton,
           ],
         ),
         label,

@@ -71,7 +71,16 @@ class ShaderPainter extends CustomPainter {
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
       try {
-        shader.getUniformFloat(tweak.tweakType.uniform!).set(tweak.storedValue);
+        if (tweak.isEnergyUniform && tweak.useEnergyDerivedCount) {
+          /// Special case: Ignore slider/storedValue as the track energy will be used for this. The shader needs to
+          /// know the min/max values for some internal calculations.
+          shader.getUniformFloat('u_energyMin').set(tweak.min);
+          shader.getUniformFloat('u_energyMax').set(tweak.max);
+        } else {
+          shader
+              .getUniformFloat(tweak.tweakType.uniform!)
+              .set(tweak.storedValue);
+        }
       } on ArgumentError catch (_) {
         // Shader switch in progress (ie user has changed selection in dropdown)... skip an update
       }

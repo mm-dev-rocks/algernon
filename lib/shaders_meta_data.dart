@@ -295,6 +295,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformBlobCount.name: ShaderTweakModel(
         shaderId: 'slime_trails',
         tweakType: TweakType.uniformBlobCount,
+        isEnergyUniform: true,
         min: 2,
         max: 8,
         divisions: 6,
@@ -335,6 +336,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformArmCount.name: ShaderTweakModel(
         shaderId: 'root_system',
         tweakType: TweakType.uniformArmCount,
+        isEnergyUniform: true,
         min: 3,
         max: 23,
         divisions: 20,

@@ -73,6 +73,9 @@ void main() {
   vec4 fftSample = texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5));
   float magnitude = fftSample.r;             // 0..1, raw bin energy
   float charge = (fftSample.g - 0.5) * 20.0; // -1..1, louder-than-avg > 0
+  // float sectionRatio = fftSample.b * 2.0;    // un-normalise back to 0..2
+  // rangie
+  float sectionRatio = texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * 2.0;
 
   // The twist applied to this ring: loud bin → large twist angle.
   // The twist is also scaled by an inverse-radius factor so that outer rings
@@ -114,7 +117,8 @@ void main() {
   // rings (treble-driven) are cool. magnitude also modulates brightness so
   // quiet rings are dark even if the arm pattern says they should be lit.
   float hueShift = u_hueShift / 360.0;
-  float hueT = fract(radius * 2.2 + u_hueShift / 360.0);
+  // float hueT = fract(radius * 2.2 + u_hueShift / 360.0);
+  float hueT = fract(radius * 2.2 + u_hueShift / 360.0 + sectionRatio * 0.5);
   float shift = u_hueShift / 360.0;
 
   float rBase = 1.0 - hueT * 0.8;

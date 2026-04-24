@@ -26,6 +26,8 @@ class PainterConfigModel with ChangeNotifier {
         break;
       }
     }
+    _currentShader.calibrateAudioEnergy();
+
     notifyListeners();
   }
 
