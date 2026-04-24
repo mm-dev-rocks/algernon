@@ -309,15 +309,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                                 child: MemorySlotButton(
                                   index: index,
                                   onPressed: () {
-                                    AppState.setPreference(
-                                      'selectedMemorySlotIndex',
-                                      index,
-                                    );
+                                    _painterConfig.currentMemorySlot = index;
                                     _showControlsThenHideDebounced();
-                                    setState(() {
-                                      // Rebuild to make sure the latest [selectedMemorySlotIndex] is picked up for the
-                                      // smoothing slider.
-                                    });
                                   },
                                 ),
                               ),

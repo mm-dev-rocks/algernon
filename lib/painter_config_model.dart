@@ -15,6 +15,14 @@ class PainterConfigModel with ChangeNotifier {
     notifyListeners();
   }
 
+  /// [currentMemorySlot] keeps track of which memory slot is currently selected.
+  int? get currentMemorySlot =>
+      AppState.getPreference('selectedMemorySlotIndex');
+  set currentMemorySlot(int index) {
+    AppState.setPreference('selectedMemorySlotIndex', index);
+    notifyListeners();
+  }
+
   /// [_currentShader] tracks which shader is currently in use.
   ShaderModel _currentShader =
       ALGERNON.shadersData[AppState.getPreference('selectedShaderIndex')];

@@ -7,8 +7,6 @@ copy/paste memory slots
 
 kb shortcuts don't work on fftsmoothing slider
 
-bin range adjustment
-
 file chooser
     1 or multiple
     multiple creates playlist
@@ -17,8 +15,6 @@ file chooser
 ---
 
 # BUGS
-
-sometimes shader are messed up when changing shaders eg polar_warp
 
 volume = 0 / black screen
 
@@ -76,3 +72,5 @@ tidy up main.js
 tidy up screen.js
 onset detection
 playback bar
+bin range adjustment
+sometimes shader are messed up when changing shaders eg polar_warp
