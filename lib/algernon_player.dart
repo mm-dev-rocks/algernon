@@ -172,7 +172,32 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                   children: [
                     Row(
                       children: [
-                        Expanded(child: Slider(value: 0.5, onChanged: null)),
+                        Expanded(
+                          child: AlgernonPlayer.soLoudIsReady
+                              ? StreamBuilder(
+                                  stream: Stream.periodic(
+                                    const Duration(milliseconds: 200),
+                                  ),
+                                  builder: (context, _) {
+                                    return Slider(
+                                      value: _positionInTrackNormalised,
+                                      onChanged: (double value) {
+                                        AppState.debounceVoidFunction(
+                                          callerKey:
+                                              'AlgernonPlayer::playheadSeek',
+                                          voidFunction: () {
+                                            _setPlaybackPosFromNormalised(
+                                              value,
+                                            );
+                                          },
+                                        );
+                                      },
+                                    );
+                                  },
+                                )
+                              : SizedBox.shrink(),
+                        ),
+
                         if (AlgernonPlayer.currentSoundHandle != null)
                           IconButton(
                             onPressed: _togglePause,
@@ -496,13 +521,13 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Future<ui.Image> _imageFromFftData(Float32List fftData) async {
     // In SoLoud, FFT data is processed late in the pipeline after the mixing stage, meaning the volume slider affects
     // the intensity of the visuals. This is not what we want, so here we scale it to compensate for the current volume.
-    if (AlgernonPlayer.currentSoundHandle != null) {
-      for (var i = 0; i < fftData.length; i++) {
-        fftData[i] /= SoLoud.instance.getVolume(
-          AlgernonPlayer.currentSoundHandle!,
-        );
-      }
-    }
+    // if (AlgernonPlayer.currentSoundHandle != null) {
+    //   for (var i = 0; i < fftData.length; i++) {
+    //     fftData[i] /= SoLoud.instance.getVolume(
+    //       AlgernonPlayer.currentSoundHandle!,
+    //     );
+    //   }
+    // }
 
     // 256 pixels, each pixel needs R,G,B,A as floats, each of which is normalised between 0 and 1 (the FFT data is
     // already in that format). We pass FFT bins in via the red channel.
@@ -576,4 +601,23 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       _controlsAreVisible = false;
     });
   }
+
+  void _setPlaybackPosFromNormalised(double norm) {
+    if (AlgernonPlayer.soLoudIsReady) {
+      int milliseconds =
+          (SoLoud.instance.getLength(_currentSound!).inMilliseconds * norm)
+              .toInt();
+      SoLoud.instance.seek(
+        AlgernonPlayer.currentSoundHandle!,
+        Duration(milliseconds: milliseconds),
+      );
+    }
+  }
+
+  double get _positionInTrackNormalised => AlgernonPlayer.soLoudIsReady
+      ? SoLoud.instance
+                .getPosition(AlgernonPlayer.currentSoundHandle!)
+                .inMilliseconds /
+            SoLoud.instance.getLength(_currentSound!).inMilliseconds
+      : 0;
 }
