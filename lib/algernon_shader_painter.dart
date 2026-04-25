@@ -3,7 +3,6 @@ import 'dart:ui' as ui;
 
 import 'package:algernon/enum/enum.dart';
 import 'package:algernon/painter_config_model.dart';
-import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_shaders/flutter_shaders.dart';
