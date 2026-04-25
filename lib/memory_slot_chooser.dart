@@ -66,11 +66,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                   index: index,
                   highlighted: candidateItems.isNotEmpty,
                   onPressed: () {
-                    AlgernonPlayer.painterConfig.currentMemorySlot = index;
-                    UserInterface.keepControlsAlive();
-                    setState(() {
-                      /// To update selection state
-                    });
+                    _selectSlot(index);
                   },
                 );
               },
@@ -88,6 +84,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                     );
                     //debugPrint('from: $prefKeyFrom');
                     //debugPrint('to: $prefKeyTo');
+                    _selectSlot(index);
                   }
                 } else {}
                 UserInterface.keepControlsAlive();
@@ -97,5 +94,13 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
         ),
       ),
     );
+  }
+
+  _selectSlot(int index) {
+    AlgernonPlayer.painterConfig.currentMemorySlot = index;
+    UserInterface.keepControlsAlive();
+    setState(() {
+      /// To update selection state
+    });
   }
 }
