@@ -113,6 +113,7 @@ flutter:
     - shaders/root_system.frag
     - shaders/murmuration.frag
     - shaders/fluid_ink.frag
+    - shaders/spectral_sphere.frag
 
   # To add assets to your application, add an assets section, like this:
   assets:
@@ -122,6 +123,7 @@ flutter:
     - "assets/South Street Player - Who Keeps Changing Your Mind.mp3"
     - "assets/Public Image Limited - Rise.mp3"
     - "assets/Sister Sledge - Thinking Of You.mp3"
+    - "assets/Indeep - LAST NIGHT A DJ SAVED MY LIFE.mp3"
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

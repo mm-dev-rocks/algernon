@@ -105,6 +105,16 @@ enum TweakType {
     description: '???',
   ),
   uniformSpeed(label: 'Speed', uniform: 'u_speed', description: '???'),
+  uniformSphereRadius(
+    label: 'Sphere Radius',
+    uniform: 'u_sphereRadius',
+    description: '???',
+  ),
+  uniformGlowStrength(
+    label: 'Glow Strength',
+    uniform: 'u_glowStrength',
+    description: '???',
+  ),
   uniformBranchDepth(
     label: 'Branch Depth',
     uniform: 'u_branchDepth',

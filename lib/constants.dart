@@ -101,5 +101,6 @@ class ALGERNON {
     'assets/Bob Dylan - Eternal Circle.mp3',
     'assets/Sister Sledge - Thinking Of You.mp3',
     'assets/Pointer Sisters - Automatic.mp3',
+    "assets/Indeep - LAST NIGHT A DJ SAVED MY LIFE.mp3",
   ];
 }
