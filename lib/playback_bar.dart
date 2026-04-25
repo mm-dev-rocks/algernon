@@ -6,6 +6,7 @@ import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
+import 'package:algernon/utils.dart';
 
 class PlaybackBar extends StatelessWidget {
   const PlaybackBar({super.key});
@@ -15,16 +16,29 @@ class PlaybackBar extends StatelessWidget {
     return StreamBuilder(
       stream: Stream.periodic(const Duration(milliseconds: 200)),
       builder: (context, _) {
-        return Slider(
-          value: _positionInTrackNormalised,
-          onChanged: (double value) {
-            AppState.debounceVoidFunction(
-              callerKey: 'AlgernonPlayer::playheadSeek',
-              voidFunction: () {
-                _setPlaybackPosFromNormalised(value);
-              },
-            );
-          },
+        return Row(
+          children: [
+            Flexible(
+              flex: 1,
+              child: Slider(
+                value: _positionInTrackNormalised,
+                onChanged: (double value) {
+                  AppState.debounceVoidFunction(
+                    callerKey: 'AlgernonPlayer::playheadSeek',
+                    voidFunction: () {
+                      _setPlaybackPosFromNormalised(value);
+                    },
+                  );
+                },
+              ),
+            ),
+            Text(
+              _positionTimeString,
+              style: const TextStyle(
+                fontFeatures: [FontFeature.tabularFigures()],
+              ),
+            ),
+          ],
         );
       },
     );
@@ -44,6 +58,14 @@ class PlaybackBar extends StatelessWidget {
       );
     }
   }
+
+  String get _positionTimeString =>
+      (AlgernonPlayer.currentSoundNotifier.source != null &&
+          AlgernonPlayer.currentSoundHandle != null)
+      ? durationToMinutesAndSeconds(
+          SoLoud.instance.getPosition(AlgernonPlayer.currentSoundHandle!),
+        )
+      : '00:00';
 
   double get _positionInTrackNormalised =>
       (AlgernonPlayer.currentSoundNotifier.source != null &&
