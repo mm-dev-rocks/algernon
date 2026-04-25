@@ -1,9 +1,16 @@
 more friendly names for shader sliders
 
-mic input
+better auto icon
+better speaker icon
+better info icon
 
-copy/paste memory slots
-    drag+drop
+fix fuzzy show/hide controls
+- must stay visible while dragging sliders
+- must stay visible while dragging memory slot
+- must stay visible while hovering dropdown buttons and items
+
+
+mic input
 
 kb shortcuts don't work on fftsmoothing slider
 
@@ -12,11 +19,15 @@ file chooser
     multiple creates playlist
     read/write .m3u
 
+when track stops, time-based uniform should stop (or even slow to a stop)
+
 ---
 
 # BUGS
 
 volume = 0 / black screen
+
+switching memory slots does not update sliders/UI
 
 null checks on soundhandle in AlgernonPlayer
 
@@ -74,3 +85,6 @@ onset detection
 playback bar
 bin range adjustment
 sometimes shader are messed up when changing shaders eg polar_warp
+copy/paste memory slots
+    drag+drop
+    if same slot give message

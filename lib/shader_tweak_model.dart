@@ -70,7 +70,7 @@ class ShaderTweakModel {
 
   /// Canon function for deriving full name of this tweak, including current memory slot, shader id and tweak type.
   String _preferenceIdFromMemorySlotIndex(int slotIndex) =>
-      "m$slotIndex-$shaderId-${tweakType.name}";
+      "${ALGERNON.memorySlotPrefPrefix}$slotIndex-$shaderId-${tweakType.name}";
 
   @override
   String toString() {

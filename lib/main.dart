@@ -97,7 +97,9 @@ class _AlgernonAppState extends State<AlgernonApp> {
               },
             ),
             backgroundColor: WidgetStateColor.resolveWith((states) {
-              return Colors.black.withValues(alpha: 0.7);
+              return Colors.black.withValues(
+                alpha: ALGERNON.fadeDarkBackgroundOpacity,
+              );
             }),
             shadowColor: WidgetStateColor.resolveWith((states) {
               return Colors.transparent;

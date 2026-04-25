@@ -37,14 +37,12 @@ class PainterConfigModel with ChangeNotifier {
       }
     }
     _currentShader.calibrateAudioEnergy();
-
     notifyListeners();
   }
 
   @override
   dispose() {
     _fftDataImage?.dispose();
-
     super.dispose();
   }
 }

@@ -9,10 +9,12 @@ class MemorySlotButton extends StatelessWidget {
     super.key,
     required this.index,
     required this.onPressed,
+    this.highlighted = false,
   });
 
   final int index;
   final VoidCallback? onPressed;
+  final bool highlighted;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,17 @@ class MemorySlotButton extends StatelessWidget {
         message: 'Memory slot $index',
         child: Container(
           width: double.infinity,
-          decoration: isSelected
+          decoration: highlighted
+              ? BoxDecoration(
+                  border: Border.all(
+                    color: Colors.white,
+                    width: ALGERNON.buttonBorderThickness,
+                  ),
+                  color: Colors.pink.withValues(
+                    alpha: ALGERNON.fadeDarkBackgroundOpacity,
+                  ),
+                )
+              : isSelected
               ? BoxDecoration(
                   border: Border.all(
                     color: Colors.white,

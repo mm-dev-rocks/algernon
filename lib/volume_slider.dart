@@ -1,0 +1,43 @@
+// SPDX-License-Identifier: GPL-3.0-only
+
+import 'package:algernon/algernon_player.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
+
+class VolumeSlider extends StatefulWidget {
+  const VolumeSlider({super.key});
+
+  @override
+  State<VolumeSlider> createState() => _VolumeSliderState();
+}
+
+class _VolumeSliderState extends State<VolumeSlider> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Tooltip(message: 'Volume', child: Icon(Icons.speaker_outlined)),
+        RotatedBox(
+          quarterTurns: 3,
+          child: Slider(
+            value: AlgernonPlayer.currentSoundHandle != null
+                ? SoLoud.instance.getVolume(AlgernonPlayer.currentSoundHandle!)
+                : 1,
+            onChanged: (double value) {
+              if (AlgernonPlayer.soLoudIsReady &&
+                  AlgernonPlayer.currentSoundHandle != null) {
+                setState(() {
+                  SoLoud.instance.setVolume(
+                    AlgernonPlayer.currentSoundHandle!,
+                    value,
+                  );
+                });
+              }
+              //_showControlsThenHideDebounced();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}

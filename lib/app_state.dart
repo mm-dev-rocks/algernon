@@ -127,6 +127,8 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     );
   }
 
+  static Set<String> get allPreferenceKeys => AppState.get('preferences').keys;
+
   static Future<void> setPreference(String key, dynamic value) async {
     SharedPreferencesWithCache? sharedPreferences = AppState.get('preferences');
 
