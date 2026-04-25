@@ -147,7 +147,12 @@ class AudioAnalysis {
     }
 
     // Store using same calibrated vars so normalisedEnergyValueAtPosition works unchanged
-    _calibratedEnergyBuckets = zoneFlattenedEnergyBuckets;
+    //_calibratedEnergyBuckets = zoneFlattenedEnergyBuckets;
+    // strength: 1.0 is full equalisation, strength: 0.0 is back to linear, and something like 0.6–0.8 often hits a sweet spot where the range is well used but the dynamic feel of the track is preserved.
+    _calibratedEnergyBuckets = _equalise(
+      zoneFlattenedEnergyBuckets,
+      strength: 0.7,
+    );
     _calibratedMinEnergy = _calibratedEnergyBuckets.reduce(
       (a, b) => a < b ? a : b,
     );
@@ -296,5 +301,30 @@ class AudioAnalysis {
     final double standardDeviation = sqrt(variance);
 
     return mean + standardDeviation * sensitivity;
+  }
+
+  //static List<double> _equalise(List<double> buckets) {
+  //  final int n = buckets.length;
+  //  final List<double> sorted = List<double>.from(buckets)..sort();
+
+  //  return buckets.map((value) {
+  //    // Find what fraction of buckets are <= this value
+  //    int rank = sorted.lastIndexWhere((s) => s <= value) + 1;
+  //    return rank / n;
+  //  }).toList();
+  //}
+
+  static List<double> _equalise(List<double> buckets, {double strength = 1.0}) {
+    final int n = buckets.length;
+    final List<double> sorted = List<double>.from(buckets)..sort();
+    final double globalMin = sorted.first;
+    final double globalMax = sorted.last;
+
+    return buckets.map((value) {
+      final double linear = (value - globalMin) / (globalMax - globalMin);
+      final int rank = sorted.lastIndexWhere((s) => s <= value) + 1;
+      final double equalised = rank / n;
+      return linear + (equalised - linear) * strength;
+    }).toList();
   }
 }
