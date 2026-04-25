@@ -29,6 +29,8 @@ volume = 0 / black screen
 
 switching memory slots does not update sliders/UI
 
+fftSmoothing is not getting saved for the slot, acts globally
+
 null checks on soundhandle in AlgernonPlayer
 
 Not experienced this yet but worth implementing workarounds

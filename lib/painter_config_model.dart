@@ -12,6 +12,7 @@ class PainterConfigModel with ChangeNotifier {
   ui.Image? get fftDataImage => _fftDataImage;
   set fftDataImage(ui.Image image) {
     _fftDataImage = image;
+    //debugPrint('PainterConfigModel::fftDataImage NOTIFY LISTENERS');
     notifyListeners();
   }
 
@@ -20,6 +21,7 @@ class PainterConfigModel with ChangeNotifier {
       AppState.getPreference('selectedMemorySlotIndex');
   set currentMemorySlot(int index) {
     AppState.setPreference('selectedMemorySlotIndex', index);
+    debugPrint('PainterConfigModel::currentMemorySlot NOTIFY LISTENERS');
     notifyListeners();
   }
 
@@ -37,6 +39,7 @@ class PainterConfigModel with ChangeNotifier {
       }
     }
     _currentShader.calibrateAudioEnergy();
+    debugPrint('PainterConfigModel::currentShader NOTIFY LISTENERS');
     notifyListeners();
   }
 

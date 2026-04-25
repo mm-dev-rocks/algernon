@@ -70,13 +70,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
 
   /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start).
-  late ui.Image? _zeroImage;
-  bool _zeroImageExists = false;
+  //late ui.Image? _zeroImage;
+  //bool _zeroImageExists = false;
 
   bool _isProcessing = false;
-
-  late Timer _hideControlsTimer;
-  bool _controlsAreVisible = true;
 
   late final Ticker _ticker;
   // Frame rate we aim for
@@ -95,11 +92,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     /// [initState] can't be async, so we send image creation off as a microtask which will be carried out after the
     /// current flow of execution.
-    Future<void>.microtask(() async {
-      _zeroImage = await _getZeroImage();
-      _zeroImageExists = true;
-    });
-    _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
+    //Future<void>.microtask(() async {
+    //  _zeroImage = await _getZeroImage();
+    //  _zeroImageExists = true;
+    //});
 
     super.initState();
   }
@@ -118,15 +114,15 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   Widget build(BuildContext context) {
     debugPrint('AlgernonPlayer::build()');
 
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: MouseRegion(
-            onHover: (_) {
-              _showControlsThenHideDebounced();
-            },
+    return MouseRegion(
+      onHover: (_) {
+        UserInterface.keepControlsAlive();
+      },
+      child: Stack(
+        children: [
+          Positioned.fill(
             child: GestureDetector(
-              onTap: _showControlsThenHideDebounced,
+              onTap: UserInterface.keepControlsAlive,
               child: FittedBox(
                 fit: BoxFit.cover,
 
@@ -135,35 +131,28 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 child: ListenableBuilder(
                   listenable: AlgernonPlayer.painterConfig,
                   builder: (BuildContext context, Widget? child) {
-                    return _zeroImageExists
-                        ? AlgernonShaderPainter(
+                    return 
+                    //_zeroImageExists
+                        //? 
+                        AlgernonShaderPainter(
                             elapsedSeconds: _elapsedSeconds,
-                            fftDataTexture:
-                                AlgernonPlayer.painterConfig.fftDataImage ??
-                                _zeroImage!,
-                            shaderMeta:
-                                AlgernonPlayer.painterConfig.currentShader,
+                            painterConfig: AlgernonPlayer.painterConfig,
+                            //fftDataTexture:
+                            //    AlgernonPlayer.painterConfig.fftDataImage ??
+                            //    _zeroImage!,
+                            //shaderMeta:
+                            //    AlgernonPlayer.painterConfig.currentShader,
                           )
-                        : const SizedBox.shrink();
+                          ;
+                        //: const SizedBox.shrink();
                   },
                 ),
               ),
             ),
           ),
-        ),
-
-        /// Fade controls in or out
-        IgnorePointer(
-          ignoring: !_controlsAreVisible,
-          child: AnimatedOpacity(
-            opacity: _controlsAreVisible ? 1.0 : 0.0,
-            duration: _controlsAreVisible
-                ? ALGERNON.showControlsFadeDuration
-                : ALGERNON.hideControlsFadeDuration,
-            child: const UserInterface(),
-          ),
-        ),
-      ],
+          const UserInterface(),
+        ],
+      ),
     );
   }
 
@@ -268,37 +257,12 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     return await _shaderImageFromPixels(pixels);
   }
 
-  /// Make an image full of zeroes as a placeholder.
-  Future<ui.Image> _getZeroImage() async {
-    final pixels = Float32List(256 * 4);
-    pixels.fillRange(0, pixels.length, 0.0);
-    return await _shaderImageFromPixels(pixels);
-  }
-
-  void _showControlsThenHideDebounced() {
-    AppState.debounceVoidFunction(
-      callerKey: 'AlgernonPlayer._showControlsThenHideDebounced',
-      debounceDuration: ALGERNON.showControlsDebounceDuration,
-      voidFunction: _showControlsThenHide,
-    );
-  }
-
-  void _showControlsThenHide() {
-    //AppState.log("_showControlsThenHide()");
-    _hideControlsTimer.cancel();
-    _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
-    setState(() {
-      _controlsAreVisible = true;
-    });
-  }
-
-  void _hideControls() {
-    //AppState.log("_hideControls()");
-    _hideControlsTimer.cancel();
-    setState(() {
-      _controlsAreVisible = false;
-    });
-  }
+  ///// Make an image full of zeroes as a placeholder.
+  //Future<ui.Image> _getZeroImage() async {
+  //  final pixels = Float32List(256 * 4);
+  //  pixels.fillRange(0, pixels.length, 0.0);
+  //  return await _shaderImageFromPixels(pixels);
+  //}
 }
 
 class AudioSourceNotifier extends ChangeNotifier {

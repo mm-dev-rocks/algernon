@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
 
@@ -33,7 +34,7 @@ class _VolumeSliderState extends State<VolumeSlider> {
                   );
                 });
               }
-              //_showControlsThenHideDebounced();
+              UserInterface.keepControlsAlive();
             },
           ),
         ),

@@ -18,6 +18,7 @@ import 'package:algernon/screen.dart';
 import 'package:algernon/shader_chooser.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/shader_tweak_slider.dart';
+import 'package:algernon/user_interface.dart';
 import 'package:algernon/volume_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -54,7 +55,7 @@ class _TrackChooserState extends State<TrackChooser> {
           );
           AlgernonPlayer.initialiseSoundAndPlay();
         }
-        //_showControlsThenHideDebounced();
+        UserInterface.keepControlsAlive();
       },
       dropdownMenuEntries: ALGERNON.audioTrackFilePaths
           .map<DropdownMenuEntry<String>>(

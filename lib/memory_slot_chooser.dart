@@ -6,6 +6,7 @@ import 'package:algernon/constants.dart';
 import 'package:algernon/lib/memory_slot_copy_model.dart';
 import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/screen.dart';
+import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 
 class MemorySlotChooser extends StatefulWidget {
@@ -66,7 +67,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                   highlighted: candidateItems.isNotEmpty,
                   onPressed: () {
                     AlgernonPlayer.painterConfig.currentMemorySlot = index;
-                    //_showControlsThenHideDebounced();
+                    UserInterface.keepControlsAlive();
                     setState(() {
                       /// To update selection state
                     });
@@ -89,6 +90,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                     //debugPrint('to: $prefKeyTo');
                   }
                 } else {}
+                UserInterface.keepControlsAlive();
               },
             ),
           ),
