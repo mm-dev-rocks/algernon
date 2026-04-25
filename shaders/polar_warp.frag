@@ -66,7 +66,7 @@ void main() {
   // Everything from here works in polar coordinates (radius, angle) rather
   // than Cartesian (x, y). The twist is applied as an additive rotation to
   // the angle, leaving the radius unchanged.
-  float radius = length(p) * 0.66;
+  float radius = length(p) * 0.5;
   float angle = atan(p.y, p.x); // -pi..pi
 
   int nBands = u_bandCount == -1.0 ? energyDerivedCount() : int(u_bandCount);
@@ -133,7 +133,7 @@ void main() {
   float shift = u_hueShift / 360.0;
 
   float rBase = 1.0 - hueT * 0.8;
-  float gBase = 0.4 + hueT * 0.3;
+  float gBase = 0.4 + hueT * 0.5;
   float bBase = 0.2 + hueT * 0.8;
 
   // rotate palette by mixing channels

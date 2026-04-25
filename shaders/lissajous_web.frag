@@ -29,20 +29,27 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
+uniform float u_energyMin;
+uniform float u_energyMax;
+
+uniform float u_blobCount;
+uniform float u_attenuation;
+uniform float u_baseRadius;
+
 out vec4 fragColor;
 
 // How many points to sample along the parametric curve when computing the
 // approximate distance. More samples = smoother curve, higher cost.
 // 80 is a good balance for mediump precision on mobile GPUs.
-const int SAMPLE_COUNT = 40;
+// const int SAMPLE_COUNT = 40;
 
 // The glow falloff exponent. Higher = thinner, sharper line.
 // 2.0 gives a soft neon glow; 4.0+ gives a fine wire look.
-const float GLOW_POWER = 6.5;
+// const float GLOW_POWER = 6.5;
 
 // Half-width of the curve in normalised screen units (0..1 range).
 // The glow fades to zero beyond this distance from the curve.
-const float GLOW_RADIUS = 0.82;
+// const float GLOW_RADIUS = 0.82;
 
 // Helper: reads a single bin by float index and returns amplitude 0..1.
 // The +0.5 texel-centre offset prevents bleeding across texel boundaries —
@@ -55,6 +62,13 @@ float sampleCharge(float binIndex) {
   return texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5)).g;
 }
 
+int energyDerivedCount() {
+  float countRange = float(u_energyMax - u_energyMin);
+  float count = float(u_energyMin) +
+                texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * countRange;
+  return int(round(count));
+}
+
 void main() {
   // Mnemonic: st = 'space transform' — normalised 0..1 screen coords.
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
@@ -64,6 +78,7 @@ void main() {
   vec2 p = st - vec2(0.5, 0.5);
   p.x *= u_resolution.x / u_resolution.y;
 
+  int nBlobs = u_blobCount == -1.0 ? energyDerivedCount() : int(u_blobCount);
   // --- FFT-driven curve parameters ---
   //
   // We use broad frequency band averages rather than individual bins so the
@@ -72,10 +87,10 @@ void main() {
   // frequencyRatioA / B control the Lissajous knot complexity.
   // Clamping to a small integer-ish range (1..4) keeps the figure legible;
   // large ratios produce dense, unreadable webs.
-  float bassEnergy = (sampleBin(2.0) + sampleBin(4.0) + sampleBin(6.0)) / 3.0;
-  float midEnergy = (sampleBin(20.0) + sampleBin(30.0) + sampleBin(40.0)) / 3.0;
+  float bassEnergy = (sampleBin(2.0) + sampleBin(6.0) + sampleBin(12.0)) / 3.0;
+  float midEnergy = (sampleBin(20.0) + sampleBin(40.0) + sampleBin(60.0)) / 3.0;
   float trebleEnergy =
-      (sampleBin(80.0) + sampleBin(100.0) + sampleBin(120.0)) / 3.0;
+      (sampleBin(80.0) + sampleBin(100.0) + sampleBin(150.0)) / 3.0;
 
   // The horizontal frequency ratio: bass pushes it from 1→3.
   // Adding 1.0 ensures we never get ratio 0 (degenerate straight line).
@@ -100,9 +115,12 @@ void main() {
   // freqA / freqB (the figure may not close in that interval for irrational
   // ratios, but it gets close enough for a visual approximation).
   float minDist = 1.0e6; // initialise to a large sentinel distance
-  float tStep = 6.28318530 / float(SAMPLE_COUNT);
+  float tStep = 6.28318530 / float(nBlobs);
 
-  for (int i = 0; i < SAMPLE_COUNT; i++) {
+  for (int i = 0; i < 999; i++) {
+    if (i >= nBlobs)
+      break;
+
     float t = float(i) * tStep;
 
     // Standard Lissajous parametric equations.
@@ -117,8 +135,8 @@ void main() {
   //
   // Map minDist → brightness using an inverse power curve.
   // clamp ensures we don't go negative or above 1.0 before the pow().
-  float distNorm = clamp(1.0 - minDist / GLOW_RADIUS, 0.0, 1.0);
-  float intensity = pow(distNorm, GLOW_POWER);
+  float distNorm = clamp(1.0 - minDist / u_baseRadius, 0.0, 1.0);
+  float intensity = pow(distNorm, u_attenuation);
 
   // --- Colour ---
   //
