@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'dart:io';
+
 import 'package:algernon/shader_model.dart';
 import 'package:flutter/material.dart';
 
@@ -105,5 +107,28 @@ class ALGERNON {
     'assets/Sister Sledge - Thinking Of You.mp3',
     'assets/Pointer Sisters - Automatic.mp3',
     "assets/Indeep - LAST NIGHT A DJ SAVED MY LIFE.mp3",
+  ];
+
+  ///
+  ///
+  ///////////////////////
+  ///
+  /// Paths to show in the file picker
+  ///
+  ///////////////////////
+
+  static final List<String> filepathsLinux = [
+    Platform.environment['HOME'] ?? '/',
+  ];
+
+  static final List<String> filepathsWindows = [
+    Platform.environment['USERPROFILE'] ?? '/',
+  ];
+
+  static const List<String> filepathsAndroid = [
+    '/sdcard/',
+    '/sdcard/Download',
+    '/storage/emulated/0/',
+    '/storage/emulated/0/Download',
   ];
 }
