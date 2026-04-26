@@ -51,11 +51,17 @@ class MemorySlotButton extends StatelessWidget {
                     alpha: ALGERNON.disabledControlOpacity,
                   ),
                 ),
-          child: Text(
-            index.toString(),
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.labelLarge,
-            overflow: TextOverflow.clip,
+          //child: Text(
+          //  index.toString(),
+          //  textAlign: TextAlign.center,
+          //  style: Theme.of(context).textTheme.labelLarge,
+          //  overflow: TextOverflow.clip,
+          //),
+          child: Icon(
+            IconData(
+              Icons.filter_1.codePoint + index,
+              fontFamily: 'MaterialIcons',
+            ),
           ),
         ),
       ),

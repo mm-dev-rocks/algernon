@@ -15,28 +15,36 @@ class VolumeSlider extends StatefulWidget {
 class _VolumeSliderState extends State<VolumeSlider> {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        const Tooltip(message: 'Volume', child: Icon(Icons.speaker_outlined)),
-        RotatedBox(
-          quarterTurns: 3,
-          child: Slider(
-            value: AlgernonPlayer.currentSoundHandle != null
-                ? SoLoud.instance.getVolume(AlgernonPlayer.currentSoundHandle!)
-                : 1,
-            onChanged: (double value) {
-              if (AlgernonPlayer.soLoudIsReady &&
-                  AlgernonPlayer.currentSoundHandle != null) {
-                setState(() {
-                  SoLoud.instance.setVolume(
-                    AlgernonPlayer.currentSoundHandle!,
-                    value,
-                  );
-                });
-              }
-              UserInterface.keepControlsAlive();
-            },
+        //const Tooltip(message: 'Volume', child: Icon(Icons.campaign_outlined)),
+        Expanded(
+          child: RotatedBox(
+            quarterTurns: 3,
+            child: Slider(
+              value: AlgernonPlayer.currentSoundHandle != null
+                  ? SoLoud.instance.getVolume(
+                      AlgernonPlayer.currentSoundHandle!,
+                    )
+                  : 1,
+              onChanged: (double value) {
+                if (AlgernonPlayer.soLoudIsReady &&
+                    AlgernonPlayer.currentSoundHandle != null) {
+                  setState(() {
+                    SoLoud.instance.setVolume(
+                      AlgernonPlayer.currentSoundHandle!,
+                      value,
+                    );
+                  });
+                }
+                UserInterface.keepControlsAlive();
+              },
+            ),
           ),
+        ),
+        const Tooltip(
+          message: 'Volume',
+          child: Icon(Icons.headphones_outlined),
         ),
       ],
     );

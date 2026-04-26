@@ -33,6 +33,7 @@ class ShaderTweakSlider extends StatelessWidget {
     Widget label = IgnorePointer(
       child: Text(
         shaderTweak.tweakType.label,
+        textAlign: TextAlign.center,
         style: const TextStyle(color: Colors.white),
       ),
     );
@@ -60,7 +61,7 @@ class ShaderTweakSlider extends StatelessWidget {
                     ),
               child: IconButton(
                 visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.auto_mode),
+                icon: const Icon(Icons.auto_awesome),
                 tooltip: 'Auto: Ignore slider and adjust based on audio energy',
                 onPressed: onAutoButtonPressed,
               ),
@@ -68,7 +69,7 @@ class ShaderTweakSlider extends StatelessWidget {
           : const SizedBox.shrink(),
     );
 
-    return Column(
+    return Stack(
       children: [
         Row(
           children: [
@@ -80,7 +81,7 @@ class ShaderTweakSlider extends StatelessWidget {
             autoCountButton,
           ],
         ),
-        label,
+        PositionedDirectional(bottom: 0, start: 0, end: 0, child: label),
       ],
     );
   }
