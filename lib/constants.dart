@@ -49,8 +49,8 @@ class ALGERNON {
 
   static const double fadeDarkBackgroundOpacity = 0.7;
 
-  static const double disabledControlOpacity = 0.2;
-  static const double buttonBorderThickness = 2;
+  static const double disabledControlOpacity = 0.5;
+  static const double buttonBorderThickness = 1;
 
   static const int finalAimFps = 30;
 
@@ -93,6 +93,9 @@ class ALGERNON {
   */
   static const double breakpointTiny = 400;
   static const double breakpointCompact = 600;
+
+  static const double controlPanelWidthMin = 300;
+  static const double controlPanelWidthMax = 400;
 
   static const List<String> audioTrackFilePaths = [
     "assets/BEATPELLA HOUSE - Candy Thief.mp3",

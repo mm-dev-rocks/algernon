@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/constants.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_soloud/flutter_soloud.dart';
@@ -42,9 +43,14 @@ class _VolumeSliderState extends State<VolumeSlider> {
             ),
           ),
         ),
-        const Tooltip(
+        Tooltip(
           message: 'Volume',
-          child: Icon(Icons.headphones_outlined),
+          child: Icon(
+            Icons.headphones_outlined,
+            color: Colors.white.withValues(
+              alpha: ALGERNON.disabledControlOpacity,
+            ),
+          ),
         ),
       ],
     );

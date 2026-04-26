@@ -5,7 +5,7 @@ import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/lib/memory_slot_copy_model.dart';
 import 'package:algernon/memory_slot_button.dart';
-import 'package:algernon/screen.dart';
+import 'package:algernon/memory_slot_drag_feedback.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 
@@ -19,8 +19,6 @@ class MemorySlotChooser extends StatefulWidget {
 class _MemorySlotChooserState extends State<MemorySlotChooser> {
   @override
   Widget build(BuildContext context) {
-    dynamic uiSizes = Screen.uiSizesFromContext(context);
-
     return Row(
       mainAxisSize: .max,
       mainAxisAlignment: .spaceBetween,
@@ -29,35 +27,10 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
         (int index) => Expanded(
           child: LongPressDraggable<MemorySlotCopyModel>(
             dragAnchorStrategy: pointerDragAnchorStrategy,
-            feedback: Padding(
-              padding: EdgeInsets.only(
-                left: uiSizes.paddingMedium,
-                bottom: uiSizes.paddingMedium,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: ALGERNON.buttonBorderThickness,
-                  ),
-                  color: Colors.black.withValues(
-                    alpha: ALGERNON.fadeDarkBackgroundOpacity,
-                  ),
-                ),
-                child: Text(
-                  'Drag to another slot to \ncopy slot [$index] to it',
-                ),
-              ),
-            ),
+            feedback: MemorySlotDragFeedback(index: index),
             data: MemorySlotCopyModel(
               slotIndex: index,
-              preferenceKeys: AppState.allPreferenceKeys
-                  .where(
-                    (String key) => key.startsWith(
-                      '${ALGERNON.memorySlotPrefPrefix}$index',
-                    ),
-                  )
-                  .toSet(),
+              preferenceKeys: _getPrefKeysFromIndex(index),
             ),
 
             child: DragTarget<MemorySlotCopyModel>(
@@ -72,21 +45,9 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
               },
               onAcceptWithDetails: (details) {
                 if (details.data.slotIndex != index) {
-                  for (final String prefKeyFrom
-                      in details.data.preferenceKeys) {
-                    String prefKeyTo = prefKeyFrom.replaceFirst(
-                      '${ALGERNON.memorySlotPrefPrefix}${details.data.slotIndex}',
-                      '${ALGERNON.memorySlotPrefPrefix}$index',
-                    );
-                    AppState.setPreference(
-                      prefKeyTo,
-                      AppState.getPreference(prefKeyFrom),
-                    );
-                    //debugPrint('from: $prefKeyFrom');
-                    //debugPrint('to: $prefKeyTo');
-                    _selectSlot(index);
-                  }
-                } else {}
+                  _copySlotFromDetails(details, index);
+                  _selectSlot(index);
+                }
                 UserInterface.keepControlsAlive();
               },
             ),
@@ -96,7 +57,26 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
     );
   }
 
-  _selectSlot(int index) {
+  Set<String> _getPrefKeysFromIndex(int index) {
+    return AppState.allPreferenceKeys
+        .where(
+          (String prefKey) =>
+              prefKey.startsWith('${ALGERNON.memorySlotPrefPrefix}$index'),
+        )
+        .toSet();
+  }
+
+  void _copySlotFromDetails(DragTargetDetails details, int toIndex) {
+    for (final String fromPrefKey in details.data.preferenceKeys) {
+      String toPrefKey = fromPrefKey.replaceFirst(
+        '${ALGERNON.memorySlotPrefPrefix}${details.data.slotIndex}',
+        '${ALGERNON.memorySlotPrefPrefix}$toIndex',
+      );
+      AppState.setPreference(toPrefKey, AppState.getPreference(fromPrefKey));
+    }
+  }
+
+  void _selectSlot(int index) {
     AlgernonPlayer.painterConfig.currentMemorySlot = index;
     UserInterface.keepControlsAlive();
     setState(() {

@@ -4,6 +4,7 @@ import 'package:algernon/algernon_player.dart';
 import 'package:algernon/enum/enum.dart';
 import 'package:algernon/memory_slot_chooser.dart';
 import 'package:algernon/screen.dart';
+import 'package:algernon/shader_chooser.dart';
 import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/shader_tweak_slider.dart';
@@ -60,6 +61,9 @@ class _MainControlPanelState extends State<MainControlPanel> {
 
       spacing: uiSizes.paddingMedium,
       children: [
+        /// 'Choose shader' dropdown
+        const Flexible(child: ShaderChooser()),
+
         /// Memory slot buttons
         Padding(
           padding: EdgeInsets.only(left: uiSizes.paddingSmall),

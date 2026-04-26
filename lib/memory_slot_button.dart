@@ -2,10 +2,11 @@
 
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/screen.dart';
 import 'package:flutter/material.dart';
 
 class MemorySlotButton extends StatelessWidget {
-  const MemorySlotButton({
+  MemorySlotButton({
     super.key,
     required this.index,
     required this.onPressed,
@@ -15,6 +16,11 @@ class MemorySlotButton extends StatelessWidget {
   final int index;
   final VoidCallback? onPressed;
   final bool highlighted;
+
+  final BoxBorder border = Border.all(
+    color: Colors.white,
+    width: ALGERNON.buttonBorderThickness,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -26,31 +32,22 @@ class MemorySlotButton extends StatelessWidget {
       onTap: onPressed,
       //customBorder: const RoundedRectangleBorder(),
       child: Tooltip(
-        message: 'Memory slot $index',
+        message: 'Memory slot ${index + 1}',
         child: Container(
-          width: double.infinity,
+          //width: double.infinity,
+          padding: EdgeInsets.all(
+            Screen.uiSizesFromContext(context).paddingSmall,
+          ),
           decoration: highlighted
               ? BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: ALGERNON.buttonBorderThickness,
-                  ),
+                  border: border,
                   color: Colors.pink.withValues(
                     alpha: ALGERNON.fadeDarkBackgroundOpacity,
                   ),
                 )
               : isSelected
-              ? BoxDecoration(
-                  border: Border.all(
-                    color: Colors.white,
-                    width: ALGERNON.buttonBorderThickness,
-                  ),
-                )
-              : BoxDecoration(
-                  color: Colors.white.withValues(
-                    alpha: ALGERNON.disabledControlOpacity,
-                  ),
-                ),
+              ? BoxDecoration(border: border)
+              : null,
           //child: Text(
           //  index.toString(),
           //  textAlign: TextAlign.center,
@@ -62,6 +59,11 @@ class MemorySlotButton extends StatelessWidget {
               Icons.filter_1.codePoint + index,
               fontFamily: 'MaterialIcons',
             ),
+            color: isSelected
+                ? Colors.white
+                : Colors.white.withValues(
+                    alpha: ALGERNON.disabledControlOpacity,
+                  ),
           ),
         ),
       ),

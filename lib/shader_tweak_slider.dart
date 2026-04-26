@@ -39,34 +39,42 @@ class ShaderTweakSlider extends StatelessWidget {
     );
     Widget infoIcon = Tooltip(
       message: shaderTweak.tweakType.description,
-      child: const Icon(Icons.info_outlined),
+      child: Icon(
+        Icons.info_outlined,
+        color: Colors.white.withValues(alpha: ALGERNON.disabledControlOpacity),
+      ),
     );
     Widget autoCountButton = SizedBox(
       /// TODO magic numbers
       width: 42,
       height: 42,
       child: shaderTweak.isEnergyUniform
-          ? Container(
-              decoration: shaderTweak.useEnergyDerivedCount
-                  ? BoxDecoration(
-                      border: Border.all(
-                        color: Colors.white,
-                        width: ALGERNON.buttonBorderThickness,
-                      ),
-                    )
-                  : BoxDecoration(
-                      color: Colors.white.withValues(
-                        alpha: ALGERNON.disabledControlOpacity,
-                      ),
-                    ),
-              child: IconButton(
-                visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.auto_awesome),
-                tooltip: 'Auto: Ignore slider and adjust based on audio energy',
-                onPressed: onAutoButtonPressed,
+          ? InkWell(
+              mouseCursor: SystemMouseCursors.click,
+              onTap: onAutoButtonPressed,
+              child: Tooltip(
+                message: 'Auto: Ignore slider and adjust based on audio energy',
+                child: Container(
+                  decoration: shaderTweak.useEnergyDerivedCount
+                      ? BoxDecoration(
+                          border: Border.all(
+                            color: Colors.white,
+                            width: ALGERNON.buttonBorderThickness,
+                          ),
+                        )
+                      : null,
+                  child: Icon(
+                    Icons.auto_awesome,
+                    color: shaderTweak.useEnergyDerivedCount
+                        ? Colors.white
+                        : Colors.white.withValues(
+                            alpha: ALGERNON.disabledControlOpacity,
+                          ),
+                  ),
+                ),
               ),
             )
-          : const SizedBox.shrink(),
+          : null,
     );
 
     return Stack(
@@ -77,7 +85,12 @@ class ShaderTweakSlider extends StatelessWidget {
               padding: EdgeInsets.only(left: uiSizes.paddingSmall),
               child: infoIcon,
             ),
-            Expanded(child: slider),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: uiSizes.paddingSmall),
+                child: slider,
+              ),
+            ),
             autoCountButton,
           ],
         ),
