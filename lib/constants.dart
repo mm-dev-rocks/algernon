@@ -78,7 +78,7 @@ class ALGERNON {
   static const Duration showControlsFadeDuration = Duration(milliseconds: 300);
 
   static final Color uiDefaultForegroundColor = Color.alphaBlend(
-    Colors.red.withValues(alpha: 0.7),
+    Colors.white.withValues(alpha: 0.7),
     Colors.black,
   );
   //Colors.green;
