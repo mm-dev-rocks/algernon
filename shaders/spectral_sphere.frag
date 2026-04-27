@@ -61,7 +61,7 @@ const float PI = 3.14159265;
 const float TAU = 6.28318530;
 // const int BINS = 256;
 // const int BINS = 128;
-const int BINS = 50;
+const int BINS = 64;
 
 // ---------------------------------------------------------------------------
 // HSV → RGB — H in [0,360], S/V in [0,1].
@@ -235,13 +235,13 @@ void main() {
   }
 
   // Soft vignette so the canvas edges fade to black cleanly.
-  float vignette = 1.0 - smoothstep(0.38, 0.52, length(p));
+  // float vignette = 1.0 - smoothstep(0.38, 0.52, length(p));
 
-  finalColour *= vignette;
+  // finalColour *= vignette;
 
   // Alpha: use accumulated brightness so transparent areas (no blobs, no rim)
   // stay fully transparent — important if composited over a dark background.
-  float finalAlpha = clamp(alphaAcc + rimGlow * 0.6, 0.0, 1.0);
+  // float finalAlpha = clamp(alphaAcc + rimGlow * 0.6, 0.0, 1.0);
 
-  fragColor = vec4(finalColour, finalAlpha);
+  fragColor = vec4(finalColour, 1.0);
 }
