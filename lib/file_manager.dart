@@ -3,7 +3,7 @@
 import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:filesystem_picker/filesystem_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -139,42 +139,47 @@ class FileManager {
   //    }
   //  }
 
-  static Future<String?> _pickFile(
-    String title,
-    List<String> allowedExtensions,
-  ) async {
-    List<String> systemPaths = Platform.isLinux
-        ? List<String>.from(ALGERNON.filepathsLinux)
-        : Platform.isWindows
-        ? List<String>.from(ALGERNON.filepathsWindows)
-        : List<String>.from(ALGERNON.filepathsAndroid);
-
-    _addLastOpenedDirectoryToList(systemPaths);
-
-    String? pickedPath = await FilesystemPicker.open(
-      title: title,
-      context: AppState.globalContext,
-      shortcuts: systemPaths
-          .map<FilesystemPickerShortcut>(
-            (path) => FilesystemPickerShortcut(
-              name: path,
-              path: Directory(path),
-              icon: Icons.snippet_folder,
-            ),
-          )
-          .toList(),
-      fsType: FilesystemType.file,
-      requestPermission: _checkStoragePermission,
-      allowedExtensions: allowedExtensions,
-      fileTileSelectMode: FileTileSelectMode.wholeTile,
+  static Future<FilePickerResult?> pickFile() async {
+    FilePickerResult? result = await FilePicker.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'wav', 'ogg', 'flac'],
     );
 
-    if (pickedPath == null) {
-      debugPrint('No file selected');
-      AppState.update('fileLoadOrSaveIsInProgress', false);
-    }
-
-    return pickedPath;
+    //    List<String> systemPaths = Platform.isLinux
+    //        ? List<String>.from(ALGERNON.filepathsLinux)
+    //        : Platform.isWindows
+    //        ? List<String>.from(ALGERNON.filepathsWindows)
+    //        : List<String>.from(ALGERNON.filepathsAndroid);
+    //
+    //    _addLastOpenedDirectoryToList(systemPaths);
+    //
+    //    String? pickedPath = await FilesystemPicker.open(
+    //      title: title,
+    //      pickText: 'this is pickText',
+    //      context: AppState.globalContext,
+    //      shortcuts: systemPaths
+    //          .map<FilesystemPickerShortcut>(
+    //            (path) => FilesystemPickerShortcut(
+    //              name: path,
+    //              path: Directory(path),
+    //              icon: Icons.snippet_folder,
+    //            ),
+    //          )
+    //          .toList(),
+    //      fsType: FilesystemType.file,
+    //      requestPermission: _checkStoragePermission,
+    //      allowedExtensions: allowedExtensions,
+    //      fileTileSelectMode: FileTileSelectMode.wholeTile,
+    //      showGoUp: true,
+    //    );
+    //
+    //    if (pickedPath == null) {
+    //      debugPrint('No file selected');
+    //      AppState.update('fileLoadOrSaveIsInProgress', false);
+    //    }
+    //
+    return result;
   }
 
   /// [tempTestDirectory] is just for the test environment. The app usually uses [path_provider] to

@@ -61,9 +61,7 @@ class MemorySlotButton extends StatelessWidget {
             ),
             color: isSelected
                 ? Colors.white
-                : Colors.white.withValues(
-                    alpha: ALGERNON.disabledControlOpacity,
-                  ),
+                : ALGERNON.uiDefaultForegroundColor,
           ),
         ),
       ),

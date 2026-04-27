@@ -5,12 +5,14 @@ import 'dart:async';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/file_chooser.dart';
+import 'package:algernon/file_manager.dart';
 import 'package:algernon/main_control_panel.dart';
 import 'package:algernon/pause_toggle.dart';
 import 'package:algernon/playback_bar.dart';
 import 'package:algernon/screen.dart';
-import 'package:algernon/track_chooser.dart';
 import 'package:algernon/volume_slider.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class UserInterface extends StatefulWidget {
@@ -77,7 +79,25 @@ class _UserInterfaceState extends State<UserInterface> {
                       ),
 
                       const PauseToggle(),
-                      const Flexible(child: TrackChooser()),
+                      const Flexible(child: FileChooser()),
+                      IconButton(
+                        onPressed: () async {
+                          /// TODO magic
+                          FilePickerResult? filePickerResult =
+                              await FileManager.pickFile();
+                          //files.files.
+                          if (filePickerResult != null &&
+                              filePickerResult.files.isNotEmpty) {
+                            FileChooser.currentPlaylist = filePickerResult.files
+                                .map(
+                                  (PlatformFile file) => file.path.toString(),
+                                )
+                                .toList();
+                          }
+                        },
+                        icon: Icon(Icons.playlist_add),
+                      ),
+                      //const Flexible(child: TrackChooser()),
                     ],
                   ),
                 ),

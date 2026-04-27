@@ -34,14 +34,14 @@ class ShaderTweakSlider extends StatelessWidget {
       child: Text(
         shaderTweak.tweakType.label,
         textAlign: TextAlign.center,
-        style: const TextStyle(color: Colors.white),
+        style: TextStyle(color: ALGERNON.uiDefaultForegroundColor),
       ),
     );
     Widget infoIcon = Tooltip(
       message: shaderTweak.tweakType.description,
       child: Icon(
         Icons.info_outlined,
-        color: Colors.white.withValues(alpha: ALGERNON.disabledControlOpacity),
+        color: ALGERNON.uiDefaultForegroundColor,
       ),
     );
     Widget autoCountButton = SizedBox(

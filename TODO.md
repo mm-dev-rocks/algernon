@@ -21,6 +21,12 @@ file chooser
 
 when track stops, time-based uniform should stop (or even slow to a stop)
 
+handle missing/renamed files
+[ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: SoLoudFileNotFoundException: The file was not found (on the C++ side).
+
+[ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: SoLoudFileNotFoundException: The file was not found (on the C++ side).
+
+
 ---
 
 # BUGS
@@ -35,6 +41,10 @@ null checks on soundhandle in AlgernonPlayer
 
 Not experienced this yet but worth implementing workarounds
 https://github.com/alnitak/flutter_soloud/issues/126
+
+Permissions for all OSes
+Keep eye on
+https://github.com/miguelpruivo/flutter_file_picker/wiki/Setup#--android
 
 Black screen on Tab S4
 

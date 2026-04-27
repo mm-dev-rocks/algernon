@@ -3,11 +3,10 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
-import 'package:algernon/app_state.dart';
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
-import 'package:algernon/track_chooser.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -36,11 +35,12 @@ class AlgernonPlayer extends StatefulWidget {
       SoLoud.instance.setVisualizationEnabled(true);
     }
 
-    AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-        .loadAsset(TrackChooser.selectedFilePath);
+    AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance.loadFile(
+      FileChooser.selectedFilePath,
+    );
 
     await AudioAnalysis.analyseTrackOnLoad(
-      filePath: TrackChooser.selectedFilePath,
+      filePath: FileChooser.selectedFilePath,
       trackDuration: SoLoud.instance.getLength(
         AlgernonPlayer.currentSoundNotifier.source!,
       ),
@@ -131,20 +131,19 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 child: ListenableBuilder(
                   listenable: AlgernonPlayer.painterConfig,
                   builder: (BuildContext context, Widget? child) {
-                    return 
+                    return
                     //_zeroImageExists
-                        //? 
-                        AlgernonShaderPainter(
-                            elapsedSeconds: _elapsedSeconds,
-                            painterConfig: AlgernonPlayer.painterConfig,
-                            //fftDataTexture:
-                            //    AlgernonPlayer.painterConfig.fftDataImage ??
-                            //    _zeroImage!,
-                            //shaderMeta:
-                            //    AlgernonPlayer.painterConfig.currentShader,
-                          )
-                          ;
-                        //: const SizedBox.shrink();
+                    //?
+                    AlgernonShaderPainter(
+                      elapsedSeconds: _elapsedSeconds,
+                      painterConfig: AlgernonPlayer.painterConfig,
+                      //fftDataTexture:
+                      //    AlgernonPlayer.painterConfig.fftDataImage ??
+                      //    _zeroImage!,
+                      //shaderMeta:
+                      //    AlgernonPlayer.painterConfig.currentShader,
+                    );
+                    //: const SizedBox.shrink();
                   },
                 ),
               ),

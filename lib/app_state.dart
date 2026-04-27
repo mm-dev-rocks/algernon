@@ -154,6 +154,8 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
             await sharedPreferences.setDouble(key, value);
           case const (int):
             await sharedPreferences.setInt(key, value);
+          case const (List<String>):
+            await sharedPreferences.setStringList(key, value);
         }
       }
     }
@@ -186,6 +188,8 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
           userPreference = sharedPreferences.getDouble(key) ?? defaultValue;
         case const (int):
           userPreference = sharedPreferences.getInt(key) ?? defaultValue;
+        case const (List<String>):
+          userPreference = sharedPreferences.getStringList(key) ?? defaultValue;
       }
     } else {
       AppState.log(

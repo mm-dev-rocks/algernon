@@ -28,23 +28,26 @@ class ALGERNON {
   /// appear on the settings page but are used to remember in-app preferences.
   static final Map<String, dynamic> defaultPreferences = {
     /// On first run, default to system preference
-    'disableAnimations': [
-      bool,
-      WidgetsBinding
-          .instance
-          .platformDispatcher
-          .accessibilityFeatures
-          .disableAnimations,
-    ],
+    //'disableAnimations': [
+    //  bool,
+    //  WidgetsBinding
+    //      .instance
+    //      .platformDispatcher
+    //      .accessibilityFeatures
+    //      .disableAnimations,
+    //],
 
-    'themeBrightnessModeIndex': [int, 0],
-    'colorScheme': [String, 'Choc Lime'],
+    //'themeBrightnessModeIndex': [int, 0],
+    //'colorScheme': [String, 'Choc Lime'],
 
     /// Container for shader tweaks, which are saved as 'preferences' for persistence between sessions.
     'shaderTweakValuesMap': [],
     'selectedShaderIndex': [int, 0],
     'selectedMemorySlotIndex': [int, 0],
     'selectedAudioFilePathIndex': [int, 0],
+    //
+    'playlist': [List<String>, <String>[]],
+    'selectedPlaylistFilePathIndex': [int, 0],
   };
 
   static const int totalMemorySlots = 5;
@@ -74,6 +77,12 @@ class ALGERNON {
   static const Duration hideControlsFadeDuration = Duration(milliseconds: 800);
   static const Duration showControlsFadeDuration = Duration(milliseconds: 300);
 
+  static final Color uiDefaultForegroundColor = Color.alphaBlend(
+    Colors.red.withValues(alpha: 0.7),
+    Colors.black,
+  );
+  //Colors.green;
+
   ///
   ///
   ///////////////////////
@@ -98,16 +107,6 @@ class ALGERNON {
 
   static const double controlPanelWidthMin = 300;
   static const double controlPanelWidthMax = 400;
-
-  static const List<String> audioTrackFilePaths = [
-    "assets/BEATPELLA HOUSE - Candy Thief.mp3",
-    'assets/Public Image Limited - Rise.mp3',
-    'assets/South Street Player - Who Keeps Changing Your Mind.mp3',
-    'assets/Bob Dylan - Eternal Circle.mp3',
-    'assets/Sister Sledge - Thinking Of You.mp3',
-    'assets/Pointer Sisters - Automatic.mp3',
-    "assets/Indeep - LAST NIGHT A DJ SAVED MY LIFE.mp3",
-  ];
 
   ///
   ///

@@ -47,9 +47,7 @@ class _VolumeSliderState extends State<VolumeSlider> {
           message: 'Volume',
           child: Icon(
             Icons.headphones_outlined,
-            color: Colors.white.withValues(
-              alpha: ALGERNON.disabledControlOpacity,
-            ),
+            color: ALGERNON.uiDefaultForegroundColor,
           ),
         ),
       ],
