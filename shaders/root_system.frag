@@ -29,6 +29,7 @@ uniform float u_energyMin;
 uniform float u_energyMax;
 
 uniform float u_armCount;
+uniform float u_ringContrast;
 uniform float u_baseRadius;
 uniform float u_branchDepth;
 uniform float u_hueShift;
@@ -208,8 +209,7 @@ void main() {
 
   glowTotal = min(glowTotal, 1.5);
   vec3 colour = (glowTotal > 0.001) ? colTotal / glowTotal : vec3(0.0);
-  float brightness = clamp(glowTotal, 0.0, 0.3);
-  float halo = clamp(glowTotal * 0.3, 0.0, 0.4);
+  float brightness = clamp(glowTotal, 0.0, u_ringContrast);
 
-  fragColor = vec4(colour * brightness + hsv2rgb(u_hueShift, 0.6, halo), 1.0);
+  fragColor = vec4(colour * brightness, 1.0);
 }

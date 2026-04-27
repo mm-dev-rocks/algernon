@@ -4,7 +4,6 @@ import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_soloud/flutter_soloud.dart';
 
 class FileChooser extends StatefulWidget {
   const FileChooser({super.key});
@@ -21,6 +20,17 @@ class FileChooser extends StatefulWidget {
 
   static String get selectedFilePath => currentPlaylist[selectedFilePathIndex];
 
+  static void selectNextTrack() {
+    debugPrint('FileChooser::selectNextTrack()');
+    debugPrint('\tselectedFilePathIndex: $selectedFilePathIndex');
+    int nextTrackIndex = selectedFilePathIndex + 1;
+    if (nextTrackIndex == currentPlaylist.length) {
+      nextTrackIndex = 0;
+    }
+    selectedFilePathIndex = nextTrackIndex;
+    debugPrint('\tselectedFilePathIndex: $selectedFilePathIndex');
+  }
+
   @override
   State<FileChooser> createState() => _FileChooserState();
 }
@@ -33,12 +43,13 @@ class _FileChooserState extends State<FileChooser> {
       requestFocusOnTap: false,
       initialSelection: FileChooser.selectedFilePathIndex,
       onSelected: (int? value) async {
+        debugPrint('FileChooser::onSelected($value)');
         if (value != null) {
-          if (AlgernonPlayer.currentSoundHandle != null) {
-            await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
-          }
+          //await AlgernonPlayer.stopAllSounds();
           FileChooser.selectedFilePathIndex = value;
-          AlgernonPlayer.initialiseSoundAndPlay();
+          await AlgernonPlayer.playSelectedSound(
+            reason: 'FileChooser::onSelected($value)',
+          );
         }
         UserInterface.keepControlsAlive();
       },

@@ -371,7 +371,7 @@ final List<ShaderModel> shadersData = [
         tweakType: TweakType.uniformArmCount,
         isEnergyUniform: true,
         min: 3,
-        max: 18,
+        max: 13,
         divisions: 15,
         defaultValue: 6,
       ),
@@ -382,6 +382,13 @@ final List<ShaderModel> shadersData = [
         max: 3,
         divisions: 2,
         defaultValue: 2,
+      ),
+      TweakType.uniformRingContrast.name: ShaderTweakModel(
+        shaderId: 'root_system',
+        tweakType: TweakType.uniformRingContrast,
+        min: 0.1,
+        max: 2,
+        defaultValue: 0.6,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
         shaderId: 'root_system',

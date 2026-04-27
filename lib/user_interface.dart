@@ -82,10 +82,8 @@ class _UserInterfaceState extends State<UserInterface> {
                       const Flexible(child: FileChooser()),
                       IconButton(
                         onPressed: () async {
-                          /// TODO magic
                           FilePickerResult? filePickerResult =
                               await FileManager.pickFile();
-                          //files.files.
                           if (filePickerResult != null &&
                               filePickerResult.files.isNotEmpty) {
                             FileChooser.currentPlaylist = filePickerResult.files
@@ -97,7 +95,6 @@ class _UserInterfaceState extends State<UserInterface> {
                         },
                         icon: Icon(Icons.playlist_add),
                       ),
-                      //const Flexible(child: TrackChooser()),
                     ],
                   ),
                 ),

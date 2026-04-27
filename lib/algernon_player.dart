@@ -24,35 +24,86 @@ class AlgernonPlayer extends StatefulWidget {
 
   static AudioSourceNotifier currentSoundNotifier = AudioSourceNotifier();
 
+  static StreamSubscription? _trackFinishedSubscription;
+
   /// [PainterConfigModel] holds all the info used to draw/update the [AlgernonShaderPainter], including the
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
   /// [AlgernonShaderPainter] to rebuild.
   static final PainterConfigModel painterConfig = PainterConfigModel();
 
-  static void initialiseSoundAndPlay() async {
+  static Future<void> playSelectedSound({required String reason}) async {
+    debugPrint('AlgernonPlayer::playSelectedSound(): $reason');
+    await _ensureSoLoudIsInitialised();
+
+    try {
+      await AlgernonPlayer.stopAllSounds();
+
+      AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
+          .loadFile(FileChooser.selectedFilePath);
+
+      await AudioAnalysis.analyseTrackOnLoad(
+        filePath: FileChooser.selectedFilePath,
+        trackDuration: SoLoud.instance.getLength(
+          AlgernonPlayer.currentSoundNotifier.source!,
+        ),
+      );
+
+      AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
+
+      if (AlgernonPlayer.currentSoundNotifier.source != null) {
+        AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(
+          AlgernonPlayer.currentSoundNotifier.source!,
+        );
+        await _startListeningForTrackFinished();
+      }
+    } on SoLoudNotInitializedException catch (e) {
+      debugPrint(
+        'AlgernonPlayer::loadFile error: SoLoud Engine is not yet initialised\n$e',
+      );
+    } on SoLoudFileNotFoundException catch (e) {
+      debugPrint('AlgernonPlayer::loadFile error: File not found\n$e');
+    } on SoLoudFileLoadFailedException catch (e) {
+      debugPrint('AlgernonPlayer::loadFile error: Problem loading file\n$e');
+    } catch (e) {
+      debugPrint('AlgernonPlayer::loadFile error:\n$e');
+    }
+  }
+
+  static Future<void> stopAllSounds() async {
+    debugPrint('AlgernonPlayer::stopAllSounds()');
+    //if (AlgernonPlayer.currentSoundHandle != null) {
+    //  await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
+    //}
+    await SoLoud.instance.disposeAllSources();
+  }
+
+  static Future<void> _startListeningForTrackFinished() async {
+    debugPrint('AlgernonPlayer::_startListeningForTrackFinished()');
+    await _trackFinishedSubscription?.cancel();
+    _trackFinishedSubscription = AlgernonPlayer
+        .currentSoundNotifier
+        .source!
+        .allInstancesFinished
+        .listen(_onAllInstancesFinished);
+  }
+
+  static Future<void> _onAllInstancesFinished(_) async {
+    debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
+    debugPrint('\t${FileChooser.selectedFilePathIndex}');
+    //await AlgernonPlayer.stopAllSounds();
+    //SoLoud.instance.disposeSource(
+    //  AlgernonPlayer.currentSoundNotifier.source!,
+    //);
+    _trackFinishedSubscription?.cancel();
+    FileChooser.selectNextTrack();
+    debugPrint('\t${FileChooser.selectedFilePathIndex}');
+    await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
+  }
+
+  static Future<void> _ensureSoLoudIsInitialised() async {
     if (!AlgernonPlayer.soLoudIsReady) {
       await SoLoud.instance.init(bufferSize: 1024);
       SoLoud.instance.setVisualizationEnabled(true);
-    }
-
-    AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance.loadFile(
-      FileChooser.selectedFilePath,
-    );
-
-    await AudioAnalysis.analyseTrackOnLoad(
-      filePath: FileChooser.selectedFilePath,
-      trackDuration: SoLoud.instance.getLength(
-        AlgernonPlayer.currentSoundNotifier.source!,
-      ),
-    );
-
-    AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
-
-    if (AlgernonPlayer.currentSoundNotifier.source != null) {
-      AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(
-        AlgernonPlayer.currentSoundNotifier.source!,
-        looping: true,
-      );
     }
   }
 
@@ -88,7 +139,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _ticker = createTicker(_onTick);
     _ticker.start();
 
-    AlgernonPlayer.initialiseSoundAndPlay();
+    AlgernonPlayer.playSelectedSound(reason: 'initState');
 
     /// [initState] can't be async, so we send image creation off as a microtask which will be carried out after the
     /// current flow of execution.

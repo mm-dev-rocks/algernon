@@ -143,7 +143,7 @@ class FileManager {
     FilePickerResult? result = await FilePicker.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
-      allowedExtensions: ['mp3', 'wav', 'ogg', 'flac'],
+      allowedExtensions: ['mp3', 'wav', 'ogg', 'flac', 'opus'],
     );
 
     //    List<String> systemPaths = Platform.isLinux

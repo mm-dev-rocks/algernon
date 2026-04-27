@@ -6,7 +6,6 @@ import 'package:algernon/constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:observable/observable.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// To enable shared state in the app, add this widget to the tree. All widgets which want to access shared state should
@@ -20,7 +19,8 @@ class AppStateWidget extends StatelessWidget {
   /// This is the main container in which we'll store all of our state. As an [ObservableMap] it's a map which we can
   /// watch and be informed when its properties change. This observation is shallow so eg a [Map] property will only be
   /// recognised if it is completely reassigned, not if its own internal values change.
-  static final ObservableMap _appState = ObservableMap();
+  //static final ObservableMap _appState = ObservableMap();
+  static final _ObservableAppState _appState = _ObservableAppState();
 
   @override
   Widget build(BuildContext context) {
@@ -56,25 +56,10 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     /// Listen for changes in [_appState] and rebuild any interested widgets (those which are listening for the specific
     /// key which changed).
     _appStateChangeSubscription = AppStateWidget._appState.changes.listen((
-      List event,
+      change,
     ) {
-      for (ChangeRecord change in event) {
-        if (change is MapChangeRecord) {
-          if (listenForChanges != null &&
-              listenForChanges!.contains(change.key)) {
-            /// if the key was removed, that indicates this is just the first step in a forced rebuild, so ignore this
-            /// change - another change of the same key will follow immediately and we don't want to rebuild twice.
-            if (!change.isRemove) {
-              //String widgetDescription =
-              //    widget.key?.toString() ?? '${widget.toStringShort()}::${widget.hashCode}';
-              //print('$widgetDescription HEARD: \'${change.key}\'');
-
-              setState(() {
-                //changedOn = change.key.toString();
-              });
-            }
-          }
-        }
+      if (mounted && !change.isRemove) {
+        setState(() {});
       }
     });
 
@@ -115,8 +100,7 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     AppState.update(key, object);
   }
 
-  /// [SharedPreferencesWithCache] must be use the [SharedPreferencesWithCache.create] constructor,
-  /// which is async.
+  /// [SharedPreferencesWithCache] must be use the [SharedPreferencesWithCache.create] constructor, which is async.
   /// https://pub.dev/packages/shared_preferences
   static Future<void> initPreferences() async {
     AppState.update(
@@ -201,18 +185,6 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     return userPreference;
   }
 
-  //static Future<void> setShaderTweakValue(String key, dynamic value) async {
-  //  Map<String, dynamic> currentMap = AppState.getPreference(
-  //    "shaderTweakValuesMap",
-  //  );
-  //  currentMap[key] = value;
-  //  AppState.setPreference("shaderTweakValuesMap", currentMap);
-  //}
-
-  //static dynamic getShaderTweakValue(String key) {
-  //  return AppState.getPreference("shaderTweakValuesMap")[key];
-  //}
-
   /// Get the current route/page we are on
   static String get currentRoute {
     String currentAppRoute = '';
@@ -294,4 +266,34 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
       }),
     );
   }
+}
+
+enum _ChangeType { set, remove }
+
+class _AppStateChange {
+  final _ChangeType type;
+  final String key;
+  const _AppStateChange(this.type, this.key);
+  bool get isRemove => type == _ChangeType.remove;
+}
+
+class _ObservableAppState {
+  final Map<String, dynamic> _map = {};
+  final _controller = StreamController<_AppStateChange>.broadcast();
+
+  Stream<_AppStateChange> get changes => _controller.stream;
+
+  dynamic operator [](String key) => _map[key];
+
+  void operator []=(String key, dynamic value) {
+    _map[key] = value;
+    _controller.add(_AppStateChange(_ChangeType.set, key));
+  }
+
+  void remove(String key) {
+    _map.remove(key);
+    _controller.add(_AppStateChange(_ChangeType.remove, key));
+  }
+
+  bool containsKey(String key) => _map.containsKey(key);
 }

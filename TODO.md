@@ -9,6 +9,27 @@ fix fuzzy show/hide controls
 - must stay visible while dragging memory slot
 - must stay visible while hovering dropdown buttons and items
 
+dropdowns need to be scrollable
+
+another big slider like volume, to scale overall shader effect
+can just use scaling variable from volume compensation
+
+Use icons for sliders instead of labels
+    - must change all internal names
+    - must make sure each tweak is different enough to have its own icon/concept
+
+file playback
+    curently selection replaces playlist, should add to it
+    need a way to delete tracks from playlist, single or all
+    need to rebuild to refresh visible dropdown playlist
+    should play next file in playlist by default (add standard shuffle loop single loop all)
+
+file chooser should indicate current track
+
+look into Soloud.instance.setGlobalVolume
+
+why is spectral sphere grey bg?
+
 
 mic input
 
@@ -30,6 +51,10 @@ handle missing/renamed files
 ---
 
 # BUGS
+
+jumping to new track does not stop old track!
+
+sometimes stored value for uniform is outside min/max due to dev/experiments. Should fix this on init
 
 volume = 0 / black screen
 

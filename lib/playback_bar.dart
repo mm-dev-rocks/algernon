@@ -59,22 +59,37 @@ class PlaybackBar extends StatelessWidget {
     }
   }
 
-  String get _positionTimeString =>
-      (AlgernonPlayer.currentSoundNotifier.source != null &&
-          AlgernonPlayer.currentSoundHandle != null)
-      ? durationToMinutesAndSeconds(
+  String get _positionTimeString {
+    String str = '00:00';
+    try {
+      if (AlgernonPlayer.currentSoundHandle != null) {
+        str = durationToMinutesAndSeconds(
           SoLoud.instance.getPosition(AlgernonPlayer.currentSoundHandle!),
-        )
-      : '00:00';
+        );
+      }
+    } catch (e) {
+      debugPrint('PlaybackBar::_positionTimeString: $e');
+    }
 
-  double get _positionInTrackNormalised =>
-      (AlgernonPlayer.currentSoundNotifier.source != null &&
-          AlgernonPlayer.currentSoundHandle != null)
-      ? SoLoud.instance
-                .getPosition(AlgernonPlayer.currentSoundHandle!)
-                .inMilliseconds /
-            SoLoud.instance
-                .getLength(AlgernonPlayer.currentSoundNotifier.source!)
-                .inMilliseconds
-      : 0;
+    return str;
+  }
+
+  double get _positionInTrackNormalised {
+    debugPrint('PlaybackBar::_positionInTrackNormalised()');
+    int position = AlgernonPlayer.currentSoundHandle != null
+        ? SoLoud.instance
+              .getPosition(AlgernonPlayer.currentSoundHandle!)
+              .inMilliseconds
+        : 0;
+    debugPrint('\tposition: $position');
+    int length = AlgernonPlayer.currentSoundNotifier.source != null
+        ? SoLoud.instance
+              .getLength(AlgernonPlayer.currentSoundNotifier.source!)
+              .inMilliseconds
+        : 1;
+    debugPrint('\tlength: $length');
+    debugPrint('\t(position / length): ${(position / length)}');
+
+    return (position == 0 && length == 0) ? 0 : position / length;
+  }
 }

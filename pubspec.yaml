@@ -49,7 +49,7 @@ dependencies:
   shared_preferences: ^2.5.5
 
   flex_color_scheme: ^8.0.1
-  observable: ^0.24.0
+  #observable: ^0.24.0
   #crypto: ^3.0.5
   path: ^1.9.0
   font_awesome_flutter: ^11.0.0
