@@ -75,20 +75,20 @@ class PlaybackBar extends StatelessWidget {
   }
 
   double get _positionInTrackNormalised {
-    debugPrint('PlaybackBar::_positionInTrackNormalised()');
+    //debugPrint('PlaybackBar::_positionInTrackNormalised()');
     int position = AlgernonPlayer.currentSoundHandle != null
         ? SoLoud.instance
               .getPosition(AlgernonPlayer.currentSoundHandle!)
               .inMilliseconds
         : 0;
-    debugPrint('\tposition: $position');
+    //debugPrint('\tposition: $position');
     int length = AlgernonPlayer.currentSoundNotifier.source != null
         ? SoLoud.instance
               .getLength(AlgernonPlayer.currentSoundNotifier.source!)
               .inMilliseconds
         : 1;
-    debugPrint('\tlength: $length');
-    debugPrint('\t(position / length): ${(position / length)}');
+    //debugPrint('\tlength: $length');
+    //debugPrint('\t(position / length): ${(position / length)}');
 
     return (position == 0 && length == 0) ? 0 : position / length;
   }
