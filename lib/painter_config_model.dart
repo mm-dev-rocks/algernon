@@ -17,7 +17,7 @@ class PainterConfigModel with ChangeNotifier {
   }
 
   /// [currentMemorySlot] keeps track of which memory slot is currently selected.
-  int? get currentMemorySlot =>
+  int get currentMemorySlot =>
       AppState.getPreference('selectedMemorySlotIndex');
   set currentMemorySlot(int index) {
     AppState.setPreference('selectedMemorySlotIndex', index);

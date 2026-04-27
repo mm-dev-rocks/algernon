@@ -67,7 +67,14 @@ class _MainControlPanelState extends State<MainControlPanel> {
         /// Memory slot buttons
         Padding(
           padding: EdgeInsets.only(left: uiSizes.paddingSmall),
-          child: const MemorySlotChooser(),
+          child: ListenableBuilder(
+            listenable: AlgernonPlayer.painterConfig,
+            builder: (context, child) {
+              return MemorySlotChooser(
+                selectedIndex: AlgernonPlayer.painterConfig.currentMemorySlot,
+              );
+            },
+          ),
         ),
 
         /// FFT smoothing

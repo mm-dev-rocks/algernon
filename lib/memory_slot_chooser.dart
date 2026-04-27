@@ -10,7 +10,8 @@ import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 
 class MemorySlotChooser extends StatefulWidget {
-  const MemorySlotChooser({super.key});
+  const MemorySlotChooser({super.key, required this.selectedIndex});
+  final int selectedIndex;
 
   @override
   State<MemorySlotChooser> createState() => _MemorySlotChooserState();
@@ -19,6 +20,7 @@ class MemorySlotChooser extends StatefulWidget {
 class _MemorySlotChooserState extends State<MemorySlotChooser> {
   @override
   Widget build(BuildContext context) {
+    //int selectedIndex = AlgernonPlayer.painterConfig.currentMemorySlot;
     return Row(
       mainAxisSize: .max,
       mainAxisAlignment: .spaceBetween,
@@ -37,6 +39,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
               builder: (context, candidateItems, rejectedItems) {
                 return MemorySlotButton(
                   index: index,
+                  selected: (index == widget.selectedIndex),
                   highlighted: candidateItems.isNotEmpty,
                   onPressed: () {
                     _selectSlot(index);
@@ -79,8 +82,8 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
   void _selectSlot(int index) {
     AlgernonPlayer.painterConfig.currentMemorySlot = index;
     UserInterface.keepControlsAlive();
-    setState(() {
-      /// To update selection state
-    });
+    //setState(() {
+    //  /// To update selection state
+    //});
   }
 }

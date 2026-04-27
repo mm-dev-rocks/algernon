@@ -10,12 +10,14 @@ class MemorySlotButton extends StatelessWidget {
     super.key,
     required this.index,
     required this.onPressed,
+    required this.selected,
     this.highlighted = false,
   });
 
   final int index;
   final VoidCallback? onPressed;
   final bool highlighted;
+  final bool selected;
 
   final BoxBorder border = Border.all(
     color: Colors.white,
@@ -24,9 +26,6 @@ class MemorySlotButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isSelected =
-        (index == AppState.getPreference('selectedMemorySlotIndex'));
-
     return InkWell(
       mouseCursor: SystemMouseCursors.click,
       onTap: onPressed,
@@ -45,7 +44,7 @@ class MemorySlotButton extends StatelessWidget {
                     alpha: ALGERNON.fadeDarkBackgroundOpacity,
                   ),
                 )
-              : isSelected
+              : selected
               ? BoxDecoration(border: border)
               : null,
           //child: Text(
@@ -59,9 +58,7 @@ class MemorySlotButton extends StatelessWidget {
               Icons.filter_1.codePoint + index,
               fontFamily: 'MaterialIcons',
             ),
-            color: isSelected
-                ? Colors.white
-                : ALGERNON.uiDefaultForegroundColor,
+            color: selected ? Colors.white : ALGERNON.uiDefaultForegroundColor,
           ),
         ),
       ),

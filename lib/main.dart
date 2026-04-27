@@ -2,7 +2,10 @@
 
 import 'dart:io';
 
+import 'package:algernon/algernon_player.dart';
+import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 /// Provides [Player], [Media], [Playlist] etc.
 import 'package:path_provider/path_provider.dart';
@@ -46,7 +49,15 @@ class _AlgernonAppState extends State<AlgernonApp> {
     /// [mainNavigatorKey]) so that other classes can access it.
     AppState.update("mainNavigatorKey", _navigatorKey);
 
+    HardwareKeyboard.instance.addHandler(_onKey);
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    HardwareKeyboard.instance.removeHandler(_onKey);
+    super.dispose();
   }
 
   /// Generate routes for nested navigation
@@ -69,6 +80,26 @@ class _AlgernonAppState extends State<AlgernonApp> {
       },
       settings: settings,
     );
+  }
+
+  bool _onKey(KeyEvent event) {
+    if (event is KeyDownEvent) {
+      debugPrint(event.logicalKey.toString());
+      switch (event.logicalKey.keyLabel) {
+        case "1":
+          AlgernonPlayer.painterConfig.currentMemorySlot = 0;
+        case "2":
+          AlgernonPlayer.painterConfig.currentMemorySlot = 1;
+        case "3":
+          AlgernonPlayer.painterConfig.currentMemorySlot = 2;
+        case "4":
+          AlgernonPlayer.painterConfig.currentMemorySlot = 3;
+        case "5":
+          AlgernonPlayer.painterConfig.currentMemorySlot = 4;
+      }
+    }
+    // don't consume — let focus/text fields still work normally
+    return false;
   }
 
   @override
