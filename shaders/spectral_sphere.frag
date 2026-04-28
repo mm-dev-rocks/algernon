@@ -54,6 +54,7 @@ uniform float u_sphereRadius;
 uniform float u_blobSize;
 uniform float u_glowStrength;
 uniform float u_speed;
+uniform float u_armCount;
 
 out vec4 fragColor;
 
@@ -61,7 +62,8 @@ const float PI = 3.14159265;
 const float TAU = 6.28318530;
 // const int BINS = 256;
 // const int BINS = 128;
-const int BINS = 64;
+// const int BINS = 64;
+int BINS = int(u_armCount);
 
 // ---------------------------------------------------------------------------
 // HSV → RGB — H in [0,360], S/V in [0,1].
@@ -162,7 +164,10 @@ void main() {
   float rimGlow = exp(-rimDist * rimDist * 800.0) * 0.07;
   vec3 rimColour = hsv2rgb(u_hueShift, 0.5, 0.4);
 
-  for (int i = 0; i < BINS; i++) {
+  for (int i = 0; i < 999; i++) {
+    if (i >= BINS)
+      break;
+
     float fi = float(i);
     float t = fi / float(BINS - 1); // 0..1, bass→treble
 
@@ -183,7 +188,7 @@ void main() {
 
     // Radial displacement: positive charge lifts blob above surface,
     // negative charge sinks it inward. Energy adds a gentle global push.
-    float displacement = charge * 0.22 + energy * 0.06 +
+    float displacement = charge * 0.33 + energy * 0.06 +
                          sin(u_time * (0.3 + t * 0.7) + fi * 0.41) * 0.015;
     float r3d = radius * (1.0 + displacement);
 
