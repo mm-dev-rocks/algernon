@@ -5,26 +5,26 @@ import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 
 final List<ShaderModel> shadersData = [
-  ShaderModel(
-    friendlyName: 'Blocks Simple',
-    id: 'blocks_simple',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'blocks_simple',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
-  ShaderModel(
-    friendlyName: 'Blocks Spiral',
-    id: 'blocks_spiral',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'blocks_spiral',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
+  //ShaderModel(
+  //  friendlyName: 'Blocks Simple',
+  //  id: 'blocks_simple',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'blocks_simple',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
+  //ShaderModel(
+  //  friendlyName: 'Blocks Spiral',
+  //  id: 'blocks_spiral',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'blocks_spiral',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
   ShaderModel(
     friendlyName: 'Rose Tunnel',
     id: 'rose_tunnel_quadrant',
@@ -285,25 +285,25 @@ final List<ShaderModel> shadersData = [
       ),
     },
   ),
-  ShaderModel(
-    friendlyName: 'Domain Tiles',
-    id: 'domain_tiles',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'domain_tiles',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-      TweakType.uniformBandCount.name: ShaderTweakModel(
-        shaderId: 'domain_tiles',
-        tweakType: TweakType.uniformBandCount,
-        isEnergyUniform: true,
-        min: 1,
-        max: 16,
-        divisions: 15,
-        defaultValue: 8,
-      ),
-    },
-  ),
+  //ShaderModel(
+  //  friendlyName: 'Domain Tiles',
+  //  id: 'domain_tiles',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'domain_tiles',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //    TweakType.uniformBandCount.name: ShaderTweakModel(
+  //      shaderId: 'domain_tiles',
+  //      tweakType: TweakType.uniformBandCount,
+  //      isEnergyUniform: true,
+  //      min: 1,
+  //      max: 16,
+  //      divisions: 15,
+  //      defaultValue: 8,
+  //    ),
+  //  },
+  //),
   ShaderModel(
     friendlyName: 'Interference Waves',
     id: 'interference_waves',
@@ -372,7 +372,7 @@ final List<ShaderModel> shadersData = [
         isEnergyUniform: true,
         min: 3,
         max: 13,
-        divisions: 15,
+        divisions: 10,
         defaultValue: 6,
       ),
       TweakType.uniformBranchDepth.name: ShaderTweakModel(
@@ -511,7 +511,7 @@ final List<ShaderModel> shadersData = [
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformSpeed,
         min: 0.05,
-        max: 1.0,
+        max: 5.0,
         defaultValue: 0.18,
       ),
       TweakType.uniformArmCount.name: ShaderTweakModel(
@@ -560,59 +560,59 @@ final List<ShaderModel> shadersData = [
     },
   ),
 
-  ShaderModel(
-    friendlyName: 'Spectral Sphere 2',
-    id: 'spectral_sphere_2',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.fftDataSmoothing,
-        min: 0.5,
-        max: 0.99,
-        defaultValue: 0.8,
-      ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultValue: 25,
-      ),
-      TweakType.uniformSpeed.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformSpeed,
-        min: 0.05,
-        max: 1.0,
-        defaultValue: 0.18,
-      ),
-      TweakType.uniformHueRange.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformHueRange,
-        min: 0,
-        max: 360,
-        defaultValue: 120,
-      ),
-      TweakType.uniformBlobSize.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformBlobSize,
-        min: 0.01,
-        max: 0.12,
-        defaultValue: 0.038,
-      ),
-      TweakType.uniformGlowStrength.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformGlowStrength,
-        min: 0.05,
-        max: 4.0,
-        defaultValue: 1.8,
-      ),
-      TweakType.uniformSphereRadius.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere_2',
-        tweakType: TweakType.uniformSphereRadius,
-        min: 0.15,
-        max: 0.48,
-        defaultValue: 0.32,
-      ),
-    },
-  ),
+  //ShaderModel(
+  //  friendlyName: 'Spectral Sphere 2',
+  //  id: 'spectral_sphere_2',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //      min: 0.5,
+  //      max: 0.99,
+  //      defaultValue: 0.8,
+  //    ),
+  //    TweakType.uniformHueShift.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformHueShift,
+  //      min: 0,
+  //      max: 360,
+  //      defaultValue: 25,
+  //    ),
+  //    TweakType.uniformSpeed.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformSpeed,
+  //      min: 0.05,
+  //      max: 1.0,
+  //      defaultValue: 0.18,
+  //    ),
+  //    TweakType.uniformHueRange.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformHueRange,
+  //      min: 0,
+  //      max: 360,
+  //      defaultValue: 120,
+  //    ),
+  //    TweakType.uniformBlobSize.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformBlobSize,
+  //      min: 0.01,
+  //      max: 0.12,
+  //      defaultValue: 0.038,
+  //    ),
+  //    TweakType.uniformGlowStrength.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformGlowStrength,
+  //      min: 0.05,
+  //      max: 4.0,
+  //      defaultValue: 1.8,
+  //    ),
+  //    TweakType.uniformSphereRadius.name: ShaderTweakModel(
+  //      shaderId: 'spectral_sphere_2',
+  //      tweakType: TweakType.uniformSphereRadius,
+  //      min: 0.15,
+  //      max: 0.48,
+  //      defaultValue: 0.32,
+  //    ),
+  //  },
+  //),
 ];

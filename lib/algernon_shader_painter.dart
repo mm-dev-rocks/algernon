@@ -35,8 +35,10 @@ class AlgernonShaderPainter extends StatelessWidget {
           painterConfig: painterConfig,
           elapsedSeconds: elapsedSeconds,
           shaderTweaks: Map.fromEntries(
+            /// Non uniform tweaks such as FFT Smoothing and Overall Effect are handled elsewhere.
             painterConfig.currentShader.shaderTweaks.entries.where(
-              (e) => e.value.tweakType != TweakType.fftDataSmoothing,
+              (MapEntry<String, ShaderTweakModel> entry) =>
+                  !entry.value.tweakType.isNonUniformTweak,
             ),
           ),
         ),

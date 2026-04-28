@@ -16,6 +16,15 @@ class PainterConfigModel with ChangeNotifier {
     notifyListeners();
   }
 
+  ///// [currentOverallEffect] keeps track of which memory slot is currently selected.
+  //int get currentOverallEffect =>
+  //    AppState.getPreference('selectedOverallEffect');
+  //set currentOverallEffect(int index) {
+  //  AppState.setPreference('selectedOverallEffect', index);
+  //  debugPrint('PainterConfigModel::currentOverallEffect NOTIFY LISTENERS');
+  //  notifyListeners();
+  //}
+
   /// [currentMemorySlot] keeps track of which memory slot is currently selected.
   int get currentMemorySlot =>
       AppState.getPreference('selectedMemorySlotIndex');
@@ -26,8 +35,11 @@ class PainterConfigModel with ChangeNotifier {
   }
 
   /// [_currentShader] tracks which shader is currently in use.
+  /// Protect against non-existent index eg when shaders have been deleted.
   ShaderModel _currentShader =
-      ALGERNON.shadersData[AppState.getPreference('selectedShaderIndex')];
+      ALGERNON.shadersData[AppState.getPreference(
+        'selectedShaderIndex',
+      ).clamp(0, ALGERNON.shadersData.length - 1)];
   //
   ShaderModel get currentShader => _currentShader;
   set currentShader(ShaderModel shaderMeta) {

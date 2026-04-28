@@ -25,9 +25,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
 
   @override
   void initState() {
-    /// Make sure we are using the correct smoothing tweak for the current shader.
-    _fftSmoothingTweak =
-        widget.currentShader.shaderTweaks[TweakType.fftDataSmoothing.name]!;
+    _updateNonUniformTweaks();
 
     super.initState();
   }
@@ -36,6 +34,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
 
+    /// TODO update comments
     /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
     /// [ListenableBuilder]. The FFT Smoothing slider [_fftSmoothingTweak] is different as it doesn't affect the shaders
     /// directly, but instead acts on the [SoLoud] instance to smooth its bin data before we pass it to the
@@ -46,13 +45,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
     /// built on a [ListenableBuilder] listening for changes to [AlgernonPlayer.painterConfig] which includes the
     /// shader.
     if (AlgernonPlayer.soLoudIsReady) {
-      /// Make sure we are using the correct smoothing tweak for the current shader.
-      _fftSmoothingTweak =
-          widget.currentShader.shaderTweaks[TweakType.fftDataSmoothing.name]!;
       SoLoud.instance.setFftSmoothing(_fftSmoothingTweak.storedValue);
-      //debugPrint(
-      //  'MainControlPanel::widget.currentShader: ${widget.currentShader}',
-      //);
     }
 
     return Column(
@@ -62,7 +55,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
       spacing: uiSizes.paddingMedium,
       children: [
         /// 'Choose shader' dropdown
-        const Flexible(child: ShaderChooser()),
+        const Flexible(fit: FlexFit.loose, child: ShaderChooser()),
 
         /// Memory slot buttons
         Padding(
@@ -92,14 +85,17 @@ class _MainControlPanelState extends State<MainControlPanel> {
 
         /// Shader-specific tweaks
         ...widget.currentShader.shaderTweaks.entries
+            /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
+            /// and have bespoke sliders.
             .where(
               (MapEntry<String, ShaderTweakModel> entry) =>
-                  entry.value.tweakType != TweakType.fftDataSmoothing,
+                  !entry.value.tweakType.isNonUniformTweak,
             )
             .map(
               (MapEntry<String, ShaderTweakModel> entry) => ShaderTweakSlider(
                 shaderTweak: entry.value,
                 onChanged:
+                    /// If this is an energy uniform and the user has selected 'auto', disable its slider.
                     (entry.value.isEnergyUniform &&
                         entry.value.useEnergyDerivedCount)
                     ? null
@@ -126,5 +122,15 @@ class _MainControlPanelState extends State<MainControlPanel> {
             ),
       ],
     );
+  }
+
+  /// Ensure we are pointing to the current tweaks
+  void _updateNonUniformTweaks() {
+    //debugPrint('MainControlPanel::_updateNonUniformTweaks()');
+    //debugPrint('\t${widget.currentShader.shaderTweaks.toString()}');
+
+    /// We know these tweaks will always exist because [ShaderModel] asserts it in its constructor.
+    _fftSmoothingTweak =
+        widget.currentShader.shaderTweaks[TweakType.fftDataSmoothing.name]!;
   }
 }

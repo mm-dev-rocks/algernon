@@ -6,6 +6,7 @@ import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/audio_source_notifier.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/user_interface.dart';
@@ -77,6 +78,10 @@ class AlgernonPlayer extends StatefulWidget {
     await SoLoud.instance.disposeAllSources();
   }
 
+  //static void setOverallEffectMagnitude(double magnitude) {
+  //  debugPrint('AlgernonPlayer::setOverallEffectMagnitude($magnitude)');
+  //}
+
   static Future<void> _startListeningForTrackFinished() async {
     debugPrint('AlgernonPlayer::_startListeningForTrackFinished()');
     await _trackFinishedSubscription?.cancel();
@@ -102,7 +107,7 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> _ensureSoLoudIsInitialised() async {
     if (!AlgernonPlayer.soLoudIsReady) {
-      await SoLoud.instance.init(bufferSize: 1024);
+      await SoLoud.instance.init(bufferSize: ALGERNON.soLoudBufferSize);
       SoLoud.instance.setVisualizationEnabled(true);
     }
   }
@@ -117,8 +122,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Tell [SoLoud] how we want to receive audio data
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
 
-  /// Keep a rolling average of bins to be used for physics 'charges'
-  final Float32List _binAverages = Float32List(256); // rolling avg per bin
+  /// Keep an average of bins to be used for physics 'charges'.
+  /// It's an exponential decay average — every past sample is still technically included, but older ones are weighted
+  /// exponentially less. With magnitudeChargeSmoothing as α, a value from k frames ago has weight α^k * (1 - α).
+  /// There's no fixed window; the "memory" decays toward zero but never fully forgets.
+  final Float32List _binExponentialMovingAverages = Float32List(256);
 
   bool _isProcessing = false;
 
@@ -240,16 +248,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
   /// We have 256 bytes of data to pass, each representing a bin we got back from the FFT.
   Future<ui.Image> _imageFromFftData(Float32List fftData) async {
-    // In SoLoud, FFT data is processed late in the pipeline after the mixing stage, meaning the volume slider affects
-    // the intensity of the visuals. This is not what we want, so here we scale it to compensate for the current volume.
-    // if (AlgernonPlayer.currentSoundHandle != null) {
-    //   for (var i = 0; i < fftData.length; i++) {
-    //     fftData[i] /= SoLoud.instance.getVolume(
-    //       AlgernonPlayer.currentSoundHandle!,
-    //     );
-    //   }
-    // }
-
     // 256 pixels, each pixel needs R,G,B,A as floats, each of which is normalised between 0 and 1 (the FFT data is
     // already in that format). We pass FFT bins in via the red channel.
     final pixels = Float32List(256 * 4);
@@ -258,13 +256,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       final double binMagnitude = fftData[i];
 
       // Update rolling average
-      _binAverages[i] =
-          _binAverages[i] * ALGERNON.magnitudeChargeSmoothing +
+      _binExponentialMovingAverages[i] =
+          _binExponentialMovingAverages[i] * ALGERNON.magnitudeChargeSmoothing +
           binMagnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
 
       // Signed charge: positive when louder than average, negative when quieter
       // clamp to [-1, 1] then remap to [0, 1] for the texture
-      final double charge = (binMagnitude - _binAverages[i]).clamp(-1.0, 1.0);
+      final double charge = (binMagnitude - _binExponentialMovingAverages[i])
+          .clamp(-1.0, 1.0);
       final double chargeNormalised = (charge + 1.0) * 0.5;
       final double energy = AlgernonPlayer.currentSoundHandle == null
           ? 0

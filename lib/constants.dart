@@ -50,6 +50,10 @@ class ALGERNON {
     'selectedPlaylistFilePathIndex': [int, 0],
   };
 
+  static const int soLoudBufferSize = 1024;
+  static const double magnitudeChargeSmoothing = 0.99;
+  static const int energyZoneBlendBuckets = 5;
+
   static const int totalMemorySlots = 5;
 
   static const double fadeDarkBackgroundOpacity = 0.7;
@@ -61,9 +65,6 @@ class ALGERNON {
 
   static const String autoCountPrefSuffix = 'auto';
   static const String memorySlotPrefPrefix = 'memslot';
-
-  static const double magnitudeChargeSmoothing = 0.92;
-  static const int energyZoneBlendBuckets = 7;
 
   /// Shader meta info is in another file to keep this file maintainable.
   static final List<ShaderModel> shadersData = meta.shadersData;

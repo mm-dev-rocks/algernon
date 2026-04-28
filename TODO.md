@@ -1,18 +1,11 @@
 more friendly names for shader sliders
 
-better auto icon
-better speaker icon
-better info icon
-
-fix fuzzy show/hide controls
-- must stay visible while dragging sliders
-- must stay visible while dragging memory slot
-- must stay visible while hovering dropdown buttons and items
-
-dropdowns need to be scrollable
+list of shaders needs to be scrollable
 
 another big slider like volume, to scale overall shader effect
 can just use scaling variable from volume compensation
+    - Ensure is saved to prefs
+    - 
 
 Use icons for sliders instead of labels
     - must change all internal names
@@ -21,15 +14,8 @@ Use icons for sliders instead of labels
 file playback
     curently selection replaces playlist, should add to it
     need a way to delete tracks from playlist, single or all
-    need to rebuild to refresh visible dropdown playlist
     should play next file in playlist by default (add standard shuffle loop single loop all)
-
-file chooser should indicate current track
-
-look into Soloud.instance.setGlobalVolume
-
-why is spectral sphere grey bg?
-
+    read/write .m3u
 
 mic input
 
@@ -38,7 +24,6 @@ kb shortcuts don't work on fftsmoothing slider
 file chooser
     1 or multiple
     multiple creates playlist
-    read/write .m3u
 
 when track stops, time-based uniform should stop (or even slow to a stop)
 
@@ -125,3 +110,14 @@ sometimes shader are messed up when changing shaders eg polar_warp
 copy/paste memory slots
     drag+drop
     if same slot give message
+better auto icon
+better speaker icon
+better info icon
+look into Soloud.instance.setGlobalVolume
+why is spectral sphere grey bg?
+file chooser should indicate current track
+fix fuzzy show/hide controls
+- must stay visible while dragging sliders
+- must stay visible while dragging memory slot
+- must stay visible while hovering dropdown buttons and items
+    need to rebuild to refresh visible dropdown playlist

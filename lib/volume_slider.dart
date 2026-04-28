@@ -24,13 +24,18 @@ class _VolumeSliderState extends State<VolumeSlider> {
             quarterTurns: 3,
             child: Slider(
               value: AlgernonPlayer.currentSoundHandle != null
-                  ? SoLoud.instance.getGlobalVolume()
+                  ? SoLoud.instance.getVolume(
+                      AlgernonPlayer.currentSoundHandle!,
+                    )
                   : 1,
               onChanged: (double value) {
                 if (AlgernonPlayer.soLoudIsReady &&
                     AlgernonPlayer.currentSoundHandle != null) {
                   setState(() {
-                    SoLoud.instance.setGlobalVolume(value);
+                    SoLoud.instance.setVolume(
+                      AlgernonPlayer.currentSoundHandle!,
+                      value,
+                    );
                   });
                 }
                 UserInterface.keepControlsAlive();

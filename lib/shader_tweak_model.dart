@@ -14,6 +14,9 @@ class ShaderTweakModel {
     this.max = 1,
     this.divisions,
     this.defaultValue = 0.75,
+
+    /// [isEnergyUniform] denotes that this is a special tweak that can be overriden by an 'auto' button next to the
+    /// slider which will set the value based on the 'energy' of the current point in the audio track.
     this.isEnergyUniform = false,
   }) {
     /// A quirk of [AppState.getPreference] and [AppState.setPreference] is that they fail if any 'preference key'

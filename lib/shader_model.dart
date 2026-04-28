@@ -2,6 +2,7 @@
 
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/shader_tweak_model.dart';
 
 /// Each shader in the app should have a respective [ShaderModel].
@@ -12,8 +13,23 @@ class ShaderModel {
     required this.id,
     this.shaderTweaks = const {},
   }) : assert(
-         shaderTweaks.values.where((t) => t.isEnergyUniform).length <= 1,
+         shaderTweaks.values
+                 .where((shaderTweak) => shaderTweak.isEnergyUniform)
+                 .length <=
+             1,
          'Only one [ShaderTweakModel] in a [ShaderModel] may have `isEnergyUniform` set to `true`',
+       ),
+
+       assert(
+         shaderTweaks.values
+                 .where(
+                   (shaderTweak) => shaderTweak.tweakType.isNonUniformTweak,
+                 )
+                 .length ==
+             TweakType.values
+                 .where((tweakType) => tweakType.isNonUniformTweak)
+                 .length,
+         'All [isNonUniformTweak]s must be present for each [ShaderModel]',
        );
 
   final String friendlyName;

@@ -4,6 +4,7 @@ enum TweakType {
   fftDataSmoothing(
     label: 'Stability',
     description: 'Smoothing/interpolation between FFT bins.',
+    isNonUniformTweak: true,
   ),
   uniformPushRange(
     label: 'Push Range',
@@ -124,9 +125,11 @@ enum TweakType {
   final String label;
   final String description;
   final String? uniform;
+  final bool isNonUniformTweak;
   const TweakType({
     required this.label,
     required this.description,
+    this.isNonUniformTweak = false,
     this.uniform,
   });
 }

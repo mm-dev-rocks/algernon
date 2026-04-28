@@ -20,20 +20,12 @@ class FileChooser extends StatefulWidget {
   static set selectedFilePathIndex(int index) =>
       AppState.setPreference('selectedPlaylistFilePathIndex', index);
 
-  static String get selectedFilePath {
-    /// Protect against scenario:
-    /// Last item in playlist was deleted from list while still playing. Then app was closed, leaving
-    /// [selectedFilePathIndex] pointing to a non-existing item.
-    int lastFilePathIndex = currentPlaylist.length - 1;
-    if (selectedFilePathIndex > lastFilePathIndex) {
-      debugPrint("FileChooser::selectedFilePath");
-      debugPrint(
-        "\tItem [$selectedFilePathIndex] chosen but last item in list is [$lastFilePathIndex] --- fixing!",
-      );
-      selectedFilePathIndex = lastFilePathIndex;
-    }
-    return currentPlaylist[selectedFilePathIndex];
-  }
+  /// Protect against non-existent index eg when tracks have been deleted.
+  static String get selectedFilePath =>
+      currentPlaylist[selectedFilePathIndex.clamp(
+        0,
+        currentPlaylist.length - 1,
+      )];
 
   static void selectNextTrack() {
     debugPrint('FileChooser::selectNextTrack()');
