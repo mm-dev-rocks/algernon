@@ -2,7 +2,7 @@
 
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
-import 'package:algernon/enum/enum.dart';
+import 'package:algernon/enum.dart';
 
 /// Each shader in the app should have a respective [ShaderMetaModel].
 /// Sets up some config defaults and provides a place to store user settings.

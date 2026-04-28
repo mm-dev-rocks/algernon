@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
-import 'package:algernon/enum/enum.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/memory_slot_chooser.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/shader_chooser.dart';

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'package:algernon/enum/enum.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 
@@ -507,13 +507,6 @@ final List<ShaderModel> shadersData = [
         max: 0.99,
         defaultValue: 0.8,
       ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultValue: 25,
-      ),
       TweakType.uniformSpeed.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformSpeed,
@@ -521,12 +514,27 @@ final List<ShaderModel> shadersData = [
         max: 1.0,
         defaultValue: 0.18,
       ),
+      TweakType.uniformArmCount.name: ShaderTweakModel(
+        shaderId: 'spectral_sphere',
+        tweakType: TweakType.uniformArmCount,
+        min: 8,
+        max: 128,
+        divisions: 12,
+        defaultValue: 40,
+      ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformHueRange,
         min: 0,
         max: 360,
         defaultValue: 120,
+      ),
+      TweakType.uniformHueShift.name: ShaderTweakModel(
+        shaderId: 'spectral_sphere',
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultValue: 25,
       ),
       TweakType.uniformBlobSize.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
