@@ -2,7 +2,6 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_soloud/flutter_soloud.dart';
 
 class PauseToggle extends StatefulWidget {
   const PauseToggle({super.key});
@@ -17,28 +16,15 @@ class _PauseToggleState extends State<PauseToggle> {
     return ListenableBuilder(
       listenable: AlgernonPlayer.currentSoundNotifier,
       builder: (context, child) {
-        debugPrint('PauseToggle::build()');
         return IconButton(
-          onPressed: _togglePause,
+          onPressed: AlgernonPlayer.currentSoundNotifier.togglePause,
           icon: Icon(
-            (AlgernonPlayer.currentSoundHandle != null &&
-                    SoLoud.instance.getPause(
-                      AlgernonPlayer.currentSoundHandle!,
-                    ))
+            AlgernonPlayer.currentSoundNotifier.isPaused
                 ? Icons.play_arrow
                 : Icons.pause,
           ),
         );
       },
     );
-  }
-
-  void _togglePause() {
-    if (AlgernonPlayer.currentSoundHandle != null) {
-      SoLoud.instance.pauseSwitch(AlgernonPlayer.currentSoundHandle!);
-      setState(() {
-        /// Rebuild to update state of the toggle button
-      });
-    }
   }
 }

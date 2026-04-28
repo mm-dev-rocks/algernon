@@ -3,9 +3,9 @@
 import 'dart:io';
 
 import 'package:algernon/algernon_player.dart';
-import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 
 /// Provides [Player], [Media], [Playlist] etc.
 import 'package:path_provider/path_provider.dart';
@@ -86,6 +86,11 @@ class _AlgernonAppState extends State<AlgernonApp> {
     if (event is KeyDownEvent) {
       debugPrint(event.logicalKey.toString());
       switch (event.logicalKey.keyLabel) {
+        /// Space toggle pause
+        case " ":
+          AlgernonPlayer.currentSoundNotifier.togglePause();
+
+        /// Number keys for memory slots
         case "1":
           AlgernonPlayer.painterConfig.currentMemorySlot = 0;
         case "2":

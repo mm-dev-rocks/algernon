@@ -4,6 +4,7 @@ import 'dart:ui' as ui;
 
 import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/audio_analysis.dart';
+import 'package:algernon/audio_source_notifier.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
@@ -16,7 +17,6 @@ class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
   static SoundHandle? currentSoundHandle;
-  //static AudioSource? currentSound;
 
   static bool get soLoudIsReady =>
       SoLoud.instance.isInitialized &&
@@ -313,16 +313,4 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   //  pixels.fillRange(0, pixels.length, 0.0);
   //  return await _shaderImageFromPixels(pixels);
   //}
-}
-
-class AudioSourceNotifier extends ChangeNotifier {
-  AudioSource? _source;
-
-  set source(AudioSource? source) {
-    _source = source;
-    debugPrint('AudioSourceNotifier: notifying listeners');
-    notifyListeners();
-  }
-
-  AudioSource? get source => _source;
 }
