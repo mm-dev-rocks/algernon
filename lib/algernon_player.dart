@@ -120,10 +120,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Keep a rolling average of bins to be used for physics 'charges'
   final Float32List _binAverages = Float32List(256); // rolling avg per bin
 
-  /// _zeroImage is a placeholder for when we don't have any audio data (eg on first start).
-  //late ui.Image? _zeroImage;
-  //bool _zeroImageExists = false;
-
   bool _isProcessing = false;
 
   late final Ticker _ticker;
@@ -140,13 +136,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     _ticker.start();
 
     AlgernonPlayer.playSelectedSound(reason: 'initState');
-
-    /// [initState] can't be async, so we send image creation off as a microtask which will be carried out after the
-    /// current flow of execution.
-    //Future<void>.microtask(() async {
-    //  _zeroImage = await _getZeroImage();
-    //  _zeroImageExists = true;
-    //});
 
     super.initState();
   }
@@ -182,19 +171,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
                 child: ListenableBuilder(
                   listenable: AlgernonPlayer.painterConfig,
                   builder: (BuildContext context, Widget? child) {
-                    return
-                    //_zeroImageExists
-                    //?
-                    AlgernonShaderPainter(
+                    return AlgernonShaderPainter(
                       elapsedSeconds: _elapsedSeconds,
                       painterConfig: AlgernonPlayer.painterConfig,
-                      //fftDataTexture:
-                      //    AlgernonPlayer.painterConfig.fftDataImage ??
-                      //    _zeroImage!,
-                      //shaderMeta:
-                      //    AlgernonPlayer.painterConfig.currentShader,
                     );
-                    //: const SizedBox.shrink();
                   },
                 ),
               ),
@@ -306,11 +286,4 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
 
     return await _shaderImageFromPixels(pixels);
   }
-
-  ///// Make an image full of zeroes as a placeholder.
-  //Future<ui.Image> _getZeroImage() async {
-  //  final pixels = Float32List(256 * 4);
-  //  pixels.fillRange(0, pixels.length, 0.0);
-  //  return await _shaderImageFromPixels(pixels);
-  //}
 }
