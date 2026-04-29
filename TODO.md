@@ -1,9 +1,5 @@
-
-list of shaders needs to be scrollable
-
 file playback
     curently selection replaces playlist, should add to it
-    need a way to delete tracks from playlist, single or all
     should play next file in playlist by default (add standard shuffle loop single loop all)
     read/write .m3u
 
@@ -140,3 +136,5 @@ can just use scaling variable from volume compensation
     - Ensure is saved to prefs
     - 
 null checks on soundhandle in AlgernonPlayer
+list of shaders needs to be scrollable
+    need a way to delete tracks from playlist, single or all
