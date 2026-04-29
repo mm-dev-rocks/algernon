@@ -50,7 +50,7 @@ class ALGERNON {
     'selectedPlaylistFilePathIndex': [int, 0],
   };
 
-  static const int soLoudBufferSize = 1024;
+  static const int soLoudBufferSize = 2048;
   static const double magnitudeChargeSmoothing = 0.999;
   static const int energyZoneBlendBuckets = 3;
 
