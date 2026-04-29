@@ -61,7 +61,7 @@ class ALGERNON {
   static const double disabledControlOpacity = 0.5;
   static const double buttonBorderThickness = 1;
 
-  static const int finalAimFps = 30;
+  static const int finalAimFps = 3;
 
   static const String autoCountPrefSuffix = 'auto';
   static const String memorySlotPrefPrefix = 'memslot';
