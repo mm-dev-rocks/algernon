@@ -13,8 +13,6 @@ class ShaderChooser extends StatelessWidget {
   Widget build(BuildContext context) {
     return DropdownMenu<ShaderModel>(
       width: Screen.mainControlPanelWidth(context),
-      //width: double.infinity,
-      //requestFocusOnTap: false,
       selectOnly: true,
       initialSelection: AlgernonPlayer.painterConfig.currentShader,
       onSelected: (ShaderModel? value) {
