@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
-import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/file_chooser_notifier.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
@@ -10,38 +10,27 @@ import 'package:flutter/material.dart';
 class FileChooser extends StatefulWidget {
   const FileChooser({super.key});
 
-  static List<String> get currentPlaylist => AppState.getPreference('playlist');
-  static set currentPlaylist(List<String> newPlaylist) {
-    AppState.setPreference('playlist', newPlaylist);
-  }
-
-  static int get selectedFilePathIndex =>
-      AppState.getPreference('selectedPlaylistFilePathIndex');
-  static set selectedFilePathIndex(int index) =>
-      AppState.setPreference('selectedPlaylistFilePathIndex', index);
-
-  /// Protect against non-existent index eg when tracks have been deleted.
-  static String get selectedFilePath =>
-      currentPlaylist[selectedFilePathIndex.clamp(
-        0,
-        currentPlaylist.length - 1,
-      )];
+  static FileChooserNotifier notifier = FileChooserNotifier();
 
   static void selectNextTrack() {
     debugPrint('FileChooser::selectNextTrack()');
-    debugPrint('\tselectedFilePathIndex: $selectedFilePathIndex');
-    int nextTrackIndex = selectedFilePathIndex + 1;
-    if (nextTrackIndex == currentPlaylist.length) {
+    debugPrint(
+      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+    );
+    int nextTrackIndex = FileChooser.notifier.selectedFilePathIndex + 1;
+    if (nextTrackIndex == FileChooser.notifier.currentPlaylist.length) {
       nextTrackIndex = 0;
     }
-    selectedFilePathIndex = nextTrackIndex;
-    debugPrint('\tselectedFilePathIndex: $selectedFilePathIndex');
+    FileChooser.notifier.selectedFilePathIndex = nextTrackIndex;
+    debugPrint(
+      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+    );
   }
 
   static void removeTrackByIndex(int index) {
-    List<String> tracks = List.of(currentPlaylist);
+    List<String> tracks = List.of(FileChooser.notifier.currentPlaylist);
     tracks.removeAt(index);
-    currentPlaylist = tracks;
+    FileChooser.notifier.currentPlaylist = tracks;
   }
 
   @override
@@ -51,48 +40,50 @@ class FileChooser extends StatefulWidget {
 class _FileChooserState extends State<FileChooser> {
   @override
   Widget build(BuildContext context) {
-    return DropdownMenu<int>(
-      width: double.infinity,
-      requestFocusOnTap: false,
-      initialSelection: FileChooser.selectedFilePathIndex,
-      menuHeight: Screen.height(context) * 0.66,
-      onSelected: (int? value) async {
-        debugPrint('FileChooser::onSelected($value)');
-        if (value != null) {
-          FileChooser.selectedFilePathIndex = value;
-          await AlgernonPlayer.playSelectedSound(
-            reason: 'FileChooser::onSelected($value)',
-          );
-        }
-        UserInterface.keepControlsAlive();
-        setState(() {
-          /// Update selection colours etc
-        });
+    return ListenableBuilder(
+      listenable: FileChooser.notifier,
+      builder: (context, child) {
+        return DropdownMenu<int>(
+          width: double.infinity,
+          requestFocusOnTap: false,
+          initialSelection: FileChooser.notifier.selectedFilePathIndex,
+          menuHeight: Screen.height(context) * 0.66,
+          onSelected: (int? value) async {
+            debugPrint('FileChooser::onSelected($value)');
+            if (value != null) {
+              FileChooser.notifier.selectedFilePathIndex = value;
+              await AlgernonPlayer.playSelectedSound(
+                reason: 'FileChooser::onSelected($value)',
+              );
+            }
+            UserInterface.keepControlsAlive();
+          },
+          dropdownMenuEntries: FileChooser.notifier.currentPlaylist
+              .asMap()
+              .entries
+              .map<DropdownMenuEntry<int>>(
+                (MapEntry entry) => DropdownMenuEntry<int>(
+                  value: entry.key,
+                  label: FileChooser.notifier.currentPlaylist[entry.key]
+                      .split('/')
+                      .last,
+                  style: MenuItemButton.styleFrom(
+                    foregroundColor:
+                        entry.key == FileChooser.notifier.selectedFilePathIndex
+                        ? Colors.white
+                        : ALGERNON.uiDefaultForegroundColor,
+                  ),
+                  trailingIcon: IconButton(
+                    icon: Icon(Icons.playlist_remove),
+                    onPressed: () {
+                      FileChooser.removeTrackByIndex(entry.key);
+                    },
+                  ),
+                ),
+              )
+              .toList(),
+        );
       },
-      dropdownMenuEntries: FileChooser.currentPlaylist
-          .asMap()
-          .entries
-          .map<DropdownMenuEntry<int>>(
-            (MapEntry entry) => DropdownMenuEntry<int>(
-              value: entry.key,
-              label: FileChooser.currentPlaylist[entry.key].split('/').last,
-              style: MenuItemButton.styleFrom(
-                foregroundColor: entry.key == FileChooser.selectedFilePathIndex
-                    ? Colors.white
-                    : ALGERNON.uiDefaultForegroundColor,
-              ),
-              trailingIcon: IconButton(
-                icon: Icon(Icons.playlist_remove),
-                onPressed: () {
-                  FileChooser.removeTrackByIndex(entry.key);
-                  setState(() {
-                    /// Update list to make removal visible
-                  });
-                },
-              ),
-            ),
-          )
-          .toList(),
     );
   }
 }

@@ -86,11 +86,13 @@ class _UserInterfaceState extends State<UserInterface> {
                               await FileManager.pickFile();
                           if (filePickerResult != null &&
                               filePickerResult.files.isNotEmpty) {
-                            FileChooser.currentPlaylist = filePickerResult.files
-                                .map(
-                                  (PlatformFile file) => file.path.toString(),
-                                )
-                                .toList();
+                            FileChooser.notifier.currentPlaylist =
+                                filePickerResult.files
+                                    .map(
+                                      (PlatformFile file) =>
+                                          file.path.toString(),
+                                    )
+                                    .toList();
                           }
                         },
                         icon: Icon(Icons.playlist_add),

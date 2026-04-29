@@ -39,10 +39,10 @@ class AlgernonPlayer extends StatefulWidget {
       await AlgernonPlayer.stopAllSounds();
 
       AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-          .loadFile(FileChooser.selectedFilePath);
+          .loadFile(FileChooser.notifier.selectedFilePath);
 
       await AudioAnalysis.analyseTrackOnLoad(
-        filePath: FileChooser.selectedFilePath,
+        filePath: FileChooser.notifier.selectedFilePath,
         trackDuration: SoLoud.instance.getLength(
           AlgernonPlayer.currentSoundNotifier.source!,
         ),
@@ -93,14 +93,14 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
-    debugPrint('\t${FileChooser.selectedFilePathIndex}');
+    debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
     //await AlgernonPlayer.stopAllSounds();
     //SoLoud.instance.disposeSource(
     //  AlgernonPlayer.currentSoundNotifier.source!,
     //);
     _trackFinishedSubscription?.cancel();
     FileChooser.selectNextTrack();
-    debugPrint('\t${FileChooser.selectedFilePathIndex}');
+    debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
     await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
   }
 
