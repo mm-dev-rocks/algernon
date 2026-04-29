@@ -1,11 +1,6 @@
 
 list of shaders needs to be scrollable
 
-another big slider like volume, to scale overall shader effect
-can just use scaling variable from volume compensation
-    - Ensure is saved to prefs
-    - 
-
 file playback
     curently selection replaces playlist, should add to it
     need a way to delete tracks from playlist, single or all
@@ -32,18 +27,9 @@ handle missing/renamed files
 
 # BUGS
 
-
-sometimes stored value for uniform is outside min/max due to dev/experiments. Should fix this on init
-
-chooser does not auto update on trac advance
-
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
 volume = 0 / black screen
-
-switching memory slots does not update sliders/UI
-
-fftSmoothing is not getting saved for the slot, acts globally
 
 null checks on soundhandle in AlgernonPlayer
 
@@ -124,3 +110,11 @@ Use icons for sliders instead of labels
     - must change all internal names
     - must make sure each tweak is different enough to have its own icon/concept
 jumping to new track does not stop old track!
+chooser does not auto update on trac advance
+switching memory slots does not update sliders/UI
+sometimes stored value for uniform is outside min/max due to dev/experiments. Should fix this on init
+fftSmoothing is not getting saved for the slot, acts globally
+another big slider like volume, to scale overall shader effect
+can just use scaling variable from volume compensation
+    - Ensure is saved to prefs
+    - 
