@@ -29,9 +29,9 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
-uniform float u_pushRange;
-uniform float u_borderWidth;
-uniform float u_baseRadius;
+uniform float u_spread;
+uniform float u_emphasis;
+uniform float u_zoom;
 
 out vec4 fragColor;
 
@@ -90,7 +90,7 @@ void main() {
     // Radial position: silent bin → sites sit on BASE_RADIUS; loud → pushed
     // out.
     // float radius = BASE_RADIUS + binAmp * PUSH_RANGE;
-    float radius = u_baseRadius + binAmp * u_pushRange;
+    float radius = u_zoom + binAmp * u_spread;
 
     // Site position in aspect-corrected screen space.
     vec2 site = vec2(cos(angle), sin(angle)) * radius;
@@ -114,9 +114,9 @@ void main() {
   // The border of a Voronoi cell is the locus where d1 == d2 (equidistant
   // from two sites). We approximate border proximity as (d2 - d1), remapped
   // to a 0..1 signal that is 0 at the border and 1 well inside a cell.
-  // Dividing by u_borderWidth normalises the width of the dark border line.
+  // Dividing by u_emphasis normalises the width of the dark border line.
   // float borderProximity = clamp((d2 - d1) / BORDER_WIDTH, 0.0, 1.0);
-  float borderProximity = clamp((d2 - d1) / u_borderWidth, 0.0, 1.0);
+  float borderProximity = clamp((d2 - d1) / u_emphasis, 0.0, 1.0);
 
   // --- Colour ---
   //

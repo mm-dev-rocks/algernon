@@ -38,13 +38,15 @@ class MemorySlotButton extends StatelessWidget {
           ),
           decoration: highlighted
               ? BoxDecoration(
-                  border: border,
+                  //border: border,
                   color: Colors.pink.withValues(
                     alpha: ALGERNON.fadeDarkBackgroundOpacity,
                   ),
                 )
               : selected
-              ? BoxDecoration(border: border)
+              ? BoxDecoration(
+                  //border: border
+                )
               : null,
           //child: Text(
           //  index.toString(),

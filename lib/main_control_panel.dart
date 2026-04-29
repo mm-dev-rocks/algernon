@@ -52,22 +52,19 @@ class _MainControlPanelState extends State<MainControlPanel> {
       mainAxisSize: .min,
       crossAxisAlignment: .start,
 
-      spacing: uiSizes.paddingMedium,
+      spacing: uiSizes.paddingSmall,
       children: [
         /// 'Choose shader' dropdown
         const Flexible(fit: FlexFit.loose, child: ShaderChooser()),
 
         /// Memory slot buttons
-        Padding(
-          padding: EdgeInsets.only(left: uiSizes.paddingSmall),
-          child: ListenableBuilder(
-            listenable: AlgernonPlayer.painterConfig,
-            builder: (context, child) {
-              return MemorySlotChooser(
-                selectedIndex: AlgernonPlayer.painterConfig.currentMemorySlot,
-              );
-            },
-          ),
+        ListenableBuilder(
+          listenable: AlgernonPlayer.painterConfig,
+          builder: (context, child) {
+            return MemorySlotChooser(
+              selectedIndex: AlgernonPlayer.painterConfig.currentMemorySlot,
+            );
+          },
         ),
 
         /// FFT smoothing

@@ -10,17 +10,17 @@
 //
 // Uniforms to wire up in shaders_meta_data.dart:
 //
-//   u_warpStrength  — TweakType.uniformWarpStrength (already exists)
+//   u_warp  — TweakType.uniformWarpStrength (already exists)
 //                     min: 0.1   max: 1.5   default: 0.7
 //
-//   u_bandCount     — TweakType.uniformBandCount (already exists)
+//   u_countPrimary     — TweakType.uniformBandCount (already exists)
 //                     min: 1.0   max: 4.0   default: 3.0   divisions: 3
 //                     Number of warp iterations.
 //
 //   u_hueShift      — TweakType.uniformHueShift (already exists)
 //                     min: 0.0   max: 360.0   default: 25.0
 //
-//   u_ringContrast  — TweakType.uniformRingContrast (already exists)
+//   u_emphasis  — TweakType.uniformRingContrast (already exists)
 //                     min: 0.3   max: 3.0   default: 1.4
 //
 // fftDataSmoothing — same as all other shaders.
@@ -31,10 +31,10 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
-uniform float u_warpStrength;
-uniform float u_bandCount;
+uniform float u_warp;
+uniform float u_countPrimary;
 uniform float u_hueShift;
-uniform float u_ringContrast;
+uniform float u_emphasis;
 
 out vec4 fragColor;
 
@@ -121,33 +121,33 @@ void main() {
   // float midPhase  = u_time * 0.5;
   // float highPhase = u_time * 0.8;
 
-  int nLayers = int(clamp(u_bandCount, 1.0, 4.0));
+  int nLayers = int(clamp(u_countPrimary, 1.0, 4.0));
   vec2 wp = p;
 
   // if (nLayers >= 1)
-  //   wp += warpDisplace(wp, 8.0, bassPhase, u_warpStrength * 0.50);
+  //   wp += warpDisplace(wp, 8.0, bassPhase, u_warp * 0.50);
   // if (nLayers >= 2)
-  //   wp += warpDisplace(wp, 48.0, midPhase, u_warpStrength * 0.30);
+  //   wp += warpDisplace(wp, 48.0, midPhase, u_warp * 0.30);
   // if (nLayers >= 3)
-  //   wp += warpDisplace(wp, 120.0, highPhase, u_warpStrength * 0.15);
+  //   wp += warpDisplace(wp, 120.0, highPhase, u_warp * 0.15);
   // if (nLayers >= 4)
-  //   wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warpStrength * 0.07);
+  //   wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warp * 0.07);
   if (nLayers >= 1)
-    wp += warpDisplace(wp, 8.0, bassPhase, u_warpStrength * 0.20);
+    wp += warpDisplace(wp, 8.0, bassPhase, u_warp * 0.20);
   if (nLayers >= 2)
-    wp += warpDisplace(wp, 48.0, midPhase, u_warpStrength * 0.12);
+    wp += warpDisplace(wp, 48.0, midPhase, u_warp * 0.12);
   if (nLayers >= 3)
-    wp += warpDisplace(wp, 120.0, highPhase, u_warpStrength * 0.06);
+    wp += warpDisplace(wp, 120.0, highPhase, u_warp * 0.06);
   if (nLayers >= 4)
-    wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warpStrength * 0.03);
+    wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warp * 0.03);
 
   float ink = inkField(wp * 2.5);
-  // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_ringContrast);
-  // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_ringContrast);
+  // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
+  // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
   // float fade = smoothstep(0.0, 0.4, brightness);
   // brightness = mix(0.1, brightness, fade);
 
-  float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_ringContrast);
+  float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
   brightness = max(brightness, 0.15); // lift black floor
 
   float globalCharge = 0.0;

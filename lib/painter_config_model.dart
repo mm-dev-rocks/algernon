@@ -16,16 +16,8 @@ class PainterConfigModel with ChangeNotifier {
     notifyListeners();
   }
 
-  ///// [currentOverallEffect] keeps track of which memory slot is currently selected.
-  //int get currentOverallEffect =>
-  //    AppState.getPreference('selectedOverallEffect');
-  //set currentOverallEffect(int index) {
-  //  AppState.setPreference('selectedOverallEffect', index);
-  //  debugPrint('PainterConfigModel::currentOverallEffect NOTIFY LISTENERS');
-  //  notifyListeners();
-  //}
-
-  /// [currentMemorySlot] keeps track of which memory slot is currently selected.
+  /// [currentMemorySlot] keeps track of which memory slot is currently selected. It reads/writes directly to
+  /// [SharedPreferencesWithCache] via [AppState].
   int get currentMemorySlot =>
       AppState.getPreference('selectedMemorySlotIndex');
   set currentMemorySlot(int index) {

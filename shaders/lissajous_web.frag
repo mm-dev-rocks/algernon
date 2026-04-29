@@ -32,9 +32,9 @@ uniform sampler2D u_fftData;
 uniform float u_energyMin;
 uniform float u_energyMax;
 
-uniform float u_blobCount;
-uniform float u_attenuation;
-uniform float u_baseRadius;
+uniform float u_countPrimary;
+uniform float u_emphasis;
+uniform float u_zoom;
 
 out vec4 fragColor;
 
@@ -78,7 +78,8 @@ void main() {
   vec2 p = st - vec2(0.5, 0.5);
   p.x *= u_resolution.x / u_resolution.y;
 
-  int nBlobs = u_blobCount == -1.0 ? energyDerivedCount() : int(u_blobCount);
+  int nBlobs =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
   // --- FFT-driven curve parameters ---
   //
   // We use broad frequency band averages rather than individual bins so the
@@ -135,8 +136,8 @@ void main() {
   //
   // Map minDist → brightness using an inverse power curve.
   // clamp ensures we don't go negative or above 1.0 before the pow().
-  float distNorm = clamp(1.0 - minDist / u_baseRadius, 0.0, 1.0);
-  float intensity = pow(distNorm, u_attenuation);
+  float distNorm = clamp(1.0 - minDist / u_zoom, 0.0, 1.0);
+  float intensity = pow(distNorm, u_emphasis);
 
   // --- Colour ---
   //

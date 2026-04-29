@@ -6,7 +6,6 @@ import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/audio_source_notifier.dart';
 import 'package:algernon/constants.dart';
-import 'package:algernon/enum.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/user_interface.dart';

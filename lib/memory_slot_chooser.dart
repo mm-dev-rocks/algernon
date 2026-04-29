@@ -6,6 +6,7 @@ import 'package:algernon/constants.dart';
 import 'package:algernon/lib/memory_slot_copy_model.dart';
 import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/memory_slot_drag_feedback.dart';
+import 'package:algernon/screen.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 
@@ -20,39 +21,46 @@ class MemorySlotChooser extends StatefulWidget {
 class _MemorySlotChooserState extends State<MemorySlotChooser> {
   @override
   Widget build(BuildContext context) {
+    dynamic uiSizes = Screen.uiSizesFromContext(context);
     //int selectedIndex = AlgernonPlayer.painterConfig.currentMemorySlot;
-    return Row(
-      mainAxisSize: .max,
-      mainAxisAlignment: .spaceBetween,
-      children: List.generate(
-        ALGERNON.totalMemorySlots,
-        (int index) => Expanded(
-          child: LongPressDraggable<MemorySlotCopyModel>(
-            dragAnchorStrategy: pointerDragAnchorStrategy,
-            feedback: MemorySlotDragFeedback(index: index),
-            data: MemorySlotCopyModel(
-              slotIndex: index,
-              preferenceKeys: _getPrefKeysFromIndex(index),
-            ),
-
-            child: DragTarget<MemorySlotCopyModel>(
-              builder: (context, candidateItems, rejectedItems) {
-                return MemorySlotButton(
-                  index: index,
-                  selected: (index == widget.selectedIndex),
-                  highlighted: candidateItems.isNotEmpty,
-                  onPressed: () {
-                    _selectSlot(index);
+    return SizedBox(
+      width: Screen.mainControlPanelWidth(context),
+      child: Padding(
+          padding: EdgeInsets.only(left: uiSizes.paddingSmall),
+        child: Row(
+          mainAxisSize: .max,
+          mainAxisAlignment: .spaceBetween,
+          children: List.generate(
+            ALGERNON.totalMemorySlots,
+            (int index) => Expanded(
+              child: LongPressDraggable<MemorySlotCopyModel>(
+                dragAnchorStrategy: pointerDragAnchorStrategy,
+                feedback: MemorySlotDragFeedback(index: index),
+                data: MemorySlotCopyModel(
+                  slotIndex: index,
+                  preferenceKeys: _getPrefKeysFromIndex(index),
+                ),
+        
+                child: DragTarget<MemorySlotCopyModel>(
+                  builder: (context, candidateItems, rejectedItems) {
+                    return MemorySlotButton(
+                      index: index,
+                      selected: (index == widget.selectedIndex),
+                      highlighted: candidateItems.isNotEmpty,
+                      onPressed: () {
+                        _selectSlot(index);
+                      },
+                    );
                   },
-                );
-              },
-              onAcceptWithDetails: (details) {
-                if (details.data.slotIndex != index) {
-                  _copySlotFromDetails(details, index);
-                  _selectSlot(index);
-                }
-                UserInterface.keepControlsAlive();
-              },
+                  onAcceptWithDetails: (details) {
+                    if (details.data.slotIndex != index) {
+                      _copySlotFromDetails(details, index);
+                      _selectSlot(index);
+                    }
+                    UserInterface.keepControlsAlive();
+                  },
+                ),
+              ),
             ),
           ),
         ),

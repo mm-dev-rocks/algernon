@@ -24,15 +24,15 @@
 //                     min: 0.0   max: 360.0   default: 140.0
 //                     Hue spread from bin 0 (bass) to bin 255 (treble).
 //
-//   u_sphereRadius  — TweakType.uniformSphereRadius (NEW enum value needed)
+//   u_zoom  — TweakType.uniformSphereRadius (NEW enum value needed)
 //                     min: 0.15  max: 0.48   default: 0.32
 //                     Radius of the sphere in normalised canvas units.
 //
-//   u_blobSize      — TweakType.uniformBlobSize (already exists)
+//   u_size      — TweakType.uniformBlobSize (already exists)
 //                     min: 0.01  max: 0.12   default: 0.038
 //                     Base half-width of each blob in screen units.
 //
-//   u_glowStrength  — TweakType.uniformGlowStrength (NEW enum value needed)
+//   u_emphasis  — TweakType.uniformGlowStrength (NEW enum value needed)
 //                     min: 0.5   max: 4.0    default: 1.8
 //                     Multiplier on each blob's brightness contribution.
 //
@@ -50,11 +50,11 @@ uniform sampler2D u_fftData;
 
 uniform float u_hueShift;
 uniform float u_hueRange;
-uniform float u_sphereRadius;
-uniform float u_blobSize;
-uniform float u_glowStrength;
+uniform float u_zoom;
+uniform float u_size;
+uniform float u_emphasis;
 uniform float u_speed;
-uniform float u_armCount;
+uniform float u_countPrimary;
 
 out vec4 fragColor;
 
@@ -63,7 +63,7 @@ const float TAU = 6.28318530;
 // const int BINS = 256;
 // const int BINS = 128;
 // const int BINS = 64;
-int BINS = int(u_armCount);
+int BINS = int(u_countPrimary);
 
 // ---------------------------------------------------------------------------
 // HSV → RGB — H in [0,360], S/V in [0,1].
@@ -148,7 +148,7 @@ void main() {
 
   // Sphere radius breathes gently with energy, plus a slow sinusoidal pulse.
   float breathe = 1.0 + energy * 0.12 + sin(u_time * 0.4) * 0.03;
-  float radius = u_sphereRadius * breathe;
+  float radius = u_zoom * breathe;
 
   // --- Slow orientation drift driven by u_time and energy ---
   float rotAngleY = u_time * u_speed + energy * 0.6;
@@ -207,7 +207,7 @@ void main() {
 
     // --- Blob size: larger when charge is high, modulated by mag and depth.
     // ---
-    float blobR = u_blobSize * (1.0 + mag * 0.8 + max(charge, 0.0) * 0.5) *
+    float blobR = u_size * (1.0 + mag * 0.8 + max(charge, 0.0) * 0.5) *
                   (0.7 + 0.3 * depthFade);
 
     // --- Soft Gaussian blob ---
@@ -218,7 +218,7 @@ void main() {
     // Extra core: a tight bright centre when magnitude is high.
     float core = exp(-d2 / (blobR * blobR * 0.08)) * mag * 0.6 * visibility;
 
-    float contribution = (blob + core) * mag * u_glowStrength;
+    float contribution = (blob + core) * mag * u_emphasis;
 
     // --- Colour: hue sweeps bass→treble across u_hueRange.
     //     Charge nudges hue warm (positive) or cool (negative).

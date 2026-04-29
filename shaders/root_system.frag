@@ -4,17 +4,17 @@
 //
 // Uniforms to wire up in shaders_meta_data.dart:
 //
-//   u_armCount      — TweakType.uniformArmCount (already exists)
+//   u_countPrimary      — TweakType.uniformArmCount (already exists)
 //                     min: 3.0   max: 12.0   default: 6.0   divisions: 9
 //
-//   u_branchDepth   — TweakType.uniformBranchDepth (NEW enum value needed)
+//   u_countSecondary   — TweakType.uniformBranchDepth (NEW enum value needed)
 //                     min: 1.0   max: 3.0   default: 2.0   divisions: 2
 //                     1 = arms only, 2 = +sub-branches, 3 = +sub-sub-branches
 //
 //   u_hueShift      — TweakType.uniformHueShift (already exists)
 //                     min: 0.0   max: 360.0   default: 30.0
 //
-//   u_maxTwist      — TweakType.uniformMaxTwist (already exists)
+//   u_warp      — TweakType.uniformMaxTwist (already exists)
 //                     min: 0.1   max: 2.5   default: 1.2
 //
 // fftDataSmoothing — same as all other shaders.
@@ -28,12 +28,12 @@ uniform sampler2D u_fftData;
 uniform float u_energyMin;
 uniform float u_energyMax;
 
-uniform float u_armCount;
-uniform float u_ringContrast;
-uniform float u_baseRadius;
-uniform float u_branchDepth;
+uniform float u_countPrimary;
+uniform float u_emphasis;
+uniform float u_zoom;
+uniform float u_countSecondary;
 uniform float u_hueShift;
-uniform float u_maxTwist;
+uniform float u_warp;
 
 out vec4 fragColor;
 
@@ -78,7 +78,7 @@ float armSway(float fi, float t) {
   float slowSway = sin(u_time * 0.7 + fi * 1.37 + t * 1.1) * 0.6 +
                    sin(u_time * 0.3 + fi * 2.71 + t * 0.8) * 0.3;
   float fastJitter = sin(u_time * 2.3 + fi * 0.89 + t * 2.3) * 0.2;
-  return (slowSway + fastJitter) * u_maxTwist;
+  return (slowSway + fastJitter) * u_warp;
 }
 
 int energyDerivedCount() {
@@ -102,9 +102,10 @@ void main() {
   float glowTotal = 0.0;
   vec3 colTotal = vec3(0.0);
 
-  // int nArms = int(u_armCount);
-  int nArms = u_armCount == -1.0 ? energyDerivedCount() : int(u_armCount);
-  int nDepths = int(u_branchDepth);
+  // int nArms = int(u_countPrimary);
+  int nArms =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
+  int nDepths = int(u_countSecondary);
 
   for (int arm = 0; arm < 999; arm++) {
     if (arm >= nArms)
@@ -115,8 +116,7 @@ void main() {
 
     float armBin = fi * (64.0 / float(nArms));
     vec2 fcArm = sampleBin(armBin);
-    float armLen =
-        clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, u_baseRadius);
+    float armLen = clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, u_zoom);
     float mainWidth = 0.012 + fcArm.x * 0.006;
 
     float hue = u_hueShift + (fi / float(nArms)) * 60.0 + fcArm.y * 25.0;
@@ -209,7 +209,7 @@ void main() {
 
   glowTotal = min(glowTotal, 1.5);
   vec3 colour = (glowTotal > 0.001) ? colTotal / glowTotal : vec3(0.0);
-  float brightness = clamp(glowTotal, 0.0, u_ringContrast);
+  float brightness = clamp(glowTotal, 0.0, u_emphasis);
 
   fragColor = vec4(colour * brightness, 1.0);
 }

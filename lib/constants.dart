@@ -51,8 +51,8 @@ class ALGERNON {
   };
 
   static const int soLoudBufferSize = 1024;
-  static const double magnitudeChargeSmoothing = 0.99;
-  static const int energyZoneBlendBuckets = 5;
+  static const double magnitudeChargeSmoothing = 0.999;
+  static const int energyZoneBlendBuckets = 3;
 
   static const int totalMemorySlots = 5;
 
@@ -79,7 +79,7 @@ class ALGERNON {
   static const Duration showControlsFadeDuration = Duration(milliseconds: 300);
 
   static final Color uiDefaultForegroundColor = Color.alphaBlend(
-    Colors.white.withValues(alpha: 0.7),
+    Colors.white.withValues(alpha: 0.5),
     Colors.black,
   );
   //Colors.green;
@@ -108,6 +108,8 @@ class ALGERNON {
 
   static const double controlPanelWidthMin = 300;
   static const double controlPanelWidthMax = 400;
+
+  static const Size autoCountButtonSize = Size(42, 42);
 
   ///
   ///

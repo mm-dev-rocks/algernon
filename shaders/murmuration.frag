@@ -39,16 +39,16 @@ uniform float u_time;
 uniform sampler2D u_fftData;
 
 // min: 4.0  max: 64.0  default: 28.0
-uniform float u_ringDensity; // used as flockDensity
+uniform float u_countPrimary; // used as flockDensity
 
 // min: 0.5  max: 4.0  default: 2.0
-uniform float u_ringContrast; // used as flockContrast
+uniform float u_emphasis; // used as flockContrast
 
 // min: 0.0  max: 360.0  default: 200.0
 uniform float u_hueShift;
 
 // min: 0.0  max: 2.0  default: 0.8
-uniform float u_attenuation; // used as cohesion
+uniform float u_spread; // used as cohesion
 
 out vec4 fragColor;
 
@@ -145,20 +145,20 @@ void main() {
 
   // Pull vector toward origin, scaled by cohesion uniform + charge
   vec2 pullDir = -normalize(p + vec2(0.001)); // toward centre
-  float pullStr = u_attenuation * clamp(avgCharge, 0.0, 1.0) * 0.3;
+  float pullStr = u_spread * clamp(avgCharge, 0.0, 1.0) * 0.3;
 
   // ---------------------------------------------------------------------------
   // Particle dot field
   // ---------------------------------------------------------------------------
   // Scale p into grid space
-  vec2 grid = p * u_ringDensity;
+  vec2 grid = p * u_countPrimary;
 
   // Local position within a grid cell [0,1]^2
   vec2 cell = fract(grid);
   vec2 cellID = floor(grid);
 
   // Flow at this cell centre
-  vec2 cellCentre = (cellID + 0.5) / u_ringDensity;
+  vec2 cellCentre = (cellID + 0.5) / u_countPrimary;
   vec2 cellP = (cellCentre - 0.5) * vec2(asp, 1.0);
 
   vec2 flow = flowField(cellP, phaseShift);
@@ -176,7 +176,7 @@ void main() {
 
   // Particle radius is tiny — contrast sharpens/softens the edge
   float radius = 0.18;
-  float particle = smoothstep(radius, radius - radius / u_ringContrast, dist);
+  float particle = smoothstep(radius, radius - radius / u_emphasis, dist);
 
   // ---------------------------------------------------------------------------
   // Colour: spectrum mapped to flow direction angle + FFT magnitude
@@ -185,7 +185,7 @@ void main() {
   float hueT = (flowAngle / 6.2832 + 0.5); // 0..1
 
   // Local FFT sample — bin index proportional to position in the field
-  float fieldBin = (cellID.x / u_ringDensity * 0.5 + 0.5) * 200.0;
+  float fieldBin = (cellID.x / u_countPrimary * 0.5 + 0.5) * 200.0;
   vec2 fcLocal = sampleBin(fieldBin);
 
   float hue = u_hueShift + hueT * 40.0 + fcLocal.y * 20.0;

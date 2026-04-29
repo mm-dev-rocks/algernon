@@ -35,10 +35,10 @@ uniform sampler2D u_fftData;
 uniform float u_energyMin;
 uniform float u_energyMax;
 
-uniform float u_armCount;
-uniform float u_maxTwist;
-uniform float u_bandCount;
-uniform float u_armContrast;
+uniform float u_countPrimary;
+uniform float u_warp;
+uniform float u_countSecondary;
+uniform float u_emphasis;
 uniform float u_hueShift;
 
 out vec4 fragColor;
@@ -69,7 +69,8 @@ void main() {
   float radius = length(p) * 0.5;
   float angle = atan(p.y, p.x); // -pi..pi
 
-  int nBands = u_bandCount == -1.0 ? energyDerivedCount() : int(u_bandCount);
+  int nBands =
+      u_countSecondary == -1.0 ? energyDerivedCount() : int(u_countSecondary);
   // --- Per-ring twist ---
   //
   // Map this fragment's radius to a radial band index (0..BAND_COUNT-1).
@@ -93,24 +94,24 @@ void main() {
   // (which are physically longer arcs) don't appear to twist more than inner
   // rings — this keeps the visual weight perceptually even across the disc.
   float radiusDamp = 1.0 / (1.0 + radius * 2.0); // falls from 1 → ~0.5 at edge
-  float twistAngle = magnitude * u_maxTwist * radiusDamp;
+  float twistAngle = magnitude * u_warp * radiusDamp;
 
   // Apply the twist: rotate this fragment's angle by the computed twist.
   float twistedAngle = angle + twistAngle;
 
   // --- Spiral arm pattern ---
   //
-  // Map the twisted angle onto u_armCount arms using a cosine wave.
-  // The argument is (twistedAngle / pi) * u_armCount * pi = twistedAngle *
-  // u_armCount, which goes through u_armCount full oscillations per full
-  // circle.
-  float armSignal = cos(twistedAngle * u_armCount);
+  // Map the twisted angle onto u_countPrimary arms using a cosine wave.
+  // The argument is (twistedAngle / pi) * u_countPrimary * pi = twistedAngle *
+  // u_countPrimary, which goes through u_countPrimary full oscillations per
+  // full circle.
+  float armSignal = cos(twistedAngle * u_countPrimary);
   // float noise = sin(radius * 20.0 + charge * 10.0);
-  // float armSignal = cos(twistedAngle * u_armCount + noise * 0.3);
+  // float armSignal = cos(twistedAngle * u_countPrimary + noise * 0.3);
 
   // Remap -1..1 → 0..1 and apply contrast.
-  // float armBrightness = pow(armSignal * 0.5 + 0.5, u_armContrast);
-  float contrast = u_armContrast + charge * 2.0;
+  // float armBrightness = pow(armSignal * 0.5 + 0.5, u_emphasis);
+  float contrast = u_emphasis + charge * 2.0;
   float armBrightness = pow(armSignal * 0.5 + 0.5, contrast);
 
   // --- Radial attenuation ---

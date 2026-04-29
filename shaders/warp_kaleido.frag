@@ -24,9 +24,9 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
-uniform float u_warpStrength;
-uniform float u_foldCount;
-uniform float u_attenuation;
+uniform float u_warp;
+uniform float u_countPrimary;
+uniform float u_emphasis;
 
 out vec4 fragColor;
 
@@ -57,7 +57,7 @@ float foldAngle(float theta) {
   float t = mod(theta + PI, 2.0 * PI);
 
   // Width of one sector in radians
-  float sectorAngle = PI / u_foldCount;
+  float sectorAngle = PI / u_countPrimary;
 
   // Map t into 0..2pi, then into the nearest sector
   t = mod(t, 2.0 * sectorAngle);
@@ -88,8 +88,8 @@ void main() {
   //
   // Each pair of bins pushes in perpendicular directions, so loud bass causes
   // the whole field to breathe/pulse while the midrange makes it shimmer.
-  float warpX = (sampleBin(2.0) - sampleBin(4.0)) * u_warpStrength;
-  float warpY = (sampleBin(6.0) - sampleBin(8.0)) * u_warpStrength;
+  float warpX = (sampleBin(2.0) - sampleBin(4.0)) * u_warp;
+  float warpY = (sampleBin(6.0) - sampleBin(8.0)) * u_warp;
   p += vec2(warpX, warpY);
 
   // --- Kaleidoscope fold ---
@@ -126,7 +126,7 @@ void main() {
 
   // Attenuate pattern by distance from centre so the middle is always dark
   // (avoids a blown-out bright centre that would obscure the structure).
-  float radialFade = 1.0 - clamp(radius * u_attenuation, 0.0, 1.0);
+  float radialFade = 1.0 - clamp(radius * u_emphasis, 0.0, 1.0);
   pattern *= radialFade;
 
   // Final RGB: each channel is the audio band × the geometric pattern.

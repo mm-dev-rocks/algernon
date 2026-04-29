@@ -63,16 +63,9 @@ final List<ShaderModel> shadersData = [
         shaderId: 'warp_kaleido',
         tweakType: TweakType.fftDataSmoothing,
       ),
-      TweakType.uniformWarpStrength.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'warp_kaleido',
-        tweakType: TweakType.uniformWarpStrength,
-        min: 0.01,
-        max: 0.2,
-        defaultValue: 0.1,
-      ),
-      TweakType.uniformFoldCount.name: ShaderTweakModel(
-        shaderId: 'warp_kaleido',
-        tweakType: TweakType.uniformFoldCount,
+        tweakType: TweakType.uniformCountPrimary,
         min: 1,
         max: 7,
 
@@ -80,10 +73,17 @@ final List<ShaderModel> shadersData = [
         divisions: 6,
         defaultValue: 3,
       ),
-      TweakType.uniformAttenuation.name: ShaderTweakModel(
+      TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'warp_kaleido',
-        tweakType: TweakType.uniformAttenuation,
-        min: 0.1,
+        tweakType: TweakType.uniformWarp,
+        min: 0.01,
+        max: 0.2,
+        defaultValue: 0.1,
+      ),
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
+        shaderId: 'warp_kaleido',
+        tweakType: TweakType.uniformEmphasis,
+        min: 0.001,
         max: 3,
         defaultValue: 1.4,
       ),
@@ -96,29 +96,29 @@ final List<ShaderModel> shadersData = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
         tweakType: TweakType.fftDataSmoothing,
-        min: 0.97,
-        max: 0.999,
-        defaultValue: 0.98,
+        min: 0.99,
+        max: 0.9999,
+        defaultValue: 0.99,
       ),
-      TweakType.uniformBlobCount.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
-        tweakType: TweakType.uniformBlobCount,
+        tweakType: TweakType.uniformCountPrimary,
         isEnergyUniform: true,
         min: 2,
         max: 80,
         divisions: 78,
         defaultValue: 40,
       ),
-      TweakType.uniformAttenuation.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
-        tweakType: TweakType.uniformAttenuation,
+        tweakType: TweakType.uniformEmphasis,
         min: 1.0,
         max: 10.0,
         defaultValue: 4.5,
       ),
-      TweakType.uniformBaseRadius.name: ShaderTweakModel(
+      TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
-        tweakType: TweakType.uniformBaseRadius,
+        tweakType: TweakType.uniformZoom,
         min: 0.1,
         max: 0.9,
         defaultValue: 0.82,
@@ -133,23 +133,23 @@ final List<ShaderModel> shadersData = [
         shaderId: 'voronoi_cells',
         tweakType: TweakType.fftDataSmoothing,
       ),
-      TweakType.uniformPushRange.name: ShaderTweakModel(
+      TweakType.uniformSpread.name: ShaderTweakModel(
         shaderId: 'voronoi_cells',
-        tweakType: TweakType.uniformPushRange,
+        tweakType: TweakType.uniformSpread,
         min: 0.05,
         max: 0.5,
         defaultValue: 0.18,
       ),
-      TweakType.uniformBorderWidth.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'voronoi_cells',
-        tweakType: TweakType.uniformBorderWidth,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.01,
         max: 0.06,
         defaultValue: 0.02,
       ),
-      TweakType.uniformBaseRadius.name: ShaderTweakModel(
+      TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'voronoi_cells',
-        tweakType: TweakType.uniformBaseRadius,
+        tweakType: TweakType.uniformZoom,
         min: 0.03,
         max: 0.85,
         defaultValue: 0.30,
@@ -167,12 +167,12 @@ final List<ShaderModel> shadersData = [
         max: 0.95,
         defaultValue: 0.75,
       ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultValue: 200,
+        tweakType: TweakType.uniformCountPrimary,
+        min: 4,
+        max: 128,
+        defaultValue: 16,
       ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
         shaderId: 'rings_radial_2',
@@ -181,16 +181,16 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 120,
       ),
-      TweakType.uniformRingDensity.name: ShaderTweakModel(
+      TweakType.uniformHueShift.name: ShaderTweakModel(
         shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformRingDensity,
-        min: 4,
-        max: 128,
-        defaultValue: 16,
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultValue: 200,
       ),
-      TweakType.uniformRingFill.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformRingFill,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.1,
         max: 1,
         defaultValue: 0.75,
@@ -207,23 +207,23 @@ final List<ShaderModel> shadersData = [
         min: 0.75,
         max: 0.999,
       ),
-      TweakType.uniformRingDensity.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'moire_grid',
-        tweakType: TweakType.uniformRingDensity,
+        tweakType: TweakType.uniformCountPrimary,
         min: 1,
         max: 30,
         defaultValue: 14,
       ),
-      TweakType.uniformRingContrast.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'moire_grid',
-        tweakType: TweakType.uniformRingContrast,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.1,
         max: 2,
         defaultValue: 1.8,
       ),
-      TweakType.uniformMaxOffset.name: ShaderTweakModel(
+      TweakType.uniformSpread.name: ShaderTweakModel(
         shaderId: 'moire_grid',
-        tweakType: TweakType.uniformMaxOffset,
+        tweakType: TweakType.uniformSpread,
         min: 0.01,
         max: 0.33,
         defaultValue: 0.22,
@@ -245,33 +245,33 @@ final List<ShaderModel> shadersData = [
         shaderId: 'polar_warp',
         tweakType: TweakType.fftDataSmoothing,
       ),
-      TweakType.uniformArmCount.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'polar_warp',
-        tweakType: TweakType.uniformArmCount,
+        tweakType: TweakType.uniformCountPrimary,
         min: 3,
         max: 18,
         divisions: 15,
         defaultValue: 5,
       ),
-      TweakType.uniformMaxTwist.name: ShaderTweakModel(
+      TweakType.uniformCountSecondary.name: ShaderTweakModel(
         shaderId: 'polar_warp',
-        tweakType: TweakType.uniformMaxTwist,
-        min: 3.14,
-        max: 9.42,
-        defaultValue: 5,
-      ),
-      TweakType.uniformBandCount.name: ShaderTweakModel(
-        shaderId: 'polar_warp',
-        tweakType: TweakType.uniformBandCount,
+        tweakType: TweakType.uniformCountSecondary,
         isEnergyUniform: true,
         min: 1,
         max: 32,
         divisions: 31,
         defaultValue: 8,
       ),
-      TweakType.uniformArmContrast.name: ShaderTweakModel(
+      TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'polar_warp',
-        tweakType: TweakType.uniformArmContrast,
+        tweakType: TweakType.uniformWarp,
+        min: 3.14,
+        max: 9.42,
+        defaultValue: 5,
+      ),
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
+        shaderId: 'polar_warp',
+        tweakType: TweakType.uniformEmphasis,
         min: 0,
         max: 15,
         defaultValue: 2.2,
@@ -325,18 +325,18 @@ final List<ShaderModel> shadersData = [
         max: 0.99,
         defaultValue: 0.75,
       ),
-      TweakType.uniformBlobCount.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'slime_trails',
-        tweakType: TweakType.uniformBlobCount,
+        tweakType: TweakType.uniformCountPrimary,
         isEnergyUniform: true,
         min: 2,
         max: 8,
         divisions: 6,
         defaultValue: 6,
       ),
-      TweakType.uniformBlobSize.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'slime_trails',
-        tweakType: TweakType.uniformBlobSize,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.05,
         max: 0.5,
         defaultValue: 0.18,
@@ -366,26 +366,26 @@ final List<ShaderModel> shadersData = [
         shaderId: 'root_system',
         tweakType: TweakType.fftDataSmoothing,
       ),
-      TweakType.uniformArmCount.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'root_system',
-        tweakType: TweakType.uniformArmCount,
+        tweakType: TweakType.uniformCountPrimary,
         isEnergyUniform: true,
         min: 3,
         max: 13,
         divisions: 10,
         defaultValue: 6,
       ),
-      TweakType.uniformBranchDepth.name: ShaderTweakModel(
+      TweakType.uniformCountSecondary.name: ShaderTweakModel(
         shaderId: 'root_system',
-        tweakType: TweakType.uniformBranchDepth,
+        tweakType: TweakType.uniformCountSecondary,
         min: 1,
         max: 3,
         divisions: 2,
         defaultValue: 2,
       ),
-      TweakType.uniformRingContrast.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'root_system',
-        tweakType: TweakType.uniformRingContrast,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.1,
         max: 2,
         defaultValue: 0.6,
@@ -397,16 +397,16 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 30,
       ),
-      TweakType.uniformMaxTwist.name: ShaderTweakModel(
+      TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'root_system',
-        tweakType: TweakType.uniformMaxTwist,
+        tweakType: TweakType.uniformWarp,
         min: 0.1,
         max: 10,
         defaultValue: 1.2,
       ),
-      TweakType.uniformBaseRadius.name: ShaderTweakModel(
+      TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'root_system',
-        tweakType: TweakType.uniformBaseRadius,
+        tweakType: TweakType.uniformZoom,
         min: 0.2,
         max: 1,
         defaultValue: 0.55,
@@ -422,16 +422,16 @@ final List<ShaderModel> shadersData = [
         shaderId: 'murmuration',
         tweakType: TweakType.fftDataSmoothing,
       ),
-      TweakType.uniformRingDensity.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'murmuration',
-        tweakType: TweakType.uniformRingDensity,
+        tweakType: TweakType.uniformCountPrimary,
         min: 4,
         max: 128,
         defaultValue: 28,
       ),
-      TweakType.uniformRingContrast.name: ShaderTweakModel(
+      TweakType.uniformSpread.name: ShaderTweakModel(
         shaderId: 'murmuration',
-        tweakType: TweakType.uniformRingContrast,
+        tweakType: TweakType.uniformSpread,
         min: 1,
         max: 2.0,
         defaultValue: 1.5,
@@ -443,9 +443,9 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 200,
       ),
-      TweakType.uniformAttenuation.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'murmuration',
-        tweakType: TweakType.uniformAttenuation,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.0,
         max: 2.0,
         defaultValue: 0.8,
@@ -464,20 +464,20 @@ final List<ShaderModel> shadersData = [
         max: 0.99,
         defaultValue: 0.8,
       ),
-      TweakType.uniformWarpStrength.name: ShaderTweakModel(
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
-        tweakType: TweakType.uniformWarpStrength,
-        min: 0.2,
-        max: 15,
-        defaultValue: 0.7,
-      ),
-      TweakType.uniformBandCount.name: ShaderTweakModel(
-        shaderId: 'fluid_ink',
-        tweakType: TweakType.uniformBandCount,
+        tweakType: TweakType.uniformCountPrimary,
         min: 1,
         max: 16,
         divisions: 15,
         defaultValue: 3,
+      ),
+      TweakType.uniformWarp.name: ShaderTweakModel(
+        shaderId: 'fluid_ink',
+        tweakType: TweakType.uniformWarp,
+        min: 0.2,
+        max: 15,
+        defaultValue: 0.7,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
@@ -486,9 +486,9 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 25,
       ),
-      TweakType.uniformRingContrast.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
-        tweakType: TweakType.uniformRingContrast,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.1,
         max: 6.0,
         defaultValue: 1.4,
@@ -507,20 +507,20 @@ final List<ShaderModel> shadersData = [
         max: 0.99,
         defaultValue: 0.8,
       ),
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
+        shaderId: 'spectral_sphere',
+        tweakType: TweakType.uniformCountPrimary,
+        min: 8,
+        max: 128,
+        divisions: 12,
+        defaultValue: 40,
+      ),
       TweakType.uniformSpeed.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformSpeed,
         min: 0.05,
         max: 5.0,
         defaultValue: 0.18,
-      ),
-      TweakType.uniformArmCount.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformArmCount,
-        min: 8,
-        max: 128,
-        divisions: 12,
-        defaultValue: 40,
       ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
@@ -536,23 +536,23 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 25,
       ),
-      TweakType.uniformBlobSize.name: ShaderTweakModel(
+      TweakType.uniformSize.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformBlobSize,
+        tweakType: TweakType.uniformSize,
         min: 0.01,
         max: 0.12,
         defaultValue: 0.038,
       ),
-      TweakType.uniformGlowStrength.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformGlowStrength,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.02,
         max: 3.0,
         defaultValue: 1.8,
       ),
-      TweakType.uniformSphereRadius.name: ShaderTweakModel(
+      TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformSphereRadius,
+        tweakType: TweakType.uniformZoom,
         min: 0.15,
         max: 1,
         defaultValue: 0.32,

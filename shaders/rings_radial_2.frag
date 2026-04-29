@@ -17,11 +17,11 @@
 //                     the rings, bass-to-treble. 0 = monochrome, 360 = full
 //                     spectrum lap.
 //
-//   u_ringDensity    — TweakType.uniformRingDensity (already exists)
+//   u_countPrimary    — TweakType.uniformRingDensity (already exists)
 //                     min: 4.0   max: 64.0   default: 16.0
 //                     Note: pass as float, no divisions needed.
 //
-//   u_ringFill     — TweakType.uniformRingFill (NEW enum value needed)
+//   u_emphasis     — TweakType.uniformRingFill (NEW enum value needed)
 //                     min: 0.05   max: 0.99   default: 0.75
 //                     Fraction of each ring's width that is lit vs gap.
 //
@@ -47,12 +47,12 @@ uniform float u_hueRange;
 
 // min: 4.0  max: 64.0  default: 16.0
 // Number of concentric rings. Low = bold graphic shapes. High = fine detail.
-uniform float u_ringDensity;
+uniform float u_countPrimary;
 
 // min: 0.05  max: 0.99  default: 0.75
 // Fraction of each ring's radial width that is lit. The remainder is a dark
 // gap that separates rings. Charge widens/narrows this dynamically on top.
-uniform float u_ringFill;
+uniform float u_emphasis;
 
 out vec4 fragColor;
 
@@ -88,22 +88,22 @@ void main() {
   // >1 scales down)
   float distFromCentre = length(fragmentOffset) * 0.5;
 
-  // Map 0..0.5 radial distance onto u_ringDensity rings.
-  float ringPosition = distFromCentre * 2.0 * u_ringDensity;
+  // Map 0..0.5 radial distance onto u_countPrimary rings.
+  float ringPosition = distFromCentre * 2.0 * u_countPrimary;
   float ringIndex = floor(ringPosition);
   float ringFrac = fract(ringPosition);
 
   // Pixels beyond the last ring (corners, etc.) stay black.
-  if (ringIndex >= u_ringDensity) {
+  if (ringIndex >= u_countPrimary) {
     fragColor = vec4(0.0, 0.0, 0.0, 1.0);
     return;
   }
 
   // ---------------------------------------------------------------------------
   // Sample FFT texture — both magnitude (R) and charge (G).
-  // Each ring covers (256 / u_ringDensity) bins; sample at block midpoint.
+  // Each ring covers (256 / u_countPrimary) bins; sample at block midpoint.
   // ---------------------------------------------------------------------------
-  float binsPerRing = 256.0 / u_ringDensity;
+  float binsPerRing = 256.0 / u_countPrimary;
   float binIndex = ringIndex * binsPerRing + binsPerRing * 0.5;
   vec4 fftSample = texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5));
 
@@ -115,7 +115,7 @@ void main() {
   // The +/-0.18 influence keeps the effect readable without being frantic.
   // Clamped so a ring never fully disappears or bleeds into the gap.
   // ---------------------------------------------------------------------------
-  float dynamicFill = clamp(u_ringFill + charge * 0.18, 0.02, 0.99);
+  float dynamicFill = clamp(u_emphasis + charge * 0.18, 0.02, 0.99);
   // float inBand = step(ringFrac, dynamicFill);
   float edgeWidth = 0.5; // tweak to taste
   float inBand = smoothstep(dynamicFill, dynamicFill - edgeWidth, ringFrac);
@@ -126,7 +126,7 @@ void main() {
   // so transient hits blush toward the warm side of the current hue.
   // Value is magnitude-driven with a small floor so quiet rings stay visible.
   // ---------------------------------------------------------------------------
-  float hueT = ringIndex / u_ringDensity; // 0.0 (bass) .. 1.0 (treble)
+  float hueT = ringIndex / u_countPrimary; // 0.0 (bass) .. 1.0 (treble)
   float hue = u_hueShift + hueT * u_hueRange + charge * 20.0;
   float sat = 1.0;
   float val = clamp(magnitude * 1.4 + 0.05, 0.0, 1.0);

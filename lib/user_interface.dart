@@ -104,10 +104,9 @@ class _UserInterfaceState extends State<UserInterface> {
                   top: 0,
                   //bottom: 0,
                   start: 0,
-                  width: (screenSize.width * 0.333).clamp(
-                    ALGERNON.controlPanelWidthMin,
-                    ALGERNON.controlPanelWidthMax,
-                  ),
+                  width:
+                      Screen.mainControlPanelWidth(context) +
+                      ALGERNON.autoCountButtonSize.width,
                   child: FocusTraversalGroup(
                     child: ListenableBuilder(
                       listenable: AlgernonPlayer.painterConfig,

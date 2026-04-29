@@ -36,9 +36,9 @@ uniform vec2 u_resolution;
 uniform float u_time;
 uniform sampler2D u_fftData;
 
-uniform float u_ringDensity;
-uniform float u_ringContrast;
-uniform float u_maxOffset;
+uniform float u_countPrimary;
+uniform float u_emphasis;
+uniform float u_spread;
 
 // Hue rotation in degrees. 0.0 = original colours.
 // Recommended range: 0.0 to 360.0 (wraps around the colour wheel).
@@ -107,7 +107,7 @@ void main() {
   // Field A is displaced toward upper-left, field B toward lower-right.
   // Bass energy controls the separation — a kick drum physically pulls
   // the two centres apart, dramatically reshaping the moiré.
-  float offset = bassEnergy * u_maxOffset;
+  float offset = bassEnergy * u_spread;
   vec2 centreA = vec2(-offset, offset * 0.6); // upper-left quadrant
   vec2 centreB = vec2(offset, -offset * 0.6); // lower-right quadrant
 
@@ -128,7 +128,7 @@ void main() {
   //
   // Treble energy adds extra ring density: bright cymbals / hi-hats tighten
   // the concentric rings into fine detail, making the moiré more intricate.
-  float ringsPerUnit = u_ringDensity + trebleEnergy * 10.0;
+  float ringsPerUnit = u_countPrimary + trebleEnergy * 10.0;
 
   // --- Evaluate both fields ---
   float fieldA = circleField(p, centreA, ringsPerUnit);
@@ -137,8 +137,8 @@ void main() {
   // Apply contrast curve to each field independently.
   // pow() with RING_CONTRAST > 1 darkens the troughs and brightens the crests,
   // sharpening the ring edges from a soft gradient into distinct bright bands.
-  fieldA = pow(fieldA, u_ringContrast);
-  fieldB = pow(fieldB, u_ringContrast);
+  fieldA = pow(fieldA, u_emphasis);
+  fieldB = pow(fieldB, u_emphasis);
 
   // --- Moiré: multiply the two fields ---
   //

@@ -40,6 +40,10 @@ class _AlgernonAppState extends State<AlgernonApp> {
   /// to [_navigatorKey].
   final _navigatorKey = GlobalKey<NavigatorState>();
 
+  final OutlineInputBorder _dropdownBorder = OutlineInputBorder(
+    borderSide: BorderSide(color: ALGERNON.uiDefaultForegroundColor),
+  );
+
   @override
   void initState() {
     AppState.log("main INITSTATE");
@@ -121,6 +125,11 @@ class _AlgernonAppState extends State<AlgernonApp> {
         brightness: Brightness.dark,
         dropdownMenuTheme: Theme.of(context).dropdownMenuTheme.copyWith(
           textStyle: const TextStyle(color: Colors.white),
+          inputDecorationTheme: InputDecorationTheme(
+            border: _dropdownBorder,
+            enabledBorder: _dropdownBorder,
+            focusedBorder: _dropdownBorder,
+          ),
           menuStyle: MenuStyle(
             padding: WidgetStateProperty<EdgeInsets?>.fromMap(
               <WidgetStatesConstraint, EdgeInsets?>{

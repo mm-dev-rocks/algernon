@@ -10,10 +10,10 @@
 //
 // Uniforms to wire up in shaders_meta_data.dart:
 //
-//   u_blobCount     — TweakType.uniformBlobCount (NEW enum value needed)
+//   u_countPrimary     — TweakType.uniformBlobCount (NEW enum value needed)
 //                     min: 2.0   max: 8.0   default: 6.0   divisions: 6
 //
-//   u_blobSize      — TweakType.uniformBlobSize (NEW enum value needed)
+//   u_emphasis      — TweakType.uniformBlobSize (NEW enum value needed)
 //                     min: 0.05   max: 0.5   default: 0.18
 //
 //   u_hueShift      — TweakType.uniformHueShift (already exists)
@@ -33,8 +33,8 @@ uniform sampler2D u_fftData;
 uniform float u_energyMin;
 uniform float u_energyMax;
 
-uniform float u_blobCount;
-uniform float u_blobSize;
+uniform float u_countPrimary;
+uniform float u_emphasis;
 uniform float u_hueShift;
 uniform float u_speed;
 
@@ -84,7 +84,8 @@ void main() {
   vec3 colourAcc = vec3(0.0);
   float weightAcc = 0.0;
 
-  int nBlobs = u_blobCount == -1.0 ? energyDerivedCount() : int(u_blobCount);
+  int nBlobs =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
 
   for (int i = 0; i < 8; i++) {
     if (i >= nBlobs)
@@ -107,7 +108,7 @@ void main() {
     float bx = (0.5 + ampX * sin(u_time * freqX + fi * 1.3)) * aspect;
     float by = 0.5 + ampY * cos(u_time * freqY + fi * 2.1);
 
-    float radius = u_blobSize * (1.0 + charge * 0.4 + mag * 0.3);
+    float radius = u_emphasis * (1.0 + charge * 0.4 + mag * 0.3);
 
     float dx = p.x - bx;
     float dy = p.y - by;

@@ -1,4 +1,3 @@
-more friendly names for shader sliders
 
 list of shaders needs to be scrollable
 
@@ -6,10 +5,6 @@ another big slider like volume, to scale overall shader effect
 can just use scaling variable from volume compensation
     - Ensure is saved to prefs
     - 
-
-Use icons for sliders instead of labels
-    - must change all internal names
-    - must make sure each tweak is different enough to have its own icon/concept
 
 file playback
     curently selection replaces playlist, should add to it
@@ -37,9 +32,12 @@ handle missing/renamed files
 
 # BUGS
 
-jumping to new track does not stop old track!
 
 sometimes stored value for uniform is outside min/max due to dev/experiments. Should fix this on init
+
+chooser does not auto update on trac advance
+
+chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
 volume = 0 / black screen
 
@@ -121,3 +119,8 @@ fix fuzzy show/hide controls
 - must stay visible while dragging memory slot
 - must stay visible while hovering dropdown buttons and items
     need to rebuild to refresh visible dropdown playlist
+more friendly names for shader sliders
+Use icons for sliders instead of labels
+    - must change all internal names
+    - must make sure each tweak is different enough to have its own icon/concept
+jumping to new track does not stop old track!

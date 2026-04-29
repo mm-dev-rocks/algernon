@@ -2,6 +2,7 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/screen.dart';
 import 'package:algernon/shader_model.dart';
 import 'package:flutter/material.dart';
 
@@ -11,8 +12,10 @@ class ShaderChooser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DropdownMenu<ShaderModel>(
-      width: double.infinity,
-      requestFocusOnTap: false,
+      width: Screen.mainControlPanelWidth(context),
+      //width: double.infinity,
+      //requestFocusOnTap: false,
+      selectOnly: true,
       initialSelection: AlgernonPlayer.painterConfig.currentShader,
       onSelected: (ShaderModel? value) {
         if (value != null) {

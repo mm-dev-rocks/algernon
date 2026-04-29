@@ -1,134 +1,87 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:flutter/material.dart';
+
 enum TweakType {
   fftDataSmoothing(
     label: 'Stability',
+    iconData: Icons.video_stable_outlined,
     description: 'Smoothing/interpolation between FFT bins.',
     isNonUniformTweak: true,
   ),
-  uniformPushRange(
-    label: 'Push Range',
-    uniform: 'u_pushRange',
-    description: 'Size range of the cell size swings',
+  uniformCountPrimary(
+    label: 'Main Count',
+    uniform: 'u_countPrimary',
+    iconData: Icons.scatter_plot,
+    description: '???',
   ),
-  uniformBorderWidth(
-    label: 'Border Width',
-    uniform: 'u_borderWidth',
-    description: 'Width of black borders',
-  ),
-  uniformBaseRadius(
-    label: 'Base Radius',
-    uniform: 'u_baseRadius',
-    description: 'Radius of base',
-  ),
-  uniformWarpStrength(
-    label: 'Warp Strength',
-    uniform: 'u_warpStrength',
-    description:
-        'How strongly the FFT bins push and pull the coordinate field. Larger values = more dramatic warping; above ~0.3 it can fold on itself.',
-  ),
-  uniformFoldCount(
-    label: 'Fold Count',
-    uniform: 'u_foldCount',
-    description:
-        'Must be a positive integer; non-integer values produce asymmetric tears.',
-  ),
-  uniformAttenuation(
-    label: 'Attenuation',
-    uniform: 'u_attenuation',
-    description: 'Used to affect eg fading distance',
-  ),
-  uniformRingDensity(
-    label: 'Ring Density',
-    uniform: 'u_ringDensity',
-    description:
-        'Baseline ring density: how many full ring cycles fit across the screen at silence. Higher = finer rings, more detail in the moiré pattern.',
-  ),
-  uniformRingContrast(
-    label: 'Ring Contrast',
-    uniform: 'u_ringContrast',
-    description:
-        'Controls how sharply the ring edges are defined. 1.0 = smooth sine gradient, higher values → harder, brighter ring edges.',
-  ),
-  uniformRingFill(
-    label: 'Ring Fill',
-    uniform: 'u_ringFill',
+  uniformCountSecondary(
+    label: 'Secondary Count',
+    uniform: 'u_countSecondary',
+    iconData: Icons.scatter_plot_outlined,
     description: '???',
   ),
   uniformHueRange(
     label: 'Hue Range',
     uniform: 'u_hueRange',
+    iconData: Icons.format_paint,
     description: '???',
-  ),
-  uniformMaxOffset(
-    label: 'Max Offset',
-    uniform: 'u_maxOffset',
-    description:
-        'Maximum offset of each field centre from screen centre, in normalised units (0..1 space). At full bass energy both centres reach this distance from the middle, so the total spread is 2 × MAX_OFFSET.',
   ),
   uniformHueShift(
     label: 'Hue Shift',
     uniform: 'u_hueShift',
-    description: 'Shift. The. Hue.',
-  ),
-  uniformArmCount(
-    label: 'Arm Count',
-    uniform: 'u_armCount',
-    description:
-        'Number of spiral arms. Even numbers give point-symmetric patterns; odd numbers give more organic asymmetric spirals.',
-  ),
-  uniformArmContrast(
-    label: 'Arm Contrast',
-    uniform: 'u_armContrast',
-    description:
-        'Controls the sharpness of the spiral arm edges. 1.0 = smooth cosine gradient, higher values → sharper arm boundaries.',
-  ),
-  uniformMaxTwist(
-    label: 'Maximum Twist',
-    uniform: 'u_maxTwist',
-    description:
-        'Maximum twist in radians that a bin at full amplitude can apply to its ring. pi (3.14) = half a full rotation; 2*pi = one full rotation per ring.',
-  ),
-  uniformBandCount(
-    label: 'Band Count',
-    uniform: 'u_bandCount',
-    description:
-        'How many radial bands to map across the 256 FFT bins. 32 gives smooth transitions between adjacent rings while still showing fine per-ring variation. Must divide evenly into 256.',
-  ),
-  uniformBlobCount(
-    label: 'Blob Count',
-    uniform: 'u_blobCount',
+    iconData: Icons.color_lens_rounded,
     description: '???',
   ),
-  uniformBlobSize(
-    label: 'Blob Size',
-    uniform: 'u_blobSize',
+  uniformEmphasis(
+    label: 'Emphasis',
+    uniform: 'u_emphasis',
+    iconData: Icons.tonality_outlined,
     description: '???',
   ),
-  uniformSpeed(label: 'Speed', uniform: 'u_speed', description: '???'),
-  uniformSphereRadius(
-    label: 'Sphere Radius',
-    uniform: 'u_sphereRadius',
+  uniformSpeed(
+    label: 'Speed',
+    uniform: 'u_speed',
+    iconData: Icons.speed,
     description: '???',
   ),
-  uniformGlowStrength(
-    label: 'Glow Strength',
-    uniform: 'u_glowStrength',
+  uniformWarp(
+    label: 'Warp',
+    uniform: 'u_warp',
+    iconData: Icons.storm,
     description: '???',
   ),
-  uniformBranchDepth(
-    label: 'Branch Depth',
-    uniform: 'u_branchDepth',
+  uniformZoom(
+    label: 'Zoom',
+    uniform: 'u_zoom',
+    iconData: Icons.crop_free,
+    description: '???',
+  ),
+  uniformSpread(
+    label: 'Spread',
+    uniform: 'u_spread',
+    iconData: Icons.expand_outlined,
+    description: '???',
+  ),
+  uniformSize(
+    label: 'Size',
+    uniform: 'u_size',
+    iconData: Icons.bubble_chart_rounded,
     description: '???',
   );
+
+  ///
+  ///
 
   final String label;
   final String description;
   final String? uniform;
   final bool isNonUniformTweak;
+  final IconData iconData;
   const TweakType({
     required this.label,
     required this.description,
+    required this.iconData,
     this.isNonUniformTweak = false,
     this.uniform,
   });

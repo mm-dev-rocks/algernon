@@ -30,47 +30,37 @@ class ShaderTweakSlider extends StatelessWidget {
       label: shaderTweak.storedValue.toString(),
       showValueIndicator: ShowValueIndicator.onDrag,
     );
-    Widget label = IgnorePointer(
-      child: Text(
-        shaderTweak.tweakType.label,
-        textAlign: TextAlign.center,
-        style: TextStyle(color: ALGERNON.uiDefaultForegroundColor),
-      ),
-    );
+    //Widget label = IgnorePointer(
+    //  child: Text(
+    //    shaderTweak.tweakType.label,
+    //    textAlign: TextAlign.center,
+    //    style: TextStyle(color: ALGERNON.uiDefaultForegroundColor),
+    //  ),
+    //);
     Widget infoIcon = Tooltip(
       message: shaderTweak.tweakType.description,
       child: Icon(
-        Icons.info_outlined,
+        //Icons.info_outlined,
+        shaderTweak.tweakType.iconData,
         color: ALGERNON.uiDefaultForegroundColor,
       ),
     );
     Widget autoCountButton = SizedBox(
-      /// TODO magic numbers
-      width: 42,
-      height: 42,
+      width: ALGERNON.autoCountButtonSize.width,
+      height: ALGERNON.autoCountButtonSize.height,
       child: shaderTweak.isEnergyUniform
           ? InkWell(
               mouseCursor: SystemMouseCursors.click,
               onTap: onAutoButtonPressed,
               child: Tooltip(
                 message: 'Auto: Ignore slider and adjust based on audio energy',
-                child: Container(
-                  decoration: shaderTweak.useEnergyDerivedCount
-                      ? BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: ALGERNON.buttonBorderThickness,
-                          ),
-                        )
-                      : null,
-                  child: Icon(
-                    Icons.auto_awesome,
-                    color: shaderTweak.useEnergyDerivedCount
-                        ? Colors.white
-                        : Colors.white.withValues(
-                            alpha: ALGERNON.disabledControlOpacity,
-                          ),
-                  ),
+                child: Icon(
+                  Icons.auto_awesome,
+                  color: shaderTweak.useEnergyDerivedCount
+                      ? Colors.white
+                      : Colors.white.withValues(
+                          alpha: ALGERNON.disabledControlOpacity,
+                        ),
                 ),
               ),
             )
@@ -85,16 +75,10 @@ class ShaderTweakSlider extends StatelessWidget {
               padding: EdgeInsets.only(left: uiSizes.paddingSmall),
               child: infoIcon,
             ),
-            Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(bottom: uiSizes.paddingSmall),
-                child: slider,
-              ),
-            ),
+            Expanded(child: slider),
             autoCountButton,
           ],
         ),
-        PositionedDirectional(bottom: 0, start: 0, end: 0, child: label),
       ],
     );
   }

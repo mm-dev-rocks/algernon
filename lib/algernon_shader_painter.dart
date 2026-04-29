@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:ui' as ui;
 
-import 'package:algernon/enum.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
@@ -12,13 +11,9 @@ class AlgernonShaderPainter extends StatelessWidget {
   const AlgernonShaderPainter({
     super.key,
     required this.painterConfig,
-    //required this.fftDataTexture,
-    //required this.shaderMeta,
     required this.elapsedSeconds,
   });
   final PainterConfigModel painterConfig;
-  //final ui.Image fftDataTexture;
-  //final ShaderModel shaderMeta;
   final double elapsedSeconds;
 
   @override
@@ -31,7 +26,6 @@ class AlgernonShaderPainter extends StatelessWidget {
         size: const Size(1, 1),
         painter: ShaderPainter(
           shader: shader,
-          //fftDataTexture: fftDataTexture,
           painterConfig: painterConfig,
           elapsedSeconds: elapsedSeconds,
           shaderTweaks: Map.fromEntries(
@@ -55,13 +49,11 @@ class ShaderPainter extends CustomPainter {
   ShaderPainter({
     required this.painterConfig,
     required this.shader,
-    //required this.fftDataTexture,
     required this.shaderTweaks,
     required this.elapsedSeconds,
   });
   final PainterConfigModel painterConfig;
   final ui.FragmentShader shader;
-  //final ui.Image fftDataTexture;
   final Map<String, ShaderTweakModel> shaderTweaks;
   final double elapsedSeconds;
 

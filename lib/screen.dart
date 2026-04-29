@@ -39,8 +39,14 @@ class Screen {
     return MediaQuery.of(context).size.width < ALGERNON.breakpointCompact;
   }
 
+  static double mainControlPanelWidth(BuildContext context) =>
+      (size(context).width * 0.333).clamp(
+        ALGERNON.controlPanelWidthMin,
+        ALGERNON.controlPanelWidthMax,
+      );
+
   /// Measurements etc for the UI based on whether the layout is compact or standard.
-  static uiSizesFromContext(BuildContext context) {
+  static dynamic uiSizesFromContext(BuildContext context) {
     return isCompact(context) ? uiSizesCompact : uiSizesStandard;
   }
 
