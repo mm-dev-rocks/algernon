@@ -61,6 +61,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
         ListenableBuilder(
           listenable: AlgernonPlayer.painterConfig,
           builder: (context, child) {
+            _updateNonUniformTweaks();
             return MemorySlotChooser(
               selectedIndex: AlgernonPlayer.painterConfig.currentMemorySlot,
             );
