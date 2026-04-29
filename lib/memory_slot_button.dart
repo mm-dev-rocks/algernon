@@ -33,9 +33,11 @@ class MemorySlotButton extends StatelessWidget {
         message: 'Memory slot ${index + 1}',
         child: Container(
           //width: double.infinity,
-          padding: EdgeInsets.all(
-            Screen.uiSizesFromContext(context).paddingSmall,
-          ),
+          width: ALGERNON.memorySlotButtonSize.width,
+          height: ALGERNON.memorySlotButtonSize.height,
+          //padding: EdgeInsets.all(
+          //  Screen.uiSizesFromContext(context).paddingSmall,
+          //),
           decoration: highlighted
               ? BoxDecoration(
                   //border: border,
@@ -48,14 +50,10 @@ class MemorySlotButton extends StatelessWidget {
                   //border: border
                 )
               : null,
-          //child: Text(
-          //  index.toString(),
-          //  textAlign: TextAlign.center,
-          //  style: Theme.of(context).textTheme.labelLarge,
-          //  overflow: TextOverflow.clip,
-          //),
           child: Icon(
             IconData(
+              /// Icons actually use a font so we can step through the sequential 'numbers in a box' (filter_n)
+              /// characters.
               Icons.filter_1.codePoint + index,
               fontFamily: 'MaterialIcons',
             ),

@@ -109,7 +109,10 @@ class ALGERNON {
   static const double controlPanelWidthMin = 300;
   static const double controlPanelWidthMax = 400;
 
+  static const double scrollbarThickness = 2;
+
   static const Size autoCountButtonSize = Size(42, 42);
+  static const Size memorySlotButtonSize = Size(42, 42);
 
   ///
   ///

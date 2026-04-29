@@ -163,6 +163,11 @@ class _AlgernonAppState extends State<AlgernonApp> {
           valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
           showValueIndicator: ShowValueIndicator.alwaysVisible,
         ),
+        scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
+          thickness: WidgetStatePropertyAll<double?>(
+            ALGERNON.scrollbarThickness,
+          ),
+        ),
       ),
       home: Scaffold(
         body: SafeArea(

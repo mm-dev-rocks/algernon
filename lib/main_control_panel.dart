@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/constants.dart';
 import 'package:algernon/enum.dart';
 import 'package:algernon/memory_slot_chooser.dart';
 import 'package:algernon/screen.dart';
@@ -34,12 +35,11 @@ class _MainControlPanelState extends State<MainControlPanel> {
   Widget build(BuildContext context) {
     dynamic uiSizes = Screen.uiSizesFromContext(context);
 
-    /// TODO update comments
     /// Most sliders are for shader parameters. They store their value as a preference and cause a rebuild of the nested
     /// [ListenableBuilder]. The FFT Smoothing slider [_fftSmoothingTweak] is different as it doesn't affect the shaders
     /// directly, but instead acts on the [SoLoud] instance to smooth its bin data before we pass it to the
     /// [AlgernonShaderPainter]. When a new shader is chosen, we need to make sure the current smoothing setting carries
-    /// over.
+    /// over (unlike the normal shader parameters, this dosen't happen automatically).
 
     /// [widget.currentShader] will always be up-to-date with the latest memory slot and shader as this widget gets
     /// built on a [ListenableBuilder] listening for changes to [AlgernonPlayer.painterConfig] which includes the
@@ -69,55 +69,65 @@ class _MainControlPanelState extends State<MainControlPanel> {
         ),
 
         /// FFT smoothing
-        ShaderTweakSlider(
-          shaderTweak: _fftSmoothingTweak,
-          onChanged: (double value) {
-            if (AlgernonPlayer.soLoudIsReady) {
-              setState(() {
-                _fftSmoothingTweak.storedValue = value;
-              });
-            }
-            UserInterface.keepControlsAlive();
-          },
-        ),
+        SizedBox(
+          // [kToolbarHeight] matches [DropdownMenu] height.
+          height:
+              Screen.height(context) -
+              (kToolbarHeight * 2 +
+                  ALGERNON.memorySlotButtonSize.height +
+                  uiSizes.paddingLarge),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                ShaderTweakSlider(
+                  shaderTweak: _fftSmoothingTweak,
+                  onChanged: (double value) {
+                    if (AlgernonPlayer.soLoudIsReady) {
+                      setState(() {
+                        _fftSmoothingTweak.storedValue = value;
+                      });
+                    }
+                    UserInterface.keepControlsAlive();
+                  },
+                ),
 
-        /// Shader-specific tweaks
-        ...widget.currentShader.shaderTweaks.entries
-            /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
-            /// and have bespoke sliders.
-            .where(
-              (MapEntry<String, ShaderTweakModel> entry) =>
-                  !entry.value.tweakType.isNonUniformTweak,
-            )
-            .map(
-              (MapEntry<String, ShaderTweakModel> entry) => ShaderTweakSlider(
-                shaderTweak: entry.value,
-                onChanged:
-                    /// If this is an energy uniform and the user has selected 'auto', disable its slider.
-                    (entry.value.isEnergyUniform &&
-                        entry.value.useEnergyDerivedCount)
-                    ? null
-                    : (double value) {
-                        if (AlgernonPlayer.soLoudIsReady) {
-                          setState(() {
-                            entry.value.storedValue = value;
-                          });
-                        }
-                        UserInterface.keepControlsAlive();
-                      },
-                onAutoButtonPressed: () {
-                  //debugPrint(
-                  //  '1. entry.value.useEnergyDerivedCount: ${entry.value.useEnergyDerivedCount}',
-                  //);
-                  entry.value.useEnergyDerivedCount =
-                      !entry.value.useEnergyDerivedCount;
-                  //debugPrint(
-                  //  '2. entry.value.useEnergyDerivedCount: ${entry.value.useEnergyDerivedCount}\n',
-                  //);
-                  setState(() {});
-                },
-              ),
+                /// Shader-specific tweaks
+                ...widget.currentShader.shaderTweaks.entries
+                    /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
+                    /// and have bespoke sliders.
+                    .where(
+                      (MapEntry<String, ShaderTweakModel> entry) =>
+                          !entry.value.tweakType.isNonUniformTweak,
+                    )
+                    .map(
+                      (
+                        MapEntry<String, ShaderTweakModel> entry,
+                      ) => ShaderTweakSlider(
+                        shaderTweak: entry.value,
+                        onChanged:
+                            /// If this is an energy uniform and the user has selected 'auto', disable its slider.
+                            (entry.value.isEnergyUniform &&
+                                entry.value.useEnergyDerivedCount)
+                            ? null
+                            : (double value) {
+                                if (AlgernonPlayer.soLoudIsReady) {
+                                  setState(() {
+                                    entry.value.storedValue = value;
+                                  });
+                                }
+                                UserInterface.keepControlsAlive();
+                              },
+                        onAutoButtonPressed: () {
+                          entry.value.useEnergyDerivedCount =
+                              !entry.value.useEnergyDerivedCount;
+                          setState(() {});
+                        },
+                      ),
+                    ),
+              ],
             ),
+          ),
+        ),
       ],
     );
   }

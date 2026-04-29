@@ -22,6 +22,29 @@ handle missing/renamed files
 
 [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: SoLoudFileNotFoundException: The file was not found (on the C++ side).
 
+[ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: SoLoudFileLoadFailedException: File found, but could not be loaded! Could be a permission error or the file is corrupted. (on the C++ side).
+
+AlgernonPlayer::loadFile error: Problem loading file
+SoLoudFileLoadFailedException: File found, but could not be loaded! Could be a permission error or the file is corrupted. (on the C++ side).
+
+══╡ EXCEPTION CAUGHT BY SCHEDULER LIBRARY ╞═════════════════════════════════════════════════════════
+The following StateError was thrown during a scheduler callback:
+Bad state: No element
+
+When the exception was thrown, this was the stack:
+#0      ListBase.reduce (dart:collection/list.dart:187:22)
+#1      AudioAnalysis.suggestedBoundaryThreshold (package:algernon/audio_analysis.dart:295:21)
+#2      ShaderModel.calibrateAudioEnergy (package:algernon/shader_model.dart:51:42)
+#3      PainterConfigModel.currentShader= (package:algernon/painter_config_model.dart:45:20)
+#4      ShaderChooser.build.<anonymous closure> (package:algernon/shader_chooser.dart:22:40)
+#5      _DropdownMenuState._buildButtons.<anonymous closure> (package:flutter/src/material/dropdown_menu.dart:1020:40)
+#6      _MenuItemButtonState._handleSelect.<anonymous closure> (package:flutter/src/material/menu_anchor.dart:1006:25)
+#7      SchedulerBinding._invokeFrameCallback (package:flutter/src/scheduler/binding.dart:1430:15)
+#8      SchedulerBinding.handleDrawFrame (package:flutter/src/scheduler/binding.dart:1357:11)
+#9      SchedulerBinding._handleDrawFrame (package:flutter/src/scheduler/binding.dart:1198:5)
+#10     _invoke (dart:ui/hooks.dart:356:13)
+#11     PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:444:5)
+#12     _drawFrame (dart:ui/hooks.dart:328:31)
 
 ---
 
@@ -30,8 +53,6 @@ handle missing/renamed files
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
 volume = 0 / black screen
-
-null checks on soundhandle in AlgernonPlayer
 
 Not experienced this yet but worth implementing workarounds
 https://github.com/alnitak/flutter_soloud/issues/126
@@ -118,3 +139,4 @@ another big slider like volume, to scale overall shader effect
 can just use scaling variable from volume compensation
     - Ensure is saved to prefs
     - 
+null checks on soundhandle in AlgernonPlayer

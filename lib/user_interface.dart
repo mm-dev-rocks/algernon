@@ -125,6 +125,7 @@ class _UserInterfaceState extends State<UserInterface> {
                 /// Volume slider
                 PositionedDirectional(
                   top: screenSize.height * 0.5,
+                  // [kToolbarHeight] matches [DropdownMenu] height.
                   bottom:
                       kToolbarHeight +
                       Screen.uiSizesFromContext(context).paddingSmall,
