@@ -1,5 +1,11 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
+
 // algernon_spectral_sphere.frag
 //
 // Visualisation strategy: a transparent sphere whose surface is populated by
@@ -33,21 +39,21 @@
 //                     min: 0.05  max: 1.0    default: 0.18
 //
 // fftDataSmoothing — same as all other shaders.
-
-precision mediump float;
-
-uniform vec2      u_resolution;
-uniform float     u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_hueShift;
-uniform float u_hueRange;
-uniform float u_sphereRadius;
-uniform float u_blobSize;
-uniform float u_glowStrength;
-uniform float u_speed;
-
-out vec4 fragColor;
+//
+//precision mediump float;
+//
+//uniform vec2      u_resolution;
+//uniform float     u_time;
+//uniform sampler2D u_fftData;
+//
+//uniform float u_hueShift;
+//uniform float u_hueRange;
+//uniform float u_sphereRadius;
+//uniform float u_blobSize;
+//uniform float u_glowStrength;
+//uniform float u_speed;
+//
+//out vec4 fragColor;
 
 // ---------------------------------------------------------------------------
 // Pre-baked Fibonacci lattice — 128 unit vectors, evenly distributed on the

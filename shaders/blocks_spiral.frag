@@ -1,9 +1,9 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
 
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
+precision mediump float;
+
 out vec4 fragColor;
 
 // This shader is very similar to `algernon_blocks_simple`. The only difference

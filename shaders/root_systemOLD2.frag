@@ -1,5 +1,11 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
+
 // algernon_root_system.frag
 //
 // Uniforms to wire up in shaders_meta_data.dart:
@@ -19,18 +25,18 @@
 //
 // fftDataSmoothing — same as all other shaders.
 
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_armCount;
-uniform float u_branchDepth;
-uniform float u_hueShift;
-uniform float u_maxTwist;
-
-out vec4 fragColor;
+//precision mediump float;
+//
+//uniform vec2 u_resolution;
+//uniform float u_time;
+//uniform sampler2D u_fftData;
+//
+//uniform float u_armCount;
+//uniform float u_branchDepth;
+//uniform float u_hueShift;
+//uniform float u_maxTwist;
+//
+//out vec4 fragColor;
 
 vec3 hsv2rgb(float h, float s, float v) {
   h = mod(h, 360.0);

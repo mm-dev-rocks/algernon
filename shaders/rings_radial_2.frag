@@ -1,5 +1,11 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
+
 // algernon_rings_radial_2.frag
 //
 // Visualisation strategy: concentric rings with a full HSV palette,
@@ -26,35 +32,6 @@
 //                     Fraction of each ring's width that is lit vs gap.
 //
 // fftDataSmoothing — same as all other shaders, no changes needed.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-// min: 0.0  max: 360.0  default: 200.0
-// Hue of the bass (innermost) ring in degrees. Shift this to rotate the
-// whole palette. 200 = a cool blue starting point.
-uniform float u_hueShift;
-
-// min: 0.0  max: 360.0  default: 120.0
-// How many degrees of hue are swept from bass ring to treble ring.
-// 120 = bass-to-treble sweeps a third of the colour wheel (e.g. blue->green).
-// 360 = full rainbow across the rings.
-// 0   = all rings share the same hue (monochrome, still uses saturation/value).
-uniform float u_hueRange;
-
-// min: 4.0  max: 64.0  default: 16.0
-// Number of concentric rings. Low = bold graphic shapes. High = fine detail.
-uniform float u_countPrimary;
-
-// min: 0.05  max: 0.99  default: 0.75
-// Fraction of each ring's radial width that is lit. The remainder is a dark
-// gap that separates rings. Charge widens/narrows this dynamically on top.
-uniform float u_emphasis;
-
-out vec4 fragColor;
 
 // ---------------------------------------------------------------------------
 // HSV -> RGB conversion. H in [0, 360], S and V in [0, 1].

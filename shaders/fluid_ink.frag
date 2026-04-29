@@ -1,5 +1,11 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
+
 // algernon_fluid_ink.frag
 //
 // Visualisation strategy: iterated domain warping builds curling ink-in-water
@@ -24,19 +30,6 @@
 //                     min: 0.3   max: 3.0   default: 1.4
 //
 // fftDataSmoothing — same as all other shaders.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_warp;
-uniform float u_countPrimary;
-uniform float u_hueShift;
-uniform float u_emphasis;
-
-out vec4 fragColor;
 
 vec3 hsv2rgb(float h, float s, float v) {
   h = mod(h, 360.0);

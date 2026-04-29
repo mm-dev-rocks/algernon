@@ -60,35 +60,57 @@ class ShaderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     if (painterConfig.fftDataImage != null) {
-      // Floats in a shader are set sequentially. This includes floats which are part of other variables, so if there is a
-      // vec2 (which contains 2 floats), the way to set it is to [setFloat()] twice.
-      shader
-        ..getUniformFloat('u_resolution', 0).set(size.width)
-        ..getUniformFloat('u_resolution', 1).set(size.height)
-        ..getUniformFloat('u_time').set(elapsedSeconds);
-
-      // There's only one sampler so we can access that easily by its index (0)
+      // There's only one sampler, we can access that easily by its index (0) as it will always be the first and only
+      // sampler.
       shader.setImageSampler(
         0,
         painterConfig.fftDataImage!,
         filterQuality: FilterQuality.low,
       );
 
+      // Floats in a shader are set sequentially. This includes floats which are part of other variables, so if there is a
+      // vec2 (which contains 2 floats), the way to set it is to [setFloat()] twice.
+      int floatIndex = 0;
+      shader
+        // u_resolution (vec2)
+        ..setFloat(floatIndex++, size.width)
+        ..setFloat(floatIndex++, size.height)
+        // u_time
+        ..setFloat(floatIndex++, elapsedSeconds);
+
+      /// At this point we have set 3 floats, so our next couple (4th/5th) of floats will be at indices [3]/[4]
+      /// (zero-indexed).
+      int tweakTypeIndexEnergyMin = 3;
+      int tweakTypeIndexEnergyMax = 4;
+
+      /// The rest of the floats are from [5] onwards
+      /// In our [TweakType] enum they come after 'special' tweaks (fft smoothing and energy max/min), so start at [3].
+      /// So here we set an offset which enables us to use [tweak.tweakType.index + tweakTypeIndexOffset] to set their
+      /// matching uniforms in the shader.
+      int tweakTypeIndexOffset = 2;
+
       shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
         try {
           if (tweak.isEnergyUniform && tweak.useEnergyDerivedCount) {
             /// Special case: Ignore slider/storedValue as the track energy will be used for this. The shader needs to
             /// know the min/max values for some internal calculations.
-            shader.getUniformFloat('u_energyMin').set(tweak.min);
-            shader.getUniformFloat('u_energyMax').set(tweak.max);
+            shader.setFloat(tweakTypeIndexEnergyMin, tweak.min);
+            shader.setFloat(tweakTypeIndexEnergyMax, tweak.max);
+            //shader.getUniformFloat('u_energyMin').set(tweak.min);
+            //shader.getUniformFloat('u_energyMax').set(tweak.max);
 
             /// Set the uniform to -1 as a signal to the shader that it should use the energy data to derive this count
             /// (the [isEnergyUniform] tweak will never have a value of -1 in normal usage).
-            shader.getUniformFloat(tweak.tweakType.uniform!).set(-1);
+            shader.setFloat(tweak.tweakType.index + tweakTypeIndexOffset, -1);
+            //shader.getUniformFloat(tweak.tweakType.uniform!).set(-1);
           } else {
-            shader
-                .getUniformFloat(tweak.tweakType.uniform!)
-                .set(tweak.storedValue);
+            shader.setFloat(
+              tweak.tweakType.index + tweakTypeIndexOffset,
+              tweak.storedValue,
+            );
+            //shader
+            //    .getUniformFloat(tweak.tweakType.uniform!)
+            //    .set(tweak.storedValue);
           }
         } on ArgumentError catch (_) {
           // Shader switch in progress (ie user has changed selection in dropdown)... skip an update

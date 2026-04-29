@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_rings_radial.frag
 //
@@ -12,15 +17,15 @@
 //
 // This is the spatial opposite of the rose_tunnel_quadrant shader: that one
 // maps frequency to *angle*; this one maps frequency to *radius*.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-out vec4 fragColor;
-
+//
+//precision mediump float;
+//
+//uniform vec2 u_resolution;
+//uniform float u_time;
+//uniform sampler2D u_fftData;
+//
+//out vec4 fragColor;
+//
 // How many concentric rings to draw. 16 divides cleanly into our 256-bin
 // texture (16 bins per ring), giving a nice coarse-but-readable display.
 const float RING_COUNT = 16.0;

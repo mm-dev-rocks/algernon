@@ -2,13 +2,32 @@
 
 import 'package:flutter/material.dart';
 
+/// The order of this enum matters! Don't move stuff around without checking how the uniforms are passed into the
+/// shaders!
 enum TweakType {
+  /// Special slider outside normal tweaks
   fftDataSmoothing(
     label: 'Stability',
     iconData: Icons.video_stable_outlined,
     description: 'Smoothing/interpolation between FFT bins.',
     isNonUniformTweak: true,
   ),
+
+  /// Uniforms set via audio analysis --- no tweak slider
+  uniformEnergyMin(
+    label: '',
+    uniform: 'u_energyMin',
+    iconData: Icons.hide_image,
+    description: '',
+  ),
+  uniformEnergyMax(
+    label: '',
+    uniform: 'u_energyMax',
+    iconData: Icons.hide_image,
+    description: '',
+  ),
+
+  /// Normal tweak sliders below
   uniformCountPrimary(
     label: 'Main Count',
     uniform: 'u_countPrimary',

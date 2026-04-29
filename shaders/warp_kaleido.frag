@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_warp_kaleido.frag
 //
@@ -17,18 +22,18 @@
 //
 // This is the most "generative" shader in the set — the visual form emerges
 // from the audio rather than being predetermined by the layout.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_warp;
-uniform float u_countPrimary;
-uniform float u_emphasis;
-
-out vec4 fragColor;
+//
+//precision mediump float;
+//
+//uniform vec2 u_resolution;
+//uniform float u_time;
+//uniform sampler2D u_fftData;
+//
+//uniform float u_warp;
+//uniform float u_countPrimary;
+//uniform float u_emphasis;
+//
+//out vec4 fragColor;
 
 // Number of mirror-fold axes. 6 gives hexagonal kaleidoscope symmetry.
 // Must be a positive integer; non-integer values produce asymmetric tears.

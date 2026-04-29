@@ -1,5 +1,11 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
+
 // algernon_murmuration.frag
 //
 // Visualisation strategy: a 2D flow field built from layered sine waves drives
@@ -31,26 +37,6 @@
 //                     How strongly charge pulls the flock toward centre.
 //
 // fftDataSmoothing — same as all other shaders.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-// min: 4.0  max: 64.0  default: 28.0
-uniform float u_countPrimary; // used as flockDensity
-
-// min: 0.5  max: 4.0  default: 2.0
-uniform float u_emphasis; // used as flockContrast
-
-// min: 0.0  max: 360.0  default: 200.0
-uniform float u_hueShift;
-
-// min: 0.0  max: 2.0  default: 0.8
-uniform float u_spread; // used as cohesion
-
-out vec4 fragColor;
 
 // ---------------------------------------------------------------------------
 // HSV -> RGB. H in [0,360], S and V in [0,1].

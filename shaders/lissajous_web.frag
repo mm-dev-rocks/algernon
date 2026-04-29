@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_lissajous_web.frag
 //
@@ -22,21 +27,6 @@
 //   rings_radial        — pure polar, concentric bands
 //   rose_tunnel         — polar angle, radial gradient
 //   THIS SHADER         — parametric SDF, no predetermined geometry
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_energyMin;
-uniform float u_energyMax;
-
-uniform float u_countPrimary;
-uniform float u_emphasis;
-uniform float u_zoom;
-
-out vec4 fragColor;
 
 // How many points to sample along the parametric curve when computing the
 // approximate distance. More samples = smoother curve, higher cost.

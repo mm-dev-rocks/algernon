@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_domain_tiles.frag
 //
@@ -8,19 +13,19 @@
 // Tiles are arranged in a centre-outward spiral: tile 0 is the centre cell
 // (lowest frequencies), winding clockwise outward so the highest frequencies
 // reach the corners.
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_energyMin;
-uniform float u_energyMax;
-
-uniform float u_bandCount;
-
-out vec4 fragColor;
+//
+// precision mediump float;
+//
+// uniform vec2 u_resolution;
+// uniform float u_time;
+// uniform sampler2D u_fftData;
+//
+// uniform float u_energyMin;
+// uniform float u_energyMax;
+//
+// uniform float u_countPrimary;
+//
+// out vec4 fragColor;
 
 const int ANGULAR_SAMPLES = 200;
 const float PLOT_SCALE = 0.85;
@@ -65,7 +70,8 @@ int energyDerivedCount() {
 }
 
 float plotRadius(float tileIndex, float angle) {
-  int nBands = u_bandCount == -1.0 ? energyDerivedCount() : int(u_bandCount);
+  int nBands =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
   float binsPerTile = 256.0 / float(nBands * nBands);
   float angleFrac = (angle + PI) / (2.0 * PI);
   float binStart = tileIndex * binsPerTile;
@@ -77,7 +83,8 @@ float plotRadius(float tileIndex, float angle) {
 void main() {
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
 
-  int nBands = u_bandCount == -1.0 ? energyDerivedCount() : int(u_bandCount);
+  int nBands =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
   vec2 tileCoord = floor(st * float(nBands));
   vec2 localST = fract(st * float(nBands));
 

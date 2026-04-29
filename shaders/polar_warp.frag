@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_polar_warp.frag
 //
@@ -25,23 +30,6 @@
 //   rings_radial    — maps radius directly to bin brightness, no rotation
 //   THIS SHADER     — each radius band independently rotated by its own bin;
 //                     no folding, no symmetry, produces spiral/tendril forms
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_energyMin;
-uniform float u_energyMax;
-
-uniform float u_countPrimary;
-uniform float u_warp;
-uniform float u_countSecondary;
-uniform float u_emphasis;
-uniform float u_hueShift;
-
-out vec4 fragColor;
 
 // pi — defined locally, not relying on any extension constants.
 const float PI = 3.14159265;

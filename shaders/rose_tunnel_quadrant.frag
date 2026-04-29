@@ -1,10 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
 
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-out vec4 fragmentColor;
+precision mediump float;
+
+out vec4 fragColor;
 
 void main() {
   // Mnemonic: st = 'space transform'
@@ -25,6 +25,6 @@ void main() {
   float intensity = binValue / distFromCentre * 0.15;
   // Normalised 0..1 across the colour range
   float colorPosition = angleFraction * 2.0;
-  fragmentColor = vec4(intensity * (2.0 - colorPosition),
-                       intensity * colorPosition * 0.5, intensity, 1.0);
+  fragColor = vec4(intensity * (2.0 - colorPosition),
+                   intensity * colorPosition * 0.5, intensity, 1.0);
 }

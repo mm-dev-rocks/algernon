@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_oscilloscope_columns.frag
 //
@@ -17,14 +22,6 @@
 //   rings_radial     — polar radius → bin, concentric bands, colour
 //   THIS SHADER      — Cartesian columns, filled bars, colour by height
 //   warp_kaleido     — domain distortion, symmetry, no direct bin→pixel map
-
-precision mediump float;
-
-uniform vec2      u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-out vec4 fragColor;
 
 // Gamma for the bar brightness falloff near the top of each bar.
 // 1.0 = flat (uniform brightness), >1.0 = bright base, dimmer tip.
@@ -49,7 +46,8 @@ void main() {
   // Sample this bin's amplitude from the FFT texture.
   // The +0.5 offset centres the sample in the texel, avoiding interpolation
   // bleeding at texel boundaries — consistent with the rest of this codebase.
-  float binValue = texture(u_fftData, vec2((binIndex + 0.5) / BIN_COUNT, 0.5)).r;
+  float binValue =
+      texture(u_fftData, vec2((binIndex + 0.5) / BIN_COUNT, 0.5)).r;
 
   // Flutter's y-axis: 0.0 is at the TOP of the screen, 1.0 is the BOTTOM.
   // We want bars to grow upward from the bottom, so we invert st.y.
@@ -79,13 +77,10 @@ void main() {
 
   // RGB: bass → red, mid → yellow/green, treble → cyan/blue.
   // These are hand-tuned to give warm bass, neutral mids, cool treble.
-  float r = (1.0 - hueT) * brightness;           // full red only at bass end
+  float r = (1.0 - hueT) * brightness; // full red only at bass end
   float g = (1.0 - abs(hueT - 0.5) * 2.0) * brightness; // peaks in the midrange
-  float b = hueT * brightness;                    // full blue only at treble end
+  float b = hueT * brightness; // full blue only at treble end
 
   // Multiply everything by insideBar to black-out pixels above the bar tip.
-  fragColor = vec4(r * insideBar,
-                   g * insideBar,
-                   b * insideBar,
-                   1.0);
+  fragColor = vec4(r * insideBar, g * insideBar, b * insideBar, 1.0);
 }

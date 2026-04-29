@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_interference_waves.frag
 //
@@ -24,14 +29,6 @@
 //   lissajous_web       — single SDF curve
 //   rings_radial        — static concentric bands, bin → radius
 //   THIS SHADER         — summed sinusoidal wave fields, emergent interference
-
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-out vec4 fragColor;
 
 // Number of wave sources. Each source sits at a fixed position on screen and
 // radiates at a spatial frequency (tightness of rings) driven by an FFT band.

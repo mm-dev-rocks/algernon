@@ -1,5 +1,10 @@
 #version 460 core
+#include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
+
+precision mediump float;
+
+out vec4 fragColor;
 
 // algernon_moire_grid.frag
 //
@@ -30,23 +35,13 @@
 //   rings_radial         — single polar field, bins → radius bands
 //   THIS SHADER          — product of two offset circular fields, moiré beating
 
-precision mediump float;
-
-uniform vec2 u_resolution;
-uniform float u_time;
-uniform sampler2D u_fftData;
-
-uniform float u_countPrimary;
-uniform float u_emphasis;
-uniform float u_spread;
-
 // Hue rotation in degrees. 0.0 = original colours.
 // Recommended range: 0.0 to 360.0 (wraps around the colour wheel).
 // Interesting fixed points: 120.0 (shifts red→green→blue),
 // 180.0 (full complement), 240.0, etc.
-uniform float u_hueShift;
-
-out vec4 fragColor;
+// uniform float u_hueShift;
+//
+// out vec4 fragColor;
 
 // --- Hue rotation helpers ---
 
