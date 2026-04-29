@@ -12,8 +12,8 @@ class FileChooser extends StatefulWidget {
 
   static FileChooserNotifier notifier = FileChooserNotifier();
 
-  static void selectNextTrack() {
-    debugPrint('FileChooser::selectNextTrack()');
+  static void selectNext() {
+    debugPrint('FileChooser::selectNext()');
     debugPrint(
       '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
     );

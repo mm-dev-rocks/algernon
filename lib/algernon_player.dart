@@ -99,7 +99,7 @@ class AlgernonPlayer extends StatefulWidget {
     //  AlgernonPlayer.currentSoundNotifier.source!,
     //);
     _trackFinishedSubscription?.cancel();
-    FileChooser.selectNextTrack();
+    FileChooser.selectNext();
     debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
     await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
   }
