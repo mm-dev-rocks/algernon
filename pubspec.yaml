@@ -58,7 +58,7 @@ dependencies:
   #html: ^0.15.4
   path_provider: ^2.1.5
   permission_handler: ^12.0.1
-  device_info_plus: ^12.4.0
+  device_info_plus: ^10.1.0
   # At time of writing, SoLoud > 4 won't build for Apple platforms
   flutter_soloud: ^4.0.2
   #flutter_soloud: ">=3.5.4 <4.0.0"
