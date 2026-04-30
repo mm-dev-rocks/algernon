@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:ui' as ui;
 
+import 'package:algernon/algernon_player.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';
@@ -152,9 +153,9 @@ class ShaderPainter extends CustomPainter {
   final Map<String, ShaderTweakModel> shaderTweaks;
   final double elapsedSeconds;
 
-  ui.Image? _lowResImage;
-  Size? _lastSize;
-  static const double _scale = 0.2;
+  //ui.Image? _lowResImage;
+  //Size? _lastSize;
+  static const double _scale = 0.5;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -170,6 +171,11 @@ class ShaderPainter extends CustomPainter {
       painterConfig.fftDataImage!,
       filterQuality: FilterQuality.low,
     );
+
+    //WidgetsBinding.instance.addPostFrameCallback((_) {
+    //  AlgernonPlayer.debugTextValueNotifier.value = painterConfig.fftDataImage!
+    //      .debugGetOpenHandleStackTraces.toString();
+    //});
 
     int floatIndex = 0;
     shader

@@ -5,26 +5,26 @@ import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 
 final List<ShaderModel> shadersData = [
-  //ShaderModel(
-  //  friendlyName: 'Blocks Simple',
-  //  id: 'blocks_simple',
-  //  shaderTweaks: {
-  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
-  //      shaderId: 'blocks_simple',
-  //      tweakType: TweakType.fftDataSmoothing,
-  //    ),
-  //  },
-  //),
-  //ShaderModel(
-  //  friendlyName: 'Blocks Spiral',
-  //  id: 'blocks_spiral',
-  //  shaderTweaks: {
-  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
-  //      shaderId: 'blocks_spiral',
-  //      tweakType: TweakType.fftDataSmoothing,
-  //    ),
-  //  },
-  //),
+  ShaderModel(
+    friendlyName: 'Blocks Simple',
+    id: 'blocks_simple',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        shaderId: 'blocks_simple',
+        tweakType: TweakType.fftDataSmoothing,
+      ),
+    },
+  ),
+  ShaderModel(
+    friendlyName: 'Blocks Spiral',
+    id: 'blocks_spiral',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        shaderId: 'blocks_spiral',
+        tweakType: TweakType.fftDataSmoothing,
+      ),
+    },
+  ),
   ShaderModel(
     friendlyName: 'Rose Tunnel',
     id: 'rose_tunnel_quadrant',
@@ -35,16 +35,16 @@ final List<ShaderModel> shadersData = [
       ),
     },
   ),
-  //ShaderMetaModel(
-  //  friendlyName: 'Oscilloscope Columns',
-  //  id: 'oscilloscope_columns',
-  //  shaderTweaks: {
-  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
-  //      shaderId: 'oscilloscope_columns',
-  //      tweakType: TweakType.fftDataSmoothing,
-  //    ),
-  //  },
-  //),
+  ShaderModel(
+    friendlyName: 'Oscilloscope Columns',
+    id: 'oscilloscope_columns',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        shaderId: 'oscilloscope_columns',
+        tweakType: TweakType.fftDataSmoothing,
+      ),
+    },
+  ),
   //ShaderMetaModel(
   //  friendlyName: 'Rings Radial',
   //  id: 'rings_radial',

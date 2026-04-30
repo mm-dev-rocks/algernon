@@ -294,8 +294,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       pixels[i * 4 + 3] = 1.0;
     }
 
-    AlgernonPlayer.debugTextValueNotifier.value = pixels.toString();
-
     return await _shaderImageFromPixels(pixels);
   }
 }
