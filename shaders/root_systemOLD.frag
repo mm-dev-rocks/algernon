@@ -2,7 +2,7 @@
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
 
-precision mediump float;
+precision lowp float;
 
 out vec4 fragColor;
 

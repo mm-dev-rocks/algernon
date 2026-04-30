@@ -2,7 +2,7 @@
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
 
-precision mediump float;
+precision lowp float;
 
 out vec4 fragColor;
 
@@ -48,21 +48,21 @@ out vec4 fragColor;
 //
 // fftDataSmoothing — same as all other shaders.
 //
-//precision mediump float;
+// precision mediump float;
 //
-//uniform vec2 u_resolution;
-//uniform float u_time;
-//uniform sampler2D u_fftData;
+// uniform vec2 u_resolution;
+// uniform float u_time;
+// uniform sampler2D u_fftData;
 //
-//uniform float u_hueShift;
-//uniform float u_hueRange;
-//uniform float u_zoom;
-//uniform float u_size;
-//uniform float u_emphasis;
-//uniform float u_speed;
-//uniform float u_countPrimary;
+// uniform float u_hueShift;
+// uniform float u_hueRange;
+// uniform float u_zoom;
+// uniform float u_size;
+// uniform float u_emphasis;
+// uniform float u_speed;
+// uniform float u_countPrimary;
 //
-//out vec4 fragColor;
+// out vec4 fragColor;
 
 const float PI = 3.14159265;
 const float TAU = 6.28318530;

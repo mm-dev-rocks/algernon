@@ -198,9 +198,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// Checks if it's time to take the next sample, if so convert the sample to FFT data and change
   /// [_fftDataImageNotifier] which will cause the [AlgernonFragment] widget to rebuild.
   void _onTick(Duration elapsed) async {
-    if (
-    //!_isProcessing &&
-    elapsed - _lastTimestamp >= _fpsAimDuration &&
+    if (!_isProcessing &&
+        elapsed - _lastTimestamp >= _fpsAimDuration &&
         context.mounted &&
         AlgernonPlayer.soLoudIsReady) {
       {
