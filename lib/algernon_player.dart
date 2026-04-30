@@ -16,6 +16,8 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
+  static ValueNotifier<String> debugTextValueNotifier = ValueNotifier('');
+
   static SoundHandle? currentSoundHandle;
 
   static bool get soLoudIsReady =>
@@ -187,6 +189,16 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
               ),
             ),
           ),
+          Positioned.fill(
+            child: Center(
+              child: ValueListenableBuilder(
+                valueListenable: AlgernonPlayer.debugTextValueNotifier,
+                builder: (context, value, child) {
+                  return Text(value);
+                },
+              ),
+            ),
+          ),
           const UserInterface(),
         ],
       ),
@@ -281,6 +293,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       // Alpha full
       pixels[i * 4 + 3] = 1.0;
     }
+
+    AlgernonPlayer.debugTextValueNotifier.value = pixels.toString();
 
     return await _shaderImageFromPixels(pixels);
   }
