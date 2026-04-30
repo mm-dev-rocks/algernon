@@ -82,6 +82,10 @@ class ALGERNON {
     Colors.white.withValues(alpha: 0.5),
     Colors.black,
   );
+  static final Color uiSoftForegroundColor = Color.alphaBlend(
+    Colors.white.withValues(alpha: 0.3),
+    Colors.black,
+  );
   //Colors.green;
 
   ///

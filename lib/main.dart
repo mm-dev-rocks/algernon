@@ -1,14 +1,8 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'dart:io';
-
 import 'package:algernon/algernon_player.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_soloud/flutter_soloud.dart';
-
-/// Provides [Player], [Media], [Playlist] etc.
-import 'package:path_provider/path_provider.dart';
 
 import 'app_state.dart';
 import 'constants.dart';
@@ -41,13 +35,12 @@ class _AlgernonAppState extends State<AlgernonApp> {
   final _navigatorKey = GlobalKey<NavigatorState>();
 
   final OutlineInputBorder _dropdownBorder = OutlineInputBorder(
-    borderSide: BorderSide(color: ALGERNON.uiDefaultForegroundColor),
+    borderSide: BorderSide(color: ALGERNON.uiSoftForegroundColor),
   );
 
   @override
   void initState() {
     AppState.log("main INITSTATE");
-    _setupCacheDirectory();
 
     /// A reference to [_navigatorKey] is stored in [AppState] (as
     /// [mainNavigatorKey]) so that other classes can access it.
@@ -193,11 +186,5 @@ class _AlgernonAppState extends State<AlgernonApp> {
         ),
       ),
     );
-  }
-
-  void _setupCacheDirectory() async {
-    // Get cache directory and store reference to it for use throughout the app
-    Directory dir = await getApplicationCacheDirectory();
-    AppState.update('cacheDirectoryPath', "${dir.path}/");
   }
 }
