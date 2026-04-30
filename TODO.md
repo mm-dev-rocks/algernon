@@ -5,6 +5,30 @@ file playback
 
 mic input
 
+better visible names for shaders
+choose great defaults for all shaders
+
+pixel doubling should decrease based on achieved frame rate
+
+add hue range / adjustment to
+- voronoi
+
+lissajous make hue less jumpy, add saturation slider
+
+next/previous buttons
+
+spectral sphere add distance/expand slider for charge multiplier (distance of dots)
+
+hairy or grassy shaders
+
+interference_waves add some sliders, make good or remove
+
+ros tunnel smooth start/end?
+
+safe area put UI inside but painter can go outside
+
+roots tune for better reaction to fft
+
 kb shortcuts don't work on fftsmoothing slider
 
 file chooser
@@ -45,6 +69,8 @@ When the exception was thrown, this was the stack:
 ---
 
 # BUGS
+
+add new tracks, if nothing playing the first track should start
 
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
