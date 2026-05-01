@@ -24,7 +24,9 @@ class ShaderTweakSlider extends StatelessWidget {
     Slider slider = Slider(
       min: shaderTweak.min,
       max: shaderTweak.max,
-      value: shaderTweak.storedValue,
+
+      /// Prevent bad values
+      value: shaderTweak.storedValue.clamp(shaderTweak.min, shaderTweak.max),
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
       label: shaderTweak.storedValue.toString(),
