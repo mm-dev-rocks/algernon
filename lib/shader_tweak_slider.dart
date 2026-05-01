@@ -32,13 +32,6 @@ class ShaderTweakSlider extends StatelessWidget {
       label: shaderTweak.storedValue.toString(),
       showValueIndicator: ShowValueIndicator.onDrag,
     );
-    //Widget label = IgnorePointer(
-    //  child: Text(
-    //    shaderTweak.tweakType.label,
-    //    textAlign: TextAlign.center,
-    //    style: TextStyle(color: ALGERNON.uiDefaultForegroundColor),
-    //  ),
-    //);
     Widget infoIcon = Tooltip(
       message: shaderTweak.tweakType.description,
       child: Icon(

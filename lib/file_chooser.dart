@@ -12,6 +12,21 @@ class FileChooser extends StatefulWidget {
 
   static FileChooserNotifier notifier = FileChooserNotifier();
 
+  static void selectPrev() {
+    debugPrint('FileChooser::selectPrev()');
+    debugPrint(
+      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+    );
+    int nextTrackIndex = FileChooser.notifier.selectedFilePathIndex - 1;
+    if (nextTrackIndex == -1) {
+      nextTrackIndex = FileChooser.notifier.currentPlaylist.length - 1;
+    }
+    FileChooser.notifier.selectedFilePathIndex = nextTrackIndex;
+    debugPrint(
+      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+    );
+  }
+
   static void selectNext() {
     debugPrint('FileChooser::selectNext()');
     debugPrint(

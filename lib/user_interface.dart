@@ -78,7 +78,28 @@ class _UserInterfaceState extends State<UserInterface> {
                             : const SizedBox.shrink(),
                       ),
 
+                      IconButton(
+                        icon: Icon(Icons.skip_previous),
+                        onPressed: () async {
+                          FileChooser.selectPrev();
+                          await AlgernonPlayer.playSelectedSound(
+                            reason: 'UserInterface::skipPrevious button',
+                          );
+                          UserInterface.keepControlsAlive();
+                        },
+                      ),
                       const PauseToggle(),
+                      IconButton(
+                        icon: Icon(Icons.skip_next),
+                        onPressed: () async {
+                          FileChooser.selectNext();
+                          await AlgernonPlayer.playSelectedSound(
+                            reason: 'UserInterface::skipNext button',
+                          );
+                          UserInterface.keepControlsAlive();
+                        },
+                      ),
+
                       const Flexible(child: FileChooser()),
                       IconButton(
                         onPressed: () async {
