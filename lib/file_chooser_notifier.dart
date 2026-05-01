@@ -1,3 +1,4 @@
+import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +6,10 @@ class FileChooserNotifier extends ChangeNotifier {
   List<String> get currentPlaylist => AppState.getPreference('playlist');
   set currentPlaylist(List<String> newPlaylist) {
     AppState.setPreference('playlist', newPlaylist);
+    selectedFilePathIndex = 0;
+    AlgernonPlayer.playSelectedSound(
+      reason: 'FileChooserNotifier: New playlist',
+    );
     notifyListeners();
   }
 
