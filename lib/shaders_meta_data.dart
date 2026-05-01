@@ -522,6 +522,13 @@ final List<ShaderModel> shadersData = [
         max: 5.0,
         defaultValue: 0.18,
       ),
+      TweakType.uniformSpread.name: ShaderTweakModel(
+        shaderId: 'spectral_sphere',
+        tweakType: TweakType.uniformSpread,
+        min: 0.1,
+        max: 2,
+        defaultValue: 0.33,
+      ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformHueRange,

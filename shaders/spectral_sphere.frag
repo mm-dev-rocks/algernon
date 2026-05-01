@@ -194,7 +194,7 @@ void main() {
 
     // Radial displacement: positive charge lifts blob above surface,
     // negative charge sinks it inward. Energy adds a gentle global push.
-    float displacement = charge * 0.33 + energy * 0.06 +
+    float displacement = charge * u_spread + energy * 0.06 +
                          sin(u_time * (0.3 + t * 0.7) + fi * 0.41) * 0.015;
     float r3d = radius * (1.0 + displacement);
 
@@ -244,15 +244,6 @@ void main() {
   if (alphaAcc > 0.001) {
     finalColour += colourAcc / alphaAcc * clamp(alphaAcc, 0.0, 1.0);
   }
-
-  // Soft vignette so the canvas edges fade to black cleanly.
-  // float vignette = 1.0 - smoothstep(0.38, 0.52, length(p));
-
-  // finalColour *= vignette;
-
-  // Alpha: use accumulated brightness so transparent areas (no blobs, no rim)
-  // stay fully transparent — important if composited over a dark background.
-  // float finalAlpha = clamp(alphaAcc + rimGlow * 0.6, 0.0, 1.0);
 
   fragColor = vec4(finalColour, 1.0);
 }
