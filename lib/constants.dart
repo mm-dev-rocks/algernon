@@ -52,6 +52,7 @@ class ALGERNON {
 
   static const int soLoudBufferSize = 1024;
   static const double magnitudeChargeSmoothing = 0.999;
+  static const double chargeOutputSmoothing = 0.95;
   static const int energyZoneBlendBuckets = 3;
 
   static const int totalMemorySlots = 5;
@@ -61,7 +62,9 @@ class ALGERNON {
   static const double disabledControlOpacity = 0.5;
   static const double buttonBorderThickness = 1;
 
+  static const int droppedFrameMeasurementLength = 30;
   static const int finalAimFps = 30;
+  static const int oneMillion = 1000000;
 
   static const String autoCountPrefSuffix = 'auto';
   static const String memorySlotPrefPrefix = 'memslot';

@@ -6,6 +6,7 @@ import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/audio_source_notifier.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/user_interface.dart';
@@ -117,8 +118,7 @@ class AlgernonPlayer extends StatefulWidget {
   State<AlgernonPlayer> createState() => _AlgernonPlayerState();
 }
 
-class _AlgernonPlayerState extends State<AlgernonPlayer>
-    with SingleTickerProviderStateMixin {
+class _AlgernonPlayerState extends State<AlgernonPlayer> {
   //
   /// Tell [SoLoud] how we want to receive audio data
   late final AudioData _audioData = AudioData(GetSamplesKind.linear);
@@ -128,35 +128,57 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
   /// exponentially less. With magnitudeChargeSmoothing as α, a value from k frames ago has weight α^k * (1 - α).
   /// There's no fixed window; the "memory" decays toward zero but never fully forgets.
   final Float32List _binExponentialMovingAverages = Float32List(256);
+  final Float32List _binChargeSmoothed = Float32List(256);
 
   bool _isProcessing = false;
 
-  late final Ticker _ticker;
+  late final Timer _timer;
+  final Stopwatch _stopwatch = Stopwatch();
   // Frame rate we aim for
   final Duration _fpsAimDuration = const Duration(
-    microseconds: 1000000 ~/ ALGERNON.finalAimFps,
+    microseconds: ALGERNON.oneMillion ~/ ALGERNON.finalAimFps,
   );
-  Duration _lastTimestamp = Duration.zero;
   double _elapsedSeconds = 0;
+  final List<bool> _lateFrameMeasurement = List<bool>.generate(
+    ALGERNON.droppedFrameMeasurementLength,
+    (index) => false,
+  );
+
+  DirectionOfChange _lastResolutionChange = DirectionOfChange.none;
 
   @override
   void initState() {
-    _ticker = createTicker(_onTick);
-    _ticker.start();
+    _stopwatch.start();
+    _timer = Timer.periodic(
+      Duration(
+        microseconds: (ALGERNON.oneMillion / ALGERNON.finalAimFps).toInt(),
+      ),
+      _onTick,
+    );
 
     AlgernonPlayer.playSelectedSound(reason: 'initState');
+
+    SchedulerBinding.instance.addTimingsCallback(_onFrameTimings);
 
     super.initState();
   }
 
   @override
   dispose() {
-    _ticker.stop();
+    SchedulerBinding.instance.removeTimingsCallback(_onFrameTimings);
+    _timer.cancel();
     _audioData.dispose();
     AlgernonPlayer.painterConfig.dispose();
     SoLoud.instance.deinit();
 
     super.dispose();
+  }
+
+  void _onFrameTimings(List<FrameTiming> timings) {
+    for (final t in timings) {
+      final bool isLate = t.rasterDuration > _fpsAimDuration;
+      _checkFrameRate(isLate);
+    }
   }
 
   @override
@@ -205,33 +227,18 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     );
   }
 
-  /// Runs on every tick of [_ticker] as a callback (which works because this widget uses the
+  /// Runs on every tick of [_timer] as a callback (which works because this widget uses the
   /// [SingleTickerProviderStateMixin]).
   /// Checks if it's time to take the next sample, if so convert the sample to FFT data and change
   /// [_fftDataImageNotifier] which will cause the [AlgernonFragment] widget to rebuild.
-  void _onTick(Duration elapsed) async {
-    if (!_isProcessing &&
-        elapsed - _lastTimestamp >= _fpsAimDuration &&
-        context.mounted &&
-        AlgernonPlayer.soLoudIsReady) {
+  void _onTick(Timer timer) async {
+    if (!_isProcessing && context.mounted && AlgernonPlayer.soLoudIsReady) {
       {
-        _lastTimestamp = elapsed;
+        _elapsedSeconds =
+            _stopwatch.elapsed.inMicroseconds / ALGERNON.oneMillion;
         _isProcessing = true;
         try {
-          _audioData.updateSamples();
-
-          _elapsedSeconds = elapsed.inMicroseconds / 1000000.0;
-
-          final oldImage = AlgernonPlayer.painterConfig.fftDataImage;
-          AlgernonPlayer.painterConfig.fftDataImage = await _imageFromFftData(
-            /// We use `AudioData(GetSamplesKind.linear)`:
-            /// `Get data in a linear manner: the first 256 floats are audio FFI values, the other 256 are audio wave samples.`
-            ///
-            /// FFI (Foreign Function Interface) is how Dart talks to SoLoud's native C++ code. FFI here (from the
-            /// asoLoud docs) is either sloppy wording or a typo, but basically the first 256 floats are our FFT bins.
-            Float32List.sublistView(_audioData.getAudioData(), 0, 256),
-          );
-          oldImage?.dispose();
+          await _updatePainterDataImage();
         } on Exception catch (e) {
           debugPrint('$e');
         } finally {
@@ -241,10 +248,48 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
     }
   }
 
+  void _checkFrameRate(bool isLate) {
+    /// Roll along
+    _lateFrameMeasurement.removeAt(0);
+    _lateFrameMeasurement.add(isLate);
+
+    double droppedFrameRatio =
+        _lateFrameMeasurement
+            .where((bool frameWasLate) => frameWasLate == true)
+            .length /
+        _lateFrameMeasurement.length;
+
+    if (droppedFrameRatio > 0.95) {
+      debugPrint(droppedFrameRatio.toString());
+      _changeResolution(DirectionOfChange.decrease);
+
+      /// For now, only decrease as oscillation made it stupid.
+      //} else if (droppedFrameRatio < 0.05) {
+      //  debugPrint(droppedFrameRatio.toString());
+      //  _changeResolution(DirectionOfChange.increase);
+    }
+  }
+
+  void _changeResolution(DirectionOfChange direction) {
+    if (direction != _lastResolutionChange) {
+      if (direction == DirectionOfChange.increase) {
+        AlgernonPlayer.painterConfig.increaseResolution();
+      } else if (direction == DirectionOfChange.decrease) {
+        AlgernonPlayer.painterConfig.decreaseResolution();
+      }
+
+      /// Set alternating true/false to ratio is in the middle
+      //for (var i = 0; i < ALGERNON.droppedFrameMeasurementLength; i++) {
+      //  _lateFrameMeasurement[i] = i.isEven;
+      //}
+      _lastResolutionChange = direction;
+    }
+  }
+
   /// We pass data into the shader as an image format, but it isn't an image as such, just an efficient way of passing
   /// our data.
   Future<ui.Image> _shaderImageFromPixels(Float32List pixels) async {
-    final completer = Completer<ui.Image>();
+    final Completer<ui.Image> completer = Completer<ui.Image>();
     ui.decodeImageFromPixels(
       pixels.buffer.asUint8List(),
 
@@ -252,13 +297,29 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       256,
       1,
       ui.PixelFormat.rgbaFloat32,
-      completer.complete,
+      (ui.Image image) => completer.complete(image),
     );
     return completer.future;
   }
 
   /// We have 256 bytes of data to pass, each representing a bin we got back from the FFT.
-  Future<ui.Image> _imageFromFftData(Float32List fftData) async {
+  Future<void> _updatePainterDataImage() async {
+    /// Get FFT data bins.
+    ///
+    /// We use `AudioData(GetSamplesKind.linear)`:
+    /// `Get data in a linear manner: the first 256 floats are audio FFI values, the other 256 are audio wave samples.`
+    ///
+    /// FFI (Foreign Function Interface) is how Dart talks to SoLoud's native C++ code. FFI here (from the
+    /// soLoud docs) is either sloppy wording or a typo, but basically the first 256 floats are our FFT bins.
+    _audioData.updateSamples();
+    Float32List fftData = Float32List.sublistView(
+      _audioData.getAudioData(),
+      0,
+      256,
+    );
+
+    /// Store data for the shader in pixels.
+    ///
     // 256 pixels, each pixel needs R,G,B,A as floats, each of which is normalised between 0 and 1 (the FFT data is
     // already in that format). We pass FFT bins in via the red channel.
     final pixels = Float32List(256 * 4);
@@ -270,6 +331,20 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       _binExponentialMovingAverages[i] =
           _binExponentialMovingAverages[i] * ALGERNON.magnitudeChargeSmoothing +
           binMagnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
+
+      // Update rolling average (existing)
+      //_binExponentialMovingAverages[i] =
+      //    _binExponentialMovingAverages[i] * ALGERNON.magnitudeChargeSmoothing +
+      //    binMagnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
+
+      // Raw charge
+      final double rawCharge = (binMagnitude - _binExponentialMovingAverages[i])
+          .clamp(-1.0, 1.0);
+
+      // Smooth the charge itself
+      _binChargeSmoothed[i] =
+          _binChargeSmoothed[i] * ALGERNON.chargeOutputSmoothing +
+          rawCharge * (1.0 - ALGERNON.chargeOutputSmoothing);
 
       // Signed charge: positive when louder than average, negative when quieter
       // clamp to [-1, 1] then remap to [0, 1] for the texture
@@ -294,6 +369,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer>
       pixels[i * 4 + 3] = 1.0;
     }
 
-    return await _shaderImageFromPixels(pixels);
+    AlgernonPlayer.painterConfig.fftDataImage = await _shaderImageFromPixels(
+      pixels,
+    );
   }
 }

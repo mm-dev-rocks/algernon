@@ -105,3 +105,15 @@ enum TweakType {
     this.uniform,
   });
 }
+
+enum RenderScale {
+  //eighth(0.125),
+  quarter(0.25),
+  half(0.5),
+  full(1.0);
+
+  const RenderScale(this.value);
+  final double value;
+}
+
+enum DirectionOfChange { increase, decrease, none }

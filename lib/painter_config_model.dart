@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
+import 'package:algernon/enum.dart';
 import 'package:algernon/shader_model.dart';
 import 'package:flutter/material.dart';
 
@@ -36,6 +37,10 @@ class PainterConfigModel with ChangeNotifier {
   ShaderModel get currentShader => _currentShader;
   set currentShader(ShaderModel shaderMeta) {
     _currentShader = shaderMeta;
+
+    /// Try full scale rendering for a new shader, it will drop down via [AlgernonPlayer] if the device can't handle it.
+    scale = RenderScale.full;
+
     for (int i = 0; i < ALGERNON.shadersData.length; i++) {
       if (ALGERNON.shadersData[i].id == shaderMeta.id) {
         AppState.setPreference('selectedShaderIndex', i);
@@ -45,6 +50,21 @@ class PainterConfigModel with ChangeNotifier {
     _currentShader.calibrateAudioEnergy();
     debugPrint('PainterConfigModel::currentShader NOTIFY LISTENERS');
     notifyListeners();
+  }
+
+  RenderScale scale = RenderScale.full;
+  void decreaseResolution() {
+    if (scale.index > 0) {
+      scale = RenderScale.values[scale.index - 1];
+    }
+    debugPrint('Resolution change to: ${scale.name}');
+  }
+
+  void increaseResolution() {
+    if (scale.index < RenderScale.values.length - 1) {
+      scale = RenderScale.values[scale.index + 1];
+    }
+    debugPrint('Resolution change to: ${scale.name}');
   }
 
   @override
