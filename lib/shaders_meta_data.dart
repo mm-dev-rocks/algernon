@@ -5,26 +5,26 @@ import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 
 final List<ShaderModel> shadersData = [
-  ShaderModel(
-    friendlyName: 'Blocks Simple',
-    id: 'blocks_simple',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'blocks_simple',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
-  ShaderModel(
-    friendlyName: 'Blocks Spiral',
-    id: 'blocks_spiral',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'blocks_spiral',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
+  //ShaderModel(
+  //  friendlyName: 'Blocks Simple',
+  //  id: 'blocks_simple',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'blocks_simple',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
+  //ShaderModel(
+  //  friendlyName: 'Blocks Spiral',
+  //  id: 'blocks_spiral',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'blocks_spiral',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
   ShaderModel(
     friendlyName: 'Rose Tunnel',
     id: 'rose_tunnel_quadrant',
@@ -35,16 +35,16 @@ final List<ShaderModel> shadersData = [
       ),
     },
   ),
-  ShaderModel(
-    friendlyName: 'Oscilloscope Columns',
-    id: 'oscilloscope_columns',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'oscilloscope_columns',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
+  //ShaderModel(
+  //  friendlyName: 'Oscilloscope Columns',
+  //  id: 'oscilloscope_columns',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'oscilloscope_columns',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
   //ShaderMetaModel(
   //  friendlyName: 'Rings Radial',
   //  id: 'rings_radial',
@@ -90,7 +90,7 @@ final List<ShaderModel> shadersData = [
     },
   ),
   ShaderModel(
-    friendlyName: 'Lissajous Web',
+    friendlyName: 'Organelles',
     id: 'lissajous_web',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -150,14 +150,14 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'voronoi_cells',
         tweakType: TweakType.uniformZoom,
-        min: 0.03,
-        max: 0.85,
+        min: 0.001,
+        max: 2,
         defaultValue: 0.30,
       ),
     },
   ),
   ShaderModel(
-    friendlyName: 'Rings Radial 2',
+    friendlyName: 'Radiate',
     id: 'rings_radial_2',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -198,7 +198,7 @@ final List<ShaderModel> shadersData = [
     },
   ),
   ShaderModel(
-    friendlyName: 'Moire Grid',
+    friendlyName: 'Moire',
     id: 'moire_grid',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -238,7 +238,7 @@ final List<ShaderModel> shadersData = [
     },
   ),
   ShaderModel(
-    friendlyName: 'Polar Warp',
+    friendlyName: 'Alloy',
     id: 'polar_warp',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -304,18 +304,73 @@ final List<ShaderModel> shadersData = [
   //    ),
   //  },
   //),
+  //ShaderModel(
+  //  friendlyName: 'Interference Waves',
+  //  id: 'interference_waves',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
+  //ShaderModel(
+  //  friendlyName: 'Interference',
+  //  id: 'interference_waves',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //      min: 0.5,
+  //      max: 0.97,
+  //      defaultValue: 0.75,
+  //    ),
+  //    TweakType.uniformSpeed.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformSpeed,
+  //      min: 0.1,
+  //      max: 3.0,
+  //      defaultValue: 1.0,
+  //    ),
+  //    TweakType.uniformWarp.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformWarp,
+  //      min: 0.0,
+  //      max: 3.0,
+  //      defaultValue: 0.8,
+  //    ),
+  //    TweakType.uniformZoom.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformZoom,
+  //      min: 5.0,
+  //      max: 40.0,
+  //      defaultValue: 18.0,
+  //    ),
+  //    TweakType.uniformSpread.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformSpread,
+  //      min: 0.0,
+  //      max: 0.3,
+  //      defaultValue: 0.08,
+  //    ),
+  //    TweakType.uniformHueShift.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformHueShift,
+  //      min: 0,
+  //      max: 180,
+  //      defaultValue: 60,
+  //    ),
+  //    TweakType.uniformEmphasis.name: ShaderTweakModel(
+  //      shaderId: 'interference_waves',
+  //      tweakType: TweakType.uniformEmphasis,
+  //      min: 0.3,
+  //      max: 4.0,
+  //      defaultValue: 1.6,
+  //    ),
+  //  },
+  //),
   ShaderModel(
-    friendlyName: 'Interference Waves',
-    id: 'interference_waves',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'interference_waves',
-        tweakType: TweakType.fftDataSmoothing,
-      ),
-    },
-  ),
-  ShaderModel(
-    friendlyName: 'Slime Trails',
+    friendlyName: 'Orb Faeries',
     id: 'slime_trails',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -359,7 +414,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Root System',
+    friendlyName: 'Roots',
     id: 'root_system',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -454,7 +509,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Fluid Ink',
+    friendlyName: 'Fluid',
     id: 'fluid_ink',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
