@@ -91,6 +91,8 @@ class _MainControlPanelState extends State<MainControlPanel> {
                   },
                 ),
 
+                SizedBox(height: uiSizes.paddingMedium),
+
                 /// Shader-specific tweaks
                 ...widget.currentShader.shaderTweaks.entries
                     /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
