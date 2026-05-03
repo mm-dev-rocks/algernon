@@ -17,7 +17,7 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
-  static ValueNotifier<String> debugTextValueNotifier = ValueNotifier('');
+  //static ValueNotifier<String> debugTextValueNotifier = ValueNotifier('');
 
   static SoundHandle? currentSoundHandle;
 
@@ -211,26 +211,23 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
               ),
             ),
           ),
-          Positioned.fill(
-            child: Center(
-              child: ValueListenableBuilder(
-                valueListenable: AlgernonPlayer.debugTextValueNotifier,
-                builder: (context, value, child) {
-                  return Text(value);
-                },
-              ),
-            ),
-          ),
+          //Positioned.fill(
+          //  child: Center(
+          //    child: ValueListenableBuilder(
+          //      valueListenable: AlgernonPlayer.debugTextValueNotifier,
+          //      builder: (context, value, child) {
+          //        return Text(value);
+          //      },
+          //    ),
+          //  ),
+          //),
           const UserInterface(),
         ],
       ),
     );
   }
 
-  /// Runs on every tick of [_timer] as a callback (which works because this widget uses the
-  /// [SingleTickerProviderStateMixin]).
-  /// Checks if it's time to take the next sample, if so convert the sample to FFT data and change
-  /// [_fftDataImageNotifier] which will cause the [AlgernonFragment] widget to rebuild.
+  /// The beating heart of the audio animation
   void _onTick(Timer timer) async {
     if (!_isProcessing && context.mounted && AlgernonPlayer.soLoudIsReady) {
       {
