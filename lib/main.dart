@@ -163,25 +163,23 @@ class _AlgernonAppState extends State<AlgernonApp> {
         ),
       ),
       home: Scaffold(
-        body: SafeArea(
-          child: AppStateWidget(
-            child: Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsets.zero,
-                  child: NavigatorPopHandler(
-                    onPop: () async {
-                      await AppState.handleNavigateBack();
-                    },
-                    child: Navigator(
-                      key: _navigatorKey,
-                      initialRoute: ALGERNON.routeRoot,
-                      onGenerateRoute: _onGenerateRoute,
-                    ),
+        body: AppStateWidget(
+          child: Stack(
+            children: [
+              Padding(
+                padding: EdgeInsets.zero,
+                child: NavigatorPopHandler(
+                  onPop: () async {
+                    await AppState.handleNavigateBack();
+                  },
+                  child: Navigator(
+                    key: _navigatorKey,
+                    initialRoute: ALGERNON.routeRoot,
+                    onGenerateRoute: _onGenerateRoute,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),

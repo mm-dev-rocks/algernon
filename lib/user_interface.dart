@@ -57,103 +57,105 @@ class _UserInterfaceState extends State<UserInterface> {
     return ValueListenableBuilder(
       valueListenable: UserInterface.controlsAreVisibleNotifier,
       builder: (context, controlsAreVisible, child) {
-        return IgnorePointer(
-          ignoring: !controlsAreVisible,
-          child: AnimatedOpacity(
-            opacity: controlsAreVisible ? 1.0 : 0.0,
-            duration: controlsAreVisible
-                ? ALGERNON.showControlsFadeDuration
-                : ALGERNON.hideControlsFadeDuration,
-            child: Stack(
-              children: [
-                PositionedDirectional(
-                  bottom: 0,
-                  start: 0,
-                  end: 0,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: AlgernonPlayer.soLoudIsReady
-                            ? const PlaybackBar()
-                            : const SizedBox.shrink(),
-                      ),
+        return SafeArea(
+          child: IgnorePointer(
+            ignoring: !controlsAreVisible,
+            child: AnimatedOpacity(
+              opacity: controlsAreVisible ? 1.0 : 0.0,
+              duration: controlsAreVisible
+                  ? ALGERNON.showControlsFadeDuration
+                  : ALGERNON.hideControlsFadeDuration,
+              child: Stack(
+                children: [
+                  PositionedDirectional(
+                    bottom: 0,
+                    start: 0,
+                    end: 0,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AlgernonPlayer.soLoudIsReady
+                              ? const PlaybackBar()
+                              : const SizedBox.shrink(),
+                        ),
 
-                      IconButton(
-                        icon: Icon(Icons.skip_previous),
-                        onPressed: () async {
-                          FileChooser.selectPrev();
-                          await AlgernonPlayer.playSelectedSound(
-                            reason: 'UserInterface::skipPrevious button',
-                          );
-                          UserInterface.keepControlsAlive();
-                        },
-                      ),
-                      const PauseToggle(),
-                      IconButton(
-                        icon: Icon(Icons.skip_next),
-                        onPressed: () async {
-                          FileChooser.selectNext();
-                          await AlgernonPlayer.playSelectedSound(
-                            reason: 'UserInterface::skipNext button',
-                          );
-                          UserInterface.keepControlsAlive();
-                        },
-                      ),
+                        IconButton(
+                          icon: Icon(Icons.skip_previous),
+                          onPressed: () async {
+                            FileChooser.selectPrev();
+                            await AlgernonPlayer.playSelectedSound(
+                              reason: 'UserInterface::skipPrevious button',
+                            );
+                            UserInterface.keepControlsAlive();
+                          },
+                        ),
+                        const PauseToggle(),
+                        IconButton(
+                          icon: Icon(Icons.skip_next),
+                          onPressed: () async {
+                            FileChooser.selectNext();
+                            await AlgernonPlayer.playSelectedSound(
+                              reason: 'UserInterface::skipNext button',
+                            );
+                            UserInterface.keepControlsAlive();
+                          },
+                        ),
 
-                      const Flexible(child: FileChooser()),
-                      IconButton(
-                        onPressed: () async {
-                          FilePickerResult? filePickerResult =
-                              await FileManager.pickFile();
-                          if (filePickerResult != null &&
-                              filePickerResult.files.isNotEmpty) {
-                            FileChooser.notifier.currentPlaylist =
-                                filePickerResult.files
-                                    .map(
-                                      (PlatformFile file) =>
-                                          file.path.toString(),
-                                    )
-                                    .toList();
-                          }
-                        },
-                        icon: Icon(Icons.playlist_add),
-                      ),
-                    ],
-                  ),
-                ),
-
-                /// Shader-specific controls block
-                PositionedDirectional(
-                  top: 0,
-                  //bottom: 0,
-                  start: 0,
-                  width:
-                      Screen.mainControlPanelWidth(context) +
-                      ALGERNON.autoCountButtonSize.width,
-                  child: FocusTraversalGroup(
-                    child: ListenableBuilder(
-                      listenable: AlgernonPlayer.painterConfig,
-                      builder: (context, child) {
-                        return MainControlPanel(
-                          currentShader:
-                              AlgernonPlayer.painterConfig.currentShader,
-                        );
-                      },
+                        const Flexible(child: FileChooser()),
+                        IconButton(
+                          onPressed: () async {
+                            FilePickerResult? filePickerResult =
+                                await FileManager.pickFile();
+                            if (filePickerResult != null &&
+                                filePickerResult.files.isNotEmpty) {
+                              FileChooser.notifier.currentPlaylist =
+                                  filePickerResult.files
+                                      .map(
+                                        (PlatformFile file) =>
+                                            file.path.toString(),
+                                      )
+                                      .toList();
+                            }
+                          },
+                          icon: Icon(Icons.playlist_add),
+                        ),
+                      ],
                     ),
                   ),
-                ),
 
-                /// Volume slider
-                PositionedDirectional(
-                  top: screenSize.height * 0.5,
-                  // [kToolbarHeight] matches [DropdownMenu] height.
-                  bottom:
-                      kToolbarHeight +
-                      Screen.uiSizesFromContext(context).paddingSmall,
-                  end: 0,
-                  child: const VolumeSlider(),
-                ),
-              ],
+                  /// Shader-specific controls block
+                  PositionedDirectional(
+                    top: 0,
+                    //bottom: 0,
+                    start: 0,
+                    width:
+                        Screen.mainControlPanelWidth(context) +
+                        ALGERNON.autoCountButtonSize.width,
+                    child: FocusTraversalGroup(
+                      child: ListenableBuilder(
+                        listenable: AlgernonPlayer.painterConfig,
+                        builder: (context, child) {
+                          return MainControlPanel(
+                            currentShader:
+                                AlgernonPlayer.painterConfig.currentShader,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+
+                  /// Volume slider
+                  PositionedDirectional(
+                    top: screenSize.height * 0.5,
+                    // [kToolbarHeight] matches [DropdownMenu] height.
+                    bottom:
+                        kToolbarHeight +
+                        Screen.uiSizesFromContext(context).paddingSmall,
+                    end: 0,
+                    child: const VolumeSlider(),
+                  ),
+                ],
+              ),
             ),
           ),
         );
