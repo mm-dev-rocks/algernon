@@ -43,13 +43,13 @@ enum TweakType {
   uniformHueRange(
     label: 'Hue Range',
     uniform: 'u_hueRange',
-    iconData: Icons.format_paint,
+    iconData: Icons.color_lens_rounded,
     description: '???',
   ),
   uniformHueShift(
     label: 'Hue Shift',
     uniform: 'u_hueShift',
-    iconData: Icons.color_lens_rounded,
+    iconData: Icons.colorize,
     description: '???',
   ),
   uniformEmphasis(
@@ -73,13 +73,13 @@ enum TweakType {
   uniformZoom(
     label: 'Zoom',
     uniform: 'u_zoom',
-    iconData: Icons.crop_free,
+    iconData: Icons.all_out_outlined,
     description: '???',
   ),
   uniformSpread(
     label: 'Spread',
     uniform: 'u_spread',
-    iconData: Icons.expand_outlined,
+    iconData: Icons.code,
     description: '???',
   ),
   uniformSize(
