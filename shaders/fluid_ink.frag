@@ -70,8 +70,9 @@ vec2 warpDisplace(vec2 p, float bandLow, float timeOffset, float strength) {
   vec2 fc = sampleBin(bandLow);
   float mag = fc.x;
   float charge = fc.y;
-  float freq = 2.5 + mag * 1.0;             // was 3.0
-  float angle = timeOffset + charge * 0.05; // was 0.2
+  float freq = 2.5 + mag * 1.0; // was 3.0
+  // float angle = timeOffset + charge * 0.05; // was 0.2
+  float angle = timeOffset; // was 0.2
 
   vec2 pRot = rot2d(p, angle);
   float wx = sin(pRot.x * freq + timeOffset) *
@@ -107,12 +108,12 @@ void main() {
 
   // Each layer gets a different time speed so structure and detail
   // animate at different rates. FFT energy adds music reactivity on top.
-  float bassPhase = u_time * 0.3 + fcBass.x * 0.3 + fcBass.y * 0.1;
-  float midPhase = u_time * 0.5 + fcMid.x * 0.2 + fcMid.y * 0.05;
-  float highPhase = u_time * 0.8 + fcHigh.x * 0.1 + fcHigh.y * 0.02;
-  // float bassPhase = u_time * 0.3;
-  // float midPhase  = u_time * 0.5;
-  // float highPhase = u_time * 0.8;
+  // float bassPhase = u_time * 0.3 + fcBass.x * 0.3 + fcBass.y * 0.1;
+  // float midPhase = u_time * 0.5 + fcMid.x * 0.2 + fcMid.y * 0.05;
+  // float highPhase = u_time * 0.8 + fcHigh.x * 0.1 + fcHigh.y * 0.02;
+  float bassPhase = u_time * 0.3;
+  float midPhase = u_time * 0.5;
+  float highPhase = u_time * 0.8;
 
   int nLayers = int(clamp(u_countPrimary, 1.0, 4.0));
   vec2 wp = p;
@@ -125,14 +126,24 @@ void main() {
   //   wp += warpDisplace(wp, 120.0, highPhase, u_warp * 0.15);
   // if (nLayers >= 4)
   //   wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warp * 0.07);
+  // if (nLayers >= 1)
+  //  wp += warpDisplace(wp, 8.0, bassPhase, u_warp * 0.20);
+  // if (nLayers >= 2)
+  //  wp += warpDisplace(wp, 48.0, midPhase, u_warp * 0.12);
+  // if (nLayers >= 3)
+  //  wp += warpDisplace(wp, 120.0, highPhase, u_warp * 0.06);
+  // if (nLayers >= 4)
+  // wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warp * 0.03);
+
   if (nLayers >= 1)
-    wp += warpDisplace(wp, 8.0, bassPhase, u_warp * 0.20);
+    wp += warpDisplace(wp, 8.0, bassPhase, u_warp * (0.20 + fcBass.x * 0.15));
   if (nLayers >= 2)
-    wp += warpDisplace(wp, 48.0, midPhase, u_warp * 0.12);
+    wp += warpDisplace(wp, 48.0, midPhase, u_warp * (0.12 + fcMid.x * 0.10));
   if (nLayers >= 3)
-    wp += warpDisplace(wp, 120.0, highPhase, u_warp * 0.06);
+    wp += warpDisplace(wp, 120.0, highPhase, u_warp * (0.06 + fcHigh.x * 0.06));
   if (nLayers >= 4)
-    wp += warpDisplace(wp, 200.0, highPhase * 1.7, u_warp * 0.03);
+    wp += warpDisplace(wp, 200.0, highPhase * 1.7,
+                       u_warp * (0.03 + fcHigh.x * 0.03));
 
   float ink = inkField(wp * 2.5);
   // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
@@ -140,8 +151,9 @@ void main() {
   // float fade = smoothstep(0.0, 0.4, brightness);
   // brightness = mix(0.1, brightness, fade);
 
-  float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
-  brightness = max(brightness, 0.15); // lift black floor
+  float brightness = pow(clamp(ink * 0.8 + 0.5, 0.0, 1.0), u_emphasis);
+  // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
+  // brightness = max(brightness, 0.15); // lift black floor
 
   float globalCharge = 0.0;
   for (int b = 0; b < 6; b++)
@@ -165,8 +177,12 @@ void main() {
   float val = mix(0.6, 1.0, brightness);
   float hue2 = hue + hueOffset + fcMid.x * 40.0 * sign(chargeBlend);
 
+  // vec3 finalCol = mix(hsv2rgb(hue, sat, val),
+  // hsv2rgb(hue2, sat * 0.8, val * 0.8), fcLocal.x * 0.4);
   vec3 finalCol = mix(hsv2rgb(hue, sat, val),
                       hsv2rgb(hue2, sat * 0.8, val * 0.8), fcLocal.x * 0.4);
+
+  finalCol = pow(finalCol, vec3(u_emphasis));
 
   fragColor = vec4(finalCol, 1.0);
 }

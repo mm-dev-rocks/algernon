@@ -6,147 +6,101 @@ precision lowp float;
 
 out vec4 fragColor;
 
-// algernon_interference_waves.frag
-//
-// Visualisation strategy: summed radial wave interference.
-//
-// Multiple point sources radiate sine waves outward. The amplitude of each
-// source is driven by a frequency band. The colour at each pixel is derived
-// from the *sum* of all wave heights at that point — where waves reinforce
-// (constructive interference) the pixel is bright; where they cancel
-// (destructive interference) it is dark.
-//
-// This produces concentric ripple rings around each source, and a complex
-// moiré/interference pattern where they overlap — similar to dropping several
-// pebbles into a pond simultaneously.
-//
-// The geometry is fully emergent: no bins map directly to pixels. Instead,
-// the *shape* of the interference pattern changes continuously with the audio.
-//
-// Method contrast vs other shaders in this set:
-//   warp_kaleido        — coordinate fold/warp, angular symmetry
-//   voronoi_cells       — nearest-neighbour partition, discrete regions
-//   lissajous_web       — single SDF curve
-//   rings_radial        — static concentric bands, bin → radius
-//   THIS SHADER         — summed sinusoidal wave fields, emergent interference
-
-// Number of wave sources. Each source sits at a fixed position on screen and
-// radiates at a spatial frequency (tightness of rings) driven by an FFT band.
-// 5 sources gives a rich interference pattern without the loop becoming costly.
 const int SOURCE_COUNT = 5;
 
-// Spatial frequency scale: higher = tighter, more numerous rings per unit
-// distance. This is a "zoom" on the wave pattern, not the audio frequency.
-const float WAVE_SCALE = 18.0;
-
-// How sharply the interference sum is thresholded into bright/dark bands.
-// 1.0 = soft sine gradient; higher values snap toward hard bright rings.
-const float CONTRAST = 1.6;
-
-// Helper: reads a single bin by float index and returns amplitude 0..1.
-// +0.5 texel-centre offset — the codebase convention for bin sampling.
-float sampleBin(float binIndex) {
-  return texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5)).r;
+vec2 sampleBin(float binIndex) {
+  float u = clamp((binIndex + 0.5) / 256.0, 0.0, 1.0);
+  vec4 s = texture(u_fftData, vec2(u, 0.5));
+  // .r = magnitude, .g remapped to signed charge [-1..1]
+  return vec2(s.r, (s.g - 0.5) * 2.0);
 }
 
 void main() {
-  // Mnemonic: st = 'space transform' — normalised 0..1 screen coords.
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
-
-  // Centre and aspect-correct so the pattern is not squashed on wide canvases.
   vec2 p = st - vec2(0.5, 0.5);
   p.x *= u_resolution.x / u_resolution.y;
 
-  // --- Fixed source positions ---
-  //
-  // Sources are placed by hand at visually interesting asymmetric positions
-  // (not a regular grid, not a circle) so the interference pattern has no
-  // simple symmetry — it remains complex across all audio states.
-  // Coordinates are in the same aspect-corrected space as p above.
-  vec2 sources[5];
-  sources[0] = vec2(0.00, 0.00);   // centre
-  sources[1] = vec2(-0.30, 0.20);  // upper-left
-  sources[2] = vec2(0.30, 0.20);   // upper-right
-  sources[3] = vec2(-0.20, -0.28); // lower-left
-  sources[4] = vec2(0.25, -0.22);  // lower-right
+  // --- FFT bands (magnitude + charge) ---
+  vec2 fcBass  = sampleBin(3.0);
+  vec2 fcLowMid = sampleBin(35.0);
+  vec2 fcMid   = sampleBin(80.0);
+  vec2 fcHiMid = sampleBin(130.0);
+  vec2 fcHigh  = sampleBin(170.0);
 
-  // --- FFT band mapping ---
-  //
-  // Each source is driven by a broad average over a frequency sub-band.
-  // Using averages over several bins smooths out single-bin jitter and gives
-  // each source a sense of "weight" corresponding to a musical register.
-  //
-  // Bin ranges (approximate musical registers at 44.1 kHz, 256-bin FFT):
-  //   0..5    sub-bass (kick drum body, synthesiser root notes)
-  //   6..20   bass (bass guitar, lower piano keys)
-  //   21..60  low-mid (vocals, guitar body, snare fundamental)
-  //   61..120 upper-mid / presence (consonants, plucks, hi-hat body)
-  //   121..180 treble (cymbals, air, shimmer)
   float amp[5];
-  amp[0] = (sampleBin(2.0) + sampleBin(4.0) + sampleBin(6.0)) / 3.0; // sub-bass
-  amp[1] = (sampleBin(10.0) + sampleBin(14.0) + sampleBin(18.0)) / 3.0; // bass
-  amp[2] =
-      (sampleBin(30.0) + sampleBin(40.0) + sampleBin(50.0)) / 3.0; // low-mid
-  amp[3] =
-      (sampleBin(80.0) + sampleBin(95.0) + sampleBin(110.0)) / 3.0; // upper-mid
-  amp[4] =
-      (sampleBin(130.0) + sampleBin(150.0) + sampleBin(170.0)) / 3.0; // treble
+  amp[0] = fcBass.x;
+  amp[1] = fcLowMid.x;
+  amp[2] = fcMid.x;
+  amp[3] = fcHiMid.x;
+  amp[4] = fcHigh.x;
+
+  // --- Source positions drift slowly with u_time for continuous life ---
+  // Base positions are the original hand-placed ones; each drifts on its own
+  // Lissajous path scaled by u_spread so the user controls how much they wander.
+  vec2 bases[5];
+  bases[0] = vec2( 0.00,  0.00);
+  bases[1] = vec2(-0.30,  0.20);
+  bases[2] = vec2( 0.30,  0.20);
+  bases[3] = vec2(-0.20, -0.28);
+  bases[4] = vec2( 0.25, -0.22);
+
+  // Each source also gets a charge-driven positional nudge so beats
+  // physically shift the interference pattern.
+  float charges[5];
+  charges[0] = fcBass.y;
+  charges[1] = fcLowMid.y;
+  charges[2] = fcMid.y;
+  charges[3] = fcHiMid.y;
+  charges[4] = fcHigh.y;
+
+  vec2 sources[5];
+  for (int i = 0; i < SOURCE_COUNT; i++) {
+    float fi = float(i);
+    float t = u_time * u_speed * (0.07 + fi * 0.03);
+    // Slow Lissajous drift
+    vec2 drift = vec2(
+      sin(t + fi * 1.3) * u_spread,
+      cos(t * 0.7 + fi * 0.9) * u_spread
+    );
+    // Beat nudge: charge pushes source toward/away from centre
+    vec2 nudge = bases[i] * charges[i] * 0.12;
+    sources[i] = bases[i] + drift + nudge;
+  }
 
   // --- Wave superposition ---
-  //
-  // For each source, compute the wave height at this fragment:
-  //   height = amplitude * sin(WAVE_SCALE * distFromSource)
-  //
-  // sin() oscillates -1..1, creating alternating crests and troughs as
-  // distance increases. Multiplying by the bin amplitude gates the source:
-  // a silent bin contributes no wave, so its rings vanish completely.
-  //
-  // The sum of all heights is then normalised into 0..1 for colour use.
+  // u_zoom controls spatial frequency (ring tightness).
+  // u_warp adds a time-animated phase offset per source so rings
+  // appear to radiate outward continuously even on silent audio.
   float waveSum = 0.0;
-
   for (int i = 0; i < SOURCE_COUNT; i++) {
     float dist = length(p - sources[i]);
-    float height = amp[i] * sin(WAVE_SCALE * dist);
+    // Phase: u_warp * u_time makes rings animate outward at a rate the
+    // user controls. charge shifts phase on beats for a pulse effect.
+    float phase = u_zoom * dist - u_warp * u_time * (0.4 + float(i) * 0.1)
+                  + charges[i] * 0.4;
+    float height = amp[i] * sin(phase);
     waveSum += height;
   }
 
-  // waveSum is in the range -(SOURCE_COUNT)..(SOURCE_COUNT).
-  // Remap to 0..1 by shifting and scaling, then apply contrast curve.
-  float normalised = waveSum / float(SOURCE_COUNT) * 0.5 + 0.5; // 0..1
-  float contrasted = pow(clamp(normalised, 0.0, 1.0), CONTRAST);
+  float normalised = waveSum / float(SOURCE_COUNT) * 0.5 + 0.5;
+  // u_emphasis as pow contrast on the interference pattern
+  float contrasted = pow(clamp(normalised, 0.0, 1.0), u_emphasis);
 
-  // --- Colour ---
-  //
-  // Split the interference pattern across three colour channels using the same
-  // audio bands, but phase-shifted so R / G / B respond to different registers.
-  // This means a bass-heavy mix glows red, a treble-heavy mix glows blue, and
-  // a balanced mix produces near-white interference bands.
-  //
-  // Each channel is also shifted in phase (by 0 / 0.33 / 0.67 of the cycle)
-  // so that the R/G/B fringes land on *different* wavefronts — preventing the
-  // trivially boring case where all three channels are identical.
-  float bassAmp = amp[0] + amp[1];   // combined low-end weight
-  float midAmp = amp[2];             // mid weight
-  float trebleAmp = amp[3] + amp[4]; // combined high-end weight
+  // --- Colour: R/G/B driven by frequency register with phase separation ---
+  float bassAmp   = amp[0] + amp[1];
+  float midAmp    = amp[2];
+  float trebleAmp = amp[3] + amp[4];
 
-  // Phase offsets create colour separation between wavefronts.
-  // The sin() input is the same as the interference calculation above, but
-  // here we re-derive it per-channel for the phase shift — the extra sin()
-  // calls are on scalars, not vectors, so cost is modest.
-  float r = pow(
-      clamp(sin(contrasted * 3.14159265 + 0.0) * bassAmp + 0.3, 0.0, 1.0), 1.2);
-  float g = pow(
-      clamp(sin(contrasted * 3.14159265 + 2.09) * midAmp + 0.3, 0.0, 1.0), 1.2);
-  float b = pow(
-      clamp(sin(contrasted * 3.14159265 + 4.19) * trebleAmp + 0.3, 0.0, 1.0),
-      1.2);
+  // Charge-driven hue shift: beats warm (positive charge) or cool (negative)
+  float globalCharge = (charges[0] + charges[1] + charges[2]) / 3.0;
+  float hueShift = globalCharge * u_hueShift; // u_hueShift ± degrees on beat
 
-  // Add a base luminance proportional to overall loudness so the visualiser
-  // stays visible on near-silent audio (avoids a completely black screen).
-  float loudness = (bassAmp + midAmp + trebleAmp) / 5.0;
-  r = clamp(r + loudness * 0.05, 0.0, 1.0);
-  g = clamp(g + loudness * 0.05, 0.0, 1.0);
-  b = clamp(b + loudness * 0.05, 0.0, 1.0);
+  float r = pow(clamp(sin(contrasted * 3.14159 + hueShift * 0.017 + 0.0 ) * bassAmp   + contrasted * 0.5, 0.0, 1.0), 1.2);
+  float g = pow(clamp(sin(contrasted * 3.14159 + hueShift * 0.017 + 2.09) * midAmp    + contrasted * 0.4, 0.0, 1.0), 1.2);
+  float b = pow(clamp(sin(contrasted * 3.14159 + hueShift * 0.017 + 4.19) * trebleAmp + contrasted * 0.3, 0.0, 1.0), 1.2);
 
-  fragColor = vec4(r, g, b, 1.0);
+  // Apply final gamma contrast so u_emphasis affects the whole image
+  vec3 col = pow(vec3(r, g, b), vec3(u_emphasis * 0.5 + 0.5));
+
+  fragColor = vec4(col, 1.0);
 }
