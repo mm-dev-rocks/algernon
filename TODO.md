@@ -5,6 +5,8 @@ file playback
     1 or multiple
     multiple creates playlist
 
+extra lib dir?
+
 mic input
 
 choose great defaults for all shaders

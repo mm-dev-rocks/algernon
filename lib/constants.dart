@@ -6,6 +6,7 @@ import 'package:algernon/shader_model.dart';
 import 'package:flutter/material.dart';
 
 import 'package:algernon/shaders_meta_data.dart' as meta;
+import 'package:algernon/shader_defaults.dart' as shader_defaults;
 
 /// Lots of constants related to the app:
 /// - UI (eg colours, sizes)
@@ -39,16 +40,13 @@ class ALGERNON {
 
     //'themeBrightnessModeIndex': [int, 0],
     //'colorScheme': [String, 'Choc Lime'],
-
-    /// Container for shader tweaks, which are saved as 'preferences' for persistence between sessions.
-    'shaderTweakValuesMap': [],
     'selectedShaderIndex': [int, 0],
     'selectedMemorySlotIndex': [int, 0],
     'selectedAudioFilePathIndex': [int, 0],
     //
     'playlist': [List<String>, <String>[]],
     'selectedPlaylistFilePathIndex': [int, 0],
-  };
+  }..addAll(shader_defaults.shaderDefaults);
 
   static const int soLoudBufferSize = 1024;
   static const double magnitudeChargeSmoothing = 0.999;
