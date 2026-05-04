@@ -3,7 +3,7 @@
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
-import 'package:algernon/lib/memory_slot_copy_model.dart';
+import 'package:algernon/memory_slot_copy_model.dart';
 import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/memory_slot_drag_feedback.dart';
 import 'package:algernon/screen.dart';
@@ -26,7 +26,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
     return SizedBox(
       width: Screen.mainControlPanelWidth(context),
       child: Padding(
-          padding: EdgeInsets.only(left: uiSizes.paddingSmall),
+        padding: EdgeInsets.only(left: uiSizes.paddingSmall),
         child: Row(
           mainAxisSize: .max,
           mainAxisAlignment: .spaceBetween,
@@ -40,7 +40,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                   slotIndex: index,
                   preferenceKeys: _getPrefKeysFromIndex(index),
                 ),
-        
+
                 child: DragTarget<MemorySlotCopyModel>(
                   builder: (context, candidateItems, rejectedItems) {
                     return MemorySlotButton(
