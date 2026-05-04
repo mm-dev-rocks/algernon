@@ -2,38 +2,23 @@ file playback
     curently selection replaces playlist, should add to it
     should play next file in playlist by default (add standard shuffle loop single loop all)
     read/write .m3u
+    1 or multiple
+    multiple creates playlist
 
 mic input
 
-better visible names for shaders
 choose great defaults for all shaders
-
-pixel doubling should decrease based on achieved frame rate
 
 add hue range / adjustment to
 - voronoi
 
 lissajous make hue less jumpy, add saturation slider
 
-next/previous buttons
-
-spectral sphere add distance/expand slider for charge multiplier (distance of dots)
-
 hairy or grassy shaders
-
-interference_waves add some sliders, make good or remove
 
 ros tunnel smooth start/end?
 
-safe area put UI inside but painter can go outside
-
-roots tune for better reaction to fft
-
 kb shortcuts don't work on fftsmoothing slider
-
-file chooser
-    1 or multiple
-    multiple creates playlist
 
 when track stops, time-based uniform should stop (or even slow to a stop)
 
@@ -69,8 +54,6 @@ When the exception was thrown, this was the stack:
 ---
 
 # BUGS
-
-add new tracks, if nothing playing the first track should start
 
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
@@ -164,3 +147,11 @@ can just use scaling variable from volume compensation
 null checks on soundhandle in AlgernonPlayer
 list of shaders needs to be scrollable
     need a way to delete tracks from playlist, single or all
+pixel doubling should decrease based on achieved frame rate
+add new tracks, if nothing playing the first track should start
+next/previous buttons
+spectral sphere add distance/expand slider for charge multiplier (distance of dots)
+interference_waves add some sliders, make good or remove
+safe area put UI inside but painter can go outside
+better visible names for shaders
+roots tune for better reaction to fft
