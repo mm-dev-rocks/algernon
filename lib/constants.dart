@@ -90,6 +90,9 @@ class ALGERNON {
     Colors.white.withValues(alpha: 0.3),
     Colors.black,
   );
+  static final Color uiAttractColor = Colors.pink.withValues(
+    alpha: ALGERNON.fadeDarkBackgroundOpacity,
+  );
   //Colors.green;
 
   ///

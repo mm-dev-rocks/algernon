@@ -1,15 +1,9 @@
-file playback
     curently selection replaces playlist, should add to it
-    should play next file in playlist by default (add standard shuffle loop single loop all)
     read/write .m3u
-    1 or multiple
-    multiple creates playlist
 
 mic input
 
 first run steer towards 'add some tracks'
-
-
 
 choose great defaults for all shaders
 
@@ -162,3 +156,7 @@ safe area put UI inside but painter can go outside
 better visible names for shaders
 roots tune for better reaction to fft
 extra lib dir?
+file playback
+    should play next file in playlist by default (add standard shuffle loop single loop all)
+    1 or multiple
+    multiple creates playlist

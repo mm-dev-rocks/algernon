@@ -41,9 +41,7 @@ class MemorySlotButton extends StatelessWidget {
           decoration: highlighted
               ? BoxDecoration(
                   //border: border,
-                  color: Colors.pink.withValues(
-                    alpha: ALGERNON.fadeDarkBackgroundOpacity,
-                  ),
+                  color: ALGERNON.uiAttractColor,
                 )
               : selected
               ? BoxDecoration(

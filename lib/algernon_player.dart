@@ -44,16 +44,16 @@ class AlgernonPlayer extends StatefulWidget {
       AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
           .loadFile(FileChooser.notifier.selectedFilePath);
 
-      await AudioAnalysis.analyseTrackOnLoad(
-        filePath: FileChooser.notifier.selectedFilePath,
-        trackDuration: SoLoud.instance.getLength(
-          AlgernonPlayer.currentSoundNotifier.source!,
-        ),
-      );
-
-      AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
-
       if (AlgernonPlayer.currentSoundNotifier.source != null) {
+        await AudioAnalysis.analyseTrackOnLoad(
+          filePath: FileChooser.notifier.selectedFilePath,
+          trackDuration: SoLoud.instance.getLength(
+            AlgernonPlayer.currentSoundNotifier.source!,
+          ),
+        );
+
+        AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
+
         AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(
           AlgernonPlayer.currentSoundNotifier.source!,
         );

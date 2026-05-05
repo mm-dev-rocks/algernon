@@ -43,9 +43,12 @@ class UserInterface extends StatefulWidget {
   }
 
   static void _hideControls() {
-    //AppState.log("_hideControls()");
-    _hideControlsTimer.cancel();
-    UserInterface.controlsAreVisibleNotifier.value = false;
+    /// If there are no tracks in the playlist, leave the UI visible as a hint.
+    if (FileChooser.notifier.currentPlaylist.isNotEmpty) {
+      //AppState.log("_hideControls()");
+      _hideControlsTimer.cancel();
+      UserInterface.controlsAreVisibleNotifier.value = false;
+    }
   }
 }
 
@@ -84,7 +87,10 @@ class _UserInterfaceState extends State<UserInterface> {
                           children: [
                             const LoopCycleButton(),
                             IconButton(
-                              icon: Icon(Icons.skip_previous, color: ALGERNON.uiDefaultForegroundColor),
+                              icon: Icon(
+                                Icons.skip_previous,
+                                color: ALGERNON.uiDefaultForegroundColor,
+                              ),
                               onPressed: () async {
                                 FileChooser.selectPrev();
                                 await AlgernonPlayer.playSelectedSound(
@@ -95,7 +101,10 @@ class _UserInterfaceState extends State<UserInterface> {
                             ),
                             const PauseToggle(),
                             IconButton(
-                              icon: Icon(Icons.skip_next, color: ALGERNON.uiDefaultForegroundColor),
+                              icon: Icon(
+                                Icons.skip_next,
+                                color: ALGERNON.uiDefaultForegroundColor,
+                              ),
                               onPressed: () async {
                                 FileChooser.selectNext();
                                 await AlgernonPlayer.playSelectedSound(
@@ -108,22 +117,16 @@ class _UserInterfaceState extends State<UserInterface> {
                         ),
 
                         const Flexible(child: FileChooser()),
-                        IconButton(
-                          onPressed: () async {
-                            FilePickerResult? filePickerResult =
-                                await FileManager.pickFile();
-                            if (filePickerResult != null &&
-                                filePickerResult.files.isNotEmpty) {
-                              FileChooser.notifier.currentPlaylist =
-                                  filePickerResult.files
-                                      .map(
-                                        (PlatformFile file) =>
-                                            file.path.toString(),
-                                      )
-                                      .toList();
-                            }
-                          },
-                          icon: Icon(Icons.playlist_add),
+                        ColoredBox(
+                          color: FileChooser.notifier.currentPlaylist.isEmpty
+                              ? ALGERNON.uiAttractColor
+                              : Colors.transparent,
+                          child: IconButton(
+                            onPressed: () async {
+                              await FileChooser.chooseFiles();
+                            },
+                            icon: Icon(Icons.playlist_add),
+                          ),
                         ),
                       ],
                     ),

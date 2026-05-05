@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/file_chooser.dart';
 import 'package:flutter/material.dart';
 
 import '../algernon_player.dart';
@@ -10,46 +11,21 @@ class RootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //
-    // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    // COULD BE USEFUL FOR ROUTE MANAGEMENT, KEEP FOR A WHILE
-    // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-    //
     //return ListenableBuilder(
-    //    listenable: WebDavConnectionManager.statusNotifier,
-    //    builder: (BuildContext context, Widget? child) {
-    //      AppState.log('RootPage::ListenableBuilder: WebDavConnectionManager.statusNotifier.value: ${WebDavConnectionManager.statusNotifier.value}');
-    //      AppState.log('RootPage::ListenableBuilder: AppState.currentRoute: ${AppState.currentRoute}');
-    //      WebDavConnectionStatus status = WebDavConnectionManager.statusNotifier.value;
+    //  listenable: FileChooser.notifier,
+    //  builder: (BuildContext context, Widget? child) {
+    //    bool playlistIsEmpty = FileChooser.notifier.currentPlaylist.isEmpty;
+    //    debugPrint(
+    //      'RootPage::ListenableBuilder: playlistIsEmpty: $playlistIsEmpty',
+    //    );
 
-    //      Widget contents = (status == WebDavConnectionStatus.error ||
-    //              status == WebDavConnectionStatus.verifiedWithBadAudiobookDirectory ||
-    //              status == WebDavConnectionStatus.firstTimeSetup)
-    //          ? AlgernonTextButton(
-    //              'Enter WebDAV server settings',
-    //              () {
-    //                AppState.navigateMainToNamedRoute(ALGERNON.routePreferences);
-    //              },
-    //            )
-    //          : Text("...");
-    //
-    //      AppState.forwardToBookListIfConnected();
+    //    Widget contents = playlistIsEmpty
+    //        ? const Text('Add some tracks')
+    //        : const AlgernonPlayer();
 
-    //      //if (status == WebDavConnectionStatus.verified &&
-    //      //    AppState.currentRoute == ALGERNON.routeRoot) {
-    //      //  /// We need to redirect, but can't do it inline here as the [build] method must return a
-    //      //  /// [Widget]. A [Future.microtask] will execute immediately after [build], so gets us the
-    //      //  /// desired effect.
-    //      //  Future.microtask(() {
-    //      //    AppState.navigateMainToNamedRoute(ALGERNON.routeBookList);
-    //      //  });
-    //      //}
-    //
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    // COULD BE USEFUL FOR ROUTE MANAGEMENT, KEEP FOR A WHILE
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-    //
-
+    //    return contents;
+    //  },
+    //);
     return const AlgernonPlayer();
   }
 }
