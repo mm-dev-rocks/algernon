@@ -70,6 +70,7 @@ class AlgernonPlayer extends StatefulWidget {
     } catch (e) {
       debugPrint('AlgernonPlayer::loadFile error:\n$e');
     }
+    AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: false);
   }
 
   static Future<void> stopAllSounds() async {
@@ -101,10 +102,36 @@ class AlgernonPlayer extends StatefulWidget {
     //SoLoud.instance.disposeSource(
     //  AlgernonPlayer.currentSoundNotifier.source!,
     //);
+    AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
-    FileChooser.selectNext();
+    switch (AlgernonPlayer.currentSoundNotifier.loopType) {
+      case LoopType.all:
+        FileChooser.selectNext();
+        await AlgernonPlayer.playSelectedSound(
+          reason: '_onAllInstancesFinished',
+        );
+      case LoopType.one:
+        // No change in file, so will loop current track
+        await AlgernonPlayer.playSelectedSound(
+          reason: '_onAllInstancesFinished',
+        );
+      case LoopType.none:
+        debugPrint(
+          '\tFileChooser.currentTrackIsLast: ${FileChooser.currentTrackIsLast}',
+        );
+        if (!FileChooser.currentTrackIsLast) {
+          FileChooser.selectNext();
+          await AlgernonPlayer.playSelectedSound(
+            reason: '_onAllInstancesFinished',
+          );
+          //} else {
+          //AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
+        }
+        break;
+    }
+    //FileChooser.selectNext();
     debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
-    await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
+    //await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
   }
 
   static Future<void> _ensureSoLoudIsInitialised() async {

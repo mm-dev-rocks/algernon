@@ -43,6 +43,9 @@ class ALGERNON {
     'selectedShaderIndex': [int, 0],
     'selectedMemorySlotIndex': [int, 0],
     'selectedAudioFilePathIndex': [int, 0],
+
+    /// Default to 'no looping'
+    'loopTypeIndex': [int, 0],
     //
     'playlist': [List<String>, <String>[]],
     'selectedPlaylistFilePathIndex': [int, 0],

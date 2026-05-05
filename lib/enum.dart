@@ -118,3 +118,5 @@ enum RenderScale {
 }
 
 enum DirectionOfChange { increase, decrease, none }
+
+enum LoopType { none, all, one }

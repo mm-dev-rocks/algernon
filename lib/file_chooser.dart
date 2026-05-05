@@ -48,6 +48,10 @@ class FileChooser extends StatefulWidget {
     FileChooser.notifier.currentPlaylist = tracks;
   }
 
+  static bool get currentTrackIsLast =>
+      FileChooser.notifier.selectedFilePathIndex ==
+      FileChooser.notifier.currentPlaylist.length - 1;
+
   @override
   State<FileChooser> createState() => _FileChooserState();
 }

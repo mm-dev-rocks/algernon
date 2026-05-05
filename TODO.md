@@ -5,9 +5,11 @@ file playback
     1 or multiple
     multiple creates playlist
 
-extra lib dir?
-
 mic input
+
+first run steer towards 'add some tracks'
+
+
 
 choose great defaults for all shaders
 
@@ -56,6 +58,8 @@ When the exception was thrown, this was the stack:
 ---
 
 # BUGS
+
+pause button shows wrong state
 
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
@@ -157,3 +161,4 @@ interference_waves add some sliders, make good or remove
 safe area put UI inside but painter can go outside
 better visible names for shaders
 roots tune for better reaction to fft
+extra lib dir?
