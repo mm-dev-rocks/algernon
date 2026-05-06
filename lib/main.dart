@@ -149,7 +149,8 @@ class _AlgernonAppState extends State<AlgernonApp> {
           inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
           thumbColor: Colors.white,
           overlayColor: Colors.white.withValues(alpha: 0.2),
-          valueIndicatorColor: Colors.white,
+          valueIndicatorColor: Colors.black,
+          valueIndicatorTextStyle: TextStyle(color: Colors.white),
           trackHeight: 1.0,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
@@ -160,6 +161,10 @@ class _AlgernonAppState extends State<AlgernonApp> {
           thickness: WidgetStatePropertyAll<double?>(
             ALGERNON.scrollbarThickness,
           ),
+        ),
+        tooltipTheme: TooltipThemeData(
+          decoration: BoxDecoration(color: Colors.black),
+          textStyle: TextStyle(color: Colors.white),
         ),
       ),
       home: Scaffold(
