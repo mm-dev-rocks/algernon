@@ -43,6 +43,7 @@ float lineSDF(vec2 p, vec2 a, vec2 b, float width) {
   return 1.0 - smoothstep(0.0, width, dist);
 }
 
+// warp passed in so main() can drive it dynamically from FFT charge
 float armSway(float fi, float t, float warp) {
   float slowSway = sin(u_time * 0.7 + fi * 1.37 + t * 1.1) * 0.6 +
                    sin(u_time * 0.3 + fi * 2.71 + t * 0.8) * 0.3;
@@ -78,7 +79,13 @@ void main() {
   vec2 fcLow = sampleBinRange(2.0, 5.0);
   vec2 fcHigh = sampleBin(200.0);
 
+  // u_warp is the resting baseline; positive low-freq charge kicks it up on
+  // beats
+  // Curl on activity
+  // float dynamicWarp = u_warp + max(0.0, fcLow.y) * 1.5;
+  // Straighten on activity
   float dynamicWarp = u_warp - max(0.0, fcLow.y) * 1.5;
+
   float fcLowMod = fcLow.x * 0.8 + fcLow.y * 0.4;
 
   float glowTotal = 0.0;
@@ -88,19 +95,6 @@ void main() {
       u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
   int nDepths = int(u_countSecondary);
 
-  // Continuous taper: global t runs 0→1 from centre to outermost tip.
-  // Proportional lengths: arm=1, branch=0.45, sub=0.45*0.45
-  float lenArm = 1.0;
-  float lenBranch = 0.45;
-  float lenSub = 0.45 * 0.45;
-  float totalReach = lenArm + lenBranch + lenSub;      // ~1.6525
-  float tArmEnd = lenArm / totalReach;                 // ~0.605
-  float tBranchEnd = tArmEnd + lenBranch / totalReach; // ~0.878
-
-// Width at global t: starts at mainWidth, tapers to ~5% at tip.
-// Adjust the 0.95 to taste (1.0 = taper to nothing, 0.0 = no taper).
-#define taperWidth(baseWidth, globalT) ((baseWidth) * (1.0 - (globalT) * 0.9))
-
   for (int arm = 0; arm < 999; arm++) {
     if (arm >= nArms)
       break;
@@ -108,13 +102,18 @@ void main() {
     float fi = float(arm);
     float baseAngle = (fi / float(nArms)) * 6.2832;
 
+    // float armBin = fi * (64.0 / float(nArms));
+    // vec2 fcArm = sampleBin(armBin);
+
     float binsPerArm = 256.0 / float(nArms);
     float armBinStart = fi * binsPerArm;
     float armBinEnd = armBinStart + binsPerArm;
     vec2 fcArm = sampleBinRange(armBinStart, armBinEnd);
 
     float armLen = clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, u_zoom);
-    float mainWidth = 0.023 + fcArm.x * 0.005;
+    /// Start (base) width
+    // float mainWidth = 0.012 + fcArm.x * 0.006;
+    float mainWidth = 0.016 + fcArm.x * 0.006;
 
     float hue = u_hueShift + (fi / float(nArms)) * 60.0 + fcArm.y * 25.0;
     float val = clamp(fcArm.x * 1.6 + 0.1, 0.0, 1.0);
@@ -130,12 +129,13 @@ void main() {
 
     for (int seg = 0; seg < 4; seg++) {
       float t = float(seg) / 4.0;
-      float globalT = t * tArmEnd;
       float angle =
           baseAngle + armSway(fi, t, dynamicWarp) + fcLowMod * sin(t * 3.14);
       vec2 segEnd = segStart + vec2(cos(angle), sin(angle)) * segLen;
 
-      float g = lineSDF(p, segStart, segEnd, taperWidth(mainWidth, globalT));
+      // Last multiplier is taper amount
+      // float g = lineSDF(p, segStart, segEnd, mainWidth * (1.0 - t * 0.4));
+      float g = lineSDF(p, segStart, segEnd, mainWidth * (1.0 - t * 0.7));
       glowTotal += g;
       colTotal += armCol * g;
 
@@ -143,6 +143,14 @@ void main() {
     }
 
     vec2 tip = segStart;
+
+    // Width at the very tip of the main arm (t → 1.0)
+    float armTipWidth = mainWidth * (1.0 - 0.99); // ≈ mainWidth * 0.01
+
+    // Give depth-2 a small multiplier so it's still visible, but never fatter
+    // than tip
+    float d2BaseWidth = armTipWidth * 1.0; // tune: ~0.08 * mainWidth
+    // float d2BaseWidth = armTipWidth * 8.0; // tune: ~0.08 * mainWidth
 
     // --- Depth 2: sub-branches from arm tip ---
     if (nDepths >= 2) {
@@ -157,19 +165,25 @@ void main() {
 
         for (int bseg = 0; bseg < 3; bseg++) {
           float bt = float(bseg) / 3.0;
-          float globalT = tArmEnd + bt * (tBranchEnd - tArmEnd);
           float ba = bAngle +
                      armSway(fi + float(sub) * 3.7, bt, dynamicWarp) * 0.6 +
                      sin(u_time * 1.4 + fi * 2.1 + bt * 2.0 + float(sub)) *
                          0.3 * fcHigh.x;
           vec2 bEnd = bStart + vec2(cos(ba), sin(ba)) * bSegLen;
 
-          float bg = lineSDF(p, bStart, bEnd, taperWidth(mainWidth, globalT));
+          float bg = lineSDF(p, bStart, bEnd, d2BaseWidth * (1.0 - bt * 0.5));
           glowTotal += bg;
           colTotal += bCol * bg;
 
           bStart = bEnd;
         }
+
+        // Width at tip of depth-2 branch (bt → 1.0)
+        float d2TipWidth = d2BaseWidth * (1.0 - 0.5); // = d2BaseWidth * 0.5
+        // float d3BaseWidth =
+        //     d2TipWidth * 3.0; // again a small boost to stay visible
+        float d3BaseWidth =
+            d2TipWidth * 1.0; // again a small boost to stay visible
 
         // --- Depth 3: sub-sub-branches ---
         if (nDepths >= 3) {
@@ -188,14 +202,13 @@ void main() {
 
             for (int b2seg = 0; b2seg < 2; b2seg++) {
               float b2t = float(b2seg) / 2.0;
-              float globalT = tBranchEnd + b2t * (1.0 - tBranchEnd);
               float b2a =
                   b2Angle +
                   armSway(fi + float(sub2) * 7.1, b2t, dynamicWarp) * 0.4;
               vec2 b2End = b2Start + vec2(cos(b2a), sin(b2a)) * b2SegLen;
 
               float b2g =
-                  lineSDF(p, b2Start, b2End, taperWidth(mainWidth, globalT));
+                  lineSDF(p, b2Start, b2End, d3BaseWidth * (1.0 - b2t * 0.5));
               glowTotal += b2g;
               colTotal += b2Col * b2g;
 
