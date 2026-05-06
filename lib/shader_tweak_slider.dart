@@ -29,7 +29,8 @@ class ShaderTweakSlider extends StatelessWidget {
       value: shaderTweak.storedValue.clamp(shaderTweak.min, shaderTweak.max),
       divisions: shaderTweak.divisions,
       onChanged: onChanged,
-      label: shaderTweak.storedValue.toString(),
+      label:
+          '${shaderTweak.tweakType.label.toUpperCase()}: ${shaderTweak.storedValue.toStringAsFixed(3)}',
       showValueIndicator: ShowValueIndicator.onDrag,
     );
     Widget infoIcon = Tooltip(
