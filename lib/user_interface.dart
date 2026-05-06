@@ -131,7 +131,7 @@ class _UserInterfaceState extends State<UserInterface> {
                   PositionedDirectional(
                     top: 0,
                     //bottom: 0,
-                    start: 0,
+                    end: 0,
                     width:
                         Screen.mainControlPanelWidth(context) +
                         ALGERNON.autoCountButtonSize.width,
@@ -155,7 +155,7 @@ class _UserInterfaceState extends State<UserInterface> {
                     bottom:
                         kToolbarHeight +
                         Screen.uiSizesFromContext(context).paddingSmall,
-                    end: 0,
+                    start: 0,
                     child: const VolumeSlider(),
                   ),
                 ],
