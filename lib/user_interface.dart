@@ -65,6 +65,7 @@ class _UserInterfaceState extends State<UserInterface> {
             ignoring: !controlsAreVisible,
             child: AnimatedOpacity(
               opacity: controlsAreVisible ? 1.0 : 0.0,
+              curve: controlsAreVisible ? Curves.easeOut : Curves.easeOut,
               duration: controlsAreVisible
                   ? ALGERNON.showControlsFadeDuration
                   : ALGERNON.hideControlsFadeDuration,
