@@ -27,6 +27,7 @@ class _FileManagerWidgetState extends State<FileManagerWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
+                              mouseCursor: SystemMouseCursors.click,
             icon: Icon(Icons.add_to_photos_rounded),
             onPressed: null,
             //iconData: Icons.add_to_photos_rounded,

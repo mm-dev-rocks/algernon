@@ -6,14 +6,12 @@ import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
-import 'package:algernon/file_manager.dart';
 import 'package:algernon/loop_cycle_button.dart';
 import 'package:algernon/main_control_panel.dart';
 import 'package:algernon/pause_toggle.dart';
 import 'package:algernon/playback_bar.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/volume_slider.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class UserInterface extends StatefulWidget {
@@ -24,7 +22,7 @@ class UserInterface extends StatefulWidget {
     _hideControls,
   );
 
-  static ValueNotifier<bool> controlsAreVisibleNotifier = ValueNotifier(false);
+  static ValueNotifier<bool> controlsAreVisibleNotifier = ValueNotifier(true);
 
   @override
   State<UserInterface> createState() => _UserInterfaceState();
@@ -56,6 +54,7 @@ class _UserInterfaceState extends State<UserInterface> {
   @override
   Widget build(BuildContext context) {
     Size screenSize = Screen.size(context);
+    dynamic uiSizes = Screen.uiSizesFromContext(context);
 
     /// Fade controls in or out
     return ValueListenableBuilder(
@@ -83,10 +82,13 @@ class _UserInterfaceState extends State<UserInterface> {
                               : const SizedBox.shrink(),
                         ),
 
+                        SizedBox(width: uiSizes.paddingMedium),
+
                         Row(
                           children: [
-                            const LoopCycleButton(),
+                            const PauseToggle(),
                             IconButton(
+                              mouseCursor: SystemMouseCursors.click,
                               icon: Icon(
                                 Icons.skip_previous,
                                 color: ALGERNON.uiDefaultForegroundColor,
@@ -99,8 +101,8 @@ class _UserInterfaceState extends State<UserInterface> {
                                 UserInterface.keepControlsAlive();
                               },
                             ),
-                            const PauseToggle(),
                             IconButton(
+                              mouseCursor: SystemMouseCursors.click,
                               icon: Icon(
                                 Icons.skip_next,
                                 color: ALGERNON.uiDefaultForegroundColor,
@@ -113,21 +115,13 @@ class _UserInterfaceState extends State<UserInterface> {
                                 UserInterface.keepControlsAlive();
                               },
                             ),
+                            const LoopCycleButton(),
                           ],
                         ),
 
+                        SizedBox(width: uiSizes.paddingMedium),
+
                         const Flexible(child: FileChooser()),
-                        ColoredBox(
-                          color: FileChooser.notifier.currentPlaylist.isEmpty
-                              ? ALGERNON.uiAttractColor
-                              : Colors.transparent,
-                          child: IconButton(
-                            onPressed: () async {
-                              await FileChooser.chooseFiles();
-                            },
-                            icon: Icon(Icons.playlist_add),
-                          ),
-                        ),
                       ],
                     ),
                   ),

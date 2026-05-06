@@ -19,6 +19,7 @@ class _LoopCycleButtonState extends State<LoopCycleButton> {
       listenable: AlgernonPlayer.currentSoundNotifier,
       builder: (context, child) {
         return IconButton(
+                              mouseCursor: SystemMouseCursors.click,
           onPressed: AlgernonPlayer.currentSoundNotifier.cycleLoopType,
           icon: switch (AlgernonPlayer.currentSoundNotifier.loopType) {
             LoopType.none => Icon(

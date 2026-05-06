@@ -75,68 +75,96 @@ class _FileChooserState extends State<FileChooser> {
     return ListenableBuilder(
       listenable: FileChooser.notifier,
       builder: (context, child) {
-        return DropdownMenu<int>(
-          textAlign: FileChooser.notifier.currentPlaylist.isEmpty
-              ? TextAlign.end
-              : TextAlign.start,
-          width: double.infinity,
-          requestFocusOnTap: false,
-          initialSelection: FileChooser.notifier.currentPlaylist.isEmpty
-              ? _emptyPlaylistSpecialIndex
-              : FileChooser.notifier.selectedFilePathIndex,
-          menuHeight: Screen.height(context) * 0.66,
-          //inputDecorationTheme: FileChooser.notifier.currentPlaylist.isEmpty
-          //    ? Theme.of(context).inputDecorationTheme.copyWith(
-          //        filled: true,
-          //        fillColor: ALGERNON.uiAttractColor,
-          //      )
-          //    : null,
-          onSelected: FileChooser.notifier.currentPlaylist.isEmpty
-              ? (value) async {
+        dynamic uiSizes = Screen.uiSizesFromContext(context);
+        return Row(
+          children: [
+            Expanded(
+              child: IgnorePointer(
+                ignoring: FileChooser.notifier.currentPlaylist.isEmpty,
+                child: DropdownMenu<int>(
+                  textAlign: FileChooser.notifier.currentPlaylist.isEmpty
+                      ? TextAlign.end
+                      : TextAlign.start,
+                  width: double.infinity,
+                  trailingIcon: FileChooser.notifier.currentPlaylist.isEmpty
+                      ? Icon(Icons.arrow_right)
+                      : null,
+                  requestFocusOnTap: false,
+                  initialSelection: FileChooser.notifier.currentPlaylist.isEmpty
+                      ? _emptyPlaylistSpecialIndex
+                      : FileChooser.notifier.selectedFilePathIndex,
+                  menuHeight: Screen.height(context) * 0.66,
+                  onSelected: FileChooser.notifier.currentPlaylist.isEmpty
+                      ? (value) async {
+                          await FileChooser.chooseFiles();
+                        }
+                      : (int? value) async {
+                          debugPrint('FileChooser::onSelected($value)');
+                          if (value != null &&
+                              value != _emptyPlaylistSpecialIndex) {
+                            FileChooser.notifier.selectedFilePathIndex = value;
+                            await AlgernonPlayer.playSelectedSound(
+                              reason: 'FileChooser::onSelected($value)',
+                            );
+                          }
+                          UserInterface.keepControlsAlive();
+                        },
+                  dropdownMenuEntries:
+                      FileChooser.notifier.currentPlaylist.isEmpty
+                      ? [
+                          DropdownMenuEntry<int>(
+                            value: _emptyPlaylistSpecialIndex,
+                            label: ('Add some tracks').toUpperCase(),
+                          ),
+                        ]
+                      : FileChooser.notifier.currentPlaylist
+                            .asMap()
+                            .entries
+                            .map<DropdownMenuEntry<int>>(
+                              (MapEntry entry) => DropdownMenuEntry<int>(
+                                value: entry.key,
+                                label: FileChooser
+                                    .notifier
+                                    .currentPlaylist[entry.key]
+                                    .split('/')
+                                    .last,
+                                style: MenuItemButton.styleFrom(
+                                  foregroundColor:
+                                      entry.key ==
+                                          FileChooser
+                                              .notifier
+                                              .selectedFilePathIndex
+                                      ? Colors.white
+                                      : ALGERNON.uiDefaultForegroundColor,
+                                ),
+                                trailingIcon: IconButton(
+                                  icon: Icon(Icons.playlist_remove),
+                                  onPressed: () {
+                                    FileChooser.removeTrackByIndex(entry.key);
+                                  },
+                                ),
+                              ),
+                            )
+                            .toList(),
+                ),
+              ),
+            ),
+
+            SizedBox(width: uiSizes.paddingSmall),
+
+            ColoredBox(
+              color: FileChooser.notifier.currentPlaylist.isEmpty
+                  ? ALGERNON.uiAttractColor
+                  : Colors.transparent,
+              child: IconButton(
+                mouseCursor: SystemMouseCursors.click,
+                onPressed: () async {
                   await FileChooser.chooseFiles();
-                }
-              : (int? value) async {
-                  debugPrint('FileChooser::onSelected($value)');
-                  if (value != null && value != _emptyPlaylistSpecialIndex) {
-                    FileChooser.notifier.selectedFilePathIndex = value;
-                    await AlgernonPlayer.playSelectedSound(
-                      reason: 'FileChooser::onSelected($value)',
-                    );
-                  }
-                  UserInterface.keepControlsAlive();
                 },
-          dropdownMenuEntries: FileChooser.notifier.currentPlaylist.isEmpty
-              ? [
-                  DropdownMenuEntry<int>(
-                    value: _emptyPlaylistSpecialIndex,
-                    label: 'Add some tracks',
-                  ),
-                ]
-              : FileChooser.notifier.currentPlaylist
-                    .asMap()
-                    .entries
-                    .map<DropdownMenuEntry<int>>(
-                      (MapEntry entry) => DropdownMenuEntry<int>(
-                        value: entry.key,
-                        label: FileChooser.notifier.currentPlaylist[entry.key]
-                            .split('/')
-                            .last,
-                        style: MenuItemButton.styleFrom(
-                          foregroundColor:
-                              entry.key ==
-                                  FileChooser.notifier.selectedFilePathIndex
-                              ? Colors.white
-                              : ALGERNON.uiDefaultForegroundColor,
-                        ),
-                        trailingIcon: IconButton(
-                          icon: Icon(Icons.playlist_remove),
-                          onPressed: () {
-                            FileChooser.removeTrackByIndex(entry.key);
-                          },
-                        ),
-                      ),
-                    )
-                    .toList(),
+                icon: Icon(Icons.playlist_add),
+              ),
+            ),
+          ],
         );
       },
     );

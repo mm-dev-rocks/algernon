@@ -24,7 +24,7 @@ class ShaderChooser extends StatelessWidget {
           .map<DropdownMenuEntry<ShaderModel>>(
             (ShaderModel shaderMeta) => DropdownMenuEntry<ShaderModel>(
               value: shaderMeta,
-              label: shaderMeta.friendlyName,
+              label: shaderMeta.friendlyName.toUpperCase(),
               style: MenuItemButton.styleFrom(foregroundColor: Colors.white),
             ),
           )

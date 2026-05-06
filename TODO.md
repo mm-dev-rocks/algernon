@@ -3,17 +3,10 @@
 
 mic input
 
-first run steer towards 'add some tracks'
-
 choose great defaults for all shaders
 
-add hue range / adjustment to
-- voronoi
-
+add hue range / adjustment to voronoi
 lissajous make hue less jumpy, add saturation slider
-
-hairy or grassy shaders
-
 ros tunnel smooth start/end?
 
 kb shortcuts don't work on fftsmoothing slider
@@ -160,3 +153,5 @@ file playback
     should play next file in playlist by default (add standard shuffle loop single loop all)
     1 or multiple
     multiple creates playlist
+first run steer towards 'add some tracks'
+hairy or grassy shaders

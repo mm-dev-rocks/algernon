@@ -16,7 +16,8 @@ class AudioSourceNotifier extends ChangeNotifier {
 
   /// Paused state
   bool get isPaused =>
-      AlgernonPlayer.currentSoundHandle == null ||
+      AlgernonPlayer.currentSoundNotifier.source == null ||
+          AlgernonPlayer.currentSoundHandle == null ||
           (AlgernonPlayer.currentSoundHandle != null &&
               SoLoud.instance.getPause(AlgernonPlayer.currentSoundHandle!))
       ? true
@@ -24,15 +25,13 @@ class AudioSourceNotifier extends ChangeNotifier {
 
   /// Toggle pause, unless [forceState] is non-null, in which case [true] pauses, [false] unpauses.
   void togglePause({bool? forcedState}) {
-    if (forcedState != null) {
-      if (AlgernonPlayer.currentSoundHandle != null) {
+    if (AlgernonPlayer.currentSoundHandle != null) {
+      if (forcedState != null) {
         SoLoud.instance.setPause(
           AlgernonPlayer.currentSoundHandle!,
           forcedState,
         );
-      }
-    } else {
-      if (AlgernonPlayer.currentSoundHandle != null) {
+      } else {
         SoLoud.instance.pauseSwitch(AlgernonPlayer.currentSoundHandle!);
       }
     }
