@@ -75,16 +75,26 @@ class ShaderPainter extends CustomPainter {
       filterQuality: FilterQuality.low,
     );
 
-    /// TODO Comments to explain this properly!
+    // Floats in a shader are set sequentially. This includes floats which are part of other variables, so if there is a
+    // vec2 (which contains 2 floats), the way to set it is to [setFloat()] twice.
     int floatIndex = 0;
     shader
+      // u_resolution (vec2)
       ..setFloat(floatIndex++, scaledWidth)
       ..setFloat(floatIndex++, scaledHeight)
+      // u_time
       ..setFloat(floatIndex++, elapsedSeconds);
 
+    /// At this point we have set 3 floats, so our next couple (4th/5th) of (zero-indexed) floats will be at indices
+    /// [3] and [4].
     int tweakTypeIndexEnergyMin = floatIndex++;
     int tweakTypeIndexEnergyMax = floatIndex;
 
+    /// The rest of the floats are from [5] onwards
+    /// In our [TweakType] enum they come after 'special' tweaks (fft smoothing and energy max/min), so start at [3].
+    /// Apart from that discrepency, the uniforms in [TweakType] and their declarations in the shaders are in the same
+    /// order. So here we set an offset which enables us to use [tweak.tweakType.index + tweakTypeIndexOffset] to set
+    /// their matching uniforms in the shader.
     int tweakTypeIndexOffset = 2;
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
