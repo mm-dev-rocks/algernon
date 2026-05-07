@@ -52,8 +52,8 @@ class ALGERNON {
   }..addAll(shader_defaults.shaderDefaults);
 
   static const int soLoudBufferSize = 1024;
-  static const double binEmaSmoothing = 0.96;
-  static const double binChargeSmoothing = 0.6;
+  static const double binEmaSmoothing = 0.95;
+  static const double binChargeSmoothing = 0.5;
   static const int energyZoneBlendBuckets = 3;
 
   static const int totalMemorySlots = 5;
@@ -75,7 +75,7 @@ class ALGERNON {
 
   static const Duration defaultDebounceDuration = Duration(milliseconds: 200);
 
-  static const Duration hideControlsDelay = Duration(seconds: 6);
+  static const Duration hideControlsDelay = Duration(seconds: 5);
   static const Duration showControlsDebounceDuration = Duration(
     milliseconds: 150,
   );
