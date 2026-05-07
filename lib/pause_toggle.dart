@@ -18,7 +18,7 @@ class _PauseToggleState extends State<PauseToggle> {
       listenable: AlgernonPlayer.currentSoundNotifier,
       builder: (context, child) {
         return IconButton(
-                              mouseCursor: SystemMouseCursors.click,
+          mouseCursor: SystemMouseCursors.click,
           onPressed: AlgernonPlayer.currentSoundNotifier.togglePause,
           icon: Icon(
             AlgernonPlayer.currentSoundNotifier.isPaused
