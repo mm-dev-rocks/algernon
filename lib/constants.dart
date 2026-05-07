@@ -52,8 +52,8 @@ class ALGERNON {
   }..addAll(shader_defaults.shaderDefaults);
 
   static const int soLoudBufferSize = 1024;
-  static const double magnitudeChargeSmoothing = 0.999;
-  static const double chargeOutputSmoothing = 0.95;
+  static const double binEmaSmoothing = 0.96;
+  static const double binChargeSmoothing = 0.6;
   static const int energyZoneBlendBuckets = 3;
 
   static const int totalMemorySlots = 5;
@@ -82,14 +82,20 @@ class ALGERNON {
   static const Duration hideControlsFadeDuration = Duration(milliseconds: 800);
   static const Duration showControlsFadeDuration = Duration(milliseconds: 300);
 
-  static final Color uiDefaultForegroundColor = Color.alphaBlend(
-    Colors.white.withValues(alpha: 0.5),
-    Colors.black,
+  static final Color uiDefaultForegroundColor = Colors.white.withValues(
+    alpha: 0.5,
   );
-  static final Color uiSoftForegroundColor = Color.alphaBlend(
-    Colors.white.withValues(alpha: 0.3),
-    Colors.black,
+  static final Color uiSoftForegroundColor = Colors.white.withValues(
+    alpha: 0.3,
   );
+  //static final Color uiDefaultForegroundColor = Color.alphaBlend(
+  //  Colors.white.withValues(alpha: 0.5),
+  //  Colors.black,
+  //);
+  //static final Color uiSoftForegroundColor = Color.alphaBlend(
+  //  Colors.white.withValues(alpha: 0.3),
+  //  Colors.black,
+  //);
   static final Color uiAttractColor = Colors.pink.withValues(
     alpha: ALGERNON.fadeDarkBackgroundOpacity,
   );

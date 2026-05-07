@@ -75,6 +75,7 @@ class ShaderPainter extends CustomPainter {
       filterQuality: FilterQuality.low,
     );
 
+    /// TODO Comments to explain this properly!
     int floatIndex = 0;
     shader
       ..setFloat(floatIndex++, scaledWidth)
@@ -83,6 +84,7 @@ class ShaderPainter extends CustomPainter {
 
     int tweakTypeIndexEnergyMin = floatIndex++;
     int tweakTypeIndexEnergyMax = floatIndex;
+
     int tweakTypeIndexOffset = 2;
 
     shaderTweaks.forEach((String uniformName, ShaderTweakModel tweak) {
@@ -97,8 +99,9 @@ class ShaderPainter extends CustomPainter {
             tweak.storedValue,
           );
         }
-      } on ArgumentError catch (_) {
+      } on ArgumentError catch (e) {
         debugPrint('AlgernonShaderPainter::!!!!!');
+        debugPrint(e.toString());
       }
     });
 

@@ -152,7 +152,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
   /// Keep an average of bins to be used for physics 'charges'.
   /// It's an exponential decay average — every past sample is still technically included, but older ones are weighted
-  /// exponentially less. With magnitudeChargeSmoothing as α, a value from k frames ago has weight α^k * (1 - α).
+  /// exponentially less. With binEmaSmoothing as α, a value from k frames ago has weight α^k * (1 - α).
   /// There's no fixed window; the "memory" decays toward zero but never fully forgets.
   final Float32List _binExponentialMovingAverages = Float32List(256);
   final Float32List _binChargeSmoothed = Float32List(256);
@@ -353,13 +353,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
       // Update rolling average
       _binExponentialMovingAverages[i] =
-          _binExponentialMovingAverages[i] * ALGERNON.magnitudeChargeSmoothing +
-          binMagnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
-
-      // Update rolling average (existing)
-      //_binExponentialMovingAverages[i] =
-      //    _binExponentialMovingAverages[i] * ALGERNON.magnitudeChargeSmoothing +
-      //    binMagnitude * (1.0 - ALGERNON.magnitudeChargeSmoothing);
+          _binExponentialMovingAverages[i] * ALGERNON.binEmaSmoothing +
+          binMagnitude * (1.0 - ALGERNON.binEmaSmoothing);
 
       // Raw charge
       final double rawCharge = (binMagnitude - _binExponentialMovingAverages[i])
@@ -367,14 +362,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
       // Smooth the charge itself
       _binChargeSmoothed[i] =
-          _binChargeSmoothed[i] * ALGERNON.chargeOutputSmoothing +
-          rawCharge * (1.0 - ALGERNON.chargeOutputSmoothing);
+          _binChargeSmoothed[i] * ALGERNON.binChargeSmoothing +
+          rawCharge * (1.0 - ALGERNON.binChargeSmoothing);
 
-      // Signed charge: positive when louder than average, negative when quieter
-      // clamp to [-1, 1] then remap to [0, 1] for the texture
-      final double charge = (binMagnitude - _binExponentialMovingAverages[i])
-          .clamp(-1.0, 1.0);
-      final double chargeNormalised = (charge + 1.0) * 0.5;
+      final double chargeNormalised = (_binChargeSmoothed[i] + 1.0) * 0.5;
       final double energy = AlgernonPlayer.currentSoundHandle == null
           ? 0
           : AudioAnalysis.normalisedEnergyValueAtPosition(
