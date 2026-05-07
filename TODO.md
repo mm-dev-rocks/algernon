@@ -3,6 +3,13 @@
 
 mic input
 
+fullscreen with leanflutter/window_manager package
+F11 plus toggle/icon
+
+delete unused shaders
+
+media keys?
+
 choose great defaults for all shaders
 
 add hue range / adjustment to voronoi

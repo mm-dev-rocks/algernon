@@ -6,6 +6,7 @@ import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
+import 'package:algernon/algernon_window.dart';
 import 'package:algernon/loop_cycle_button.dart';
 import 'package:algernon/main_control_panel.dart';
 import 'package:algernon/pause_toggle.dart';
@@ -71,6 +72,11 @@ class _UserInterfaceState extends State<UserInterface> {
                   : ALGERNON.hideControlsFadeDuration,
               child: Stack(
                 children: [
+                  PositionedDirectional(
+                    top: 0,
+                    start: 0,
+                    child: AlgernonWindow(),
+                  ),
                   PositionedDirectional(
                     bottom: 0,
                     start: 0,

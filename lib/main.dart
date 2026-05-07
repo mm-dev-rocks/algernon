@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/algernon_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:window_manager/window_manager.dart';
 
 import 'app_state.dart';
 import 'constants.dart';
@@ -11,6 +13,7 @@ import 'pages/root_page.dart';
 /// Main app entry point / main class.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await windowManager.ensureInitialized();
 
   /// App preferences [SharedPreferencesWithCache] require async setup
   await AppState.initPreferences();
@@ -86,6 +89,10 @@ class _AlgernonAppState extends State<AlgernonApp> {
         /// Space toggle pause
         case " ":
           AlgernonPlayer.currentSoundNotifier.togglePause();
+
+        /// Fullscreen
+        case "F11":
+          AlgernonWindow.toggleFullscreen();
 
         /// Number keys for memory slots
         case "1":
