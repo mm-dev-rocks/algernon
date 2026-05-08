@@ -219,23 +219,30 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
       child: Stack(
         children: [
           Positioned.fill(
-            child: GestureDetector(
-              onTap: UserInterface.keepControlsAlive,
-              child: FittedBox(
-                fit: BoxFit.cover,
+            child: ValueListenableBuilder(
+              valueListenable: UserInterface.controlsAreVisibleNotifier,
+              builder: (context, value, child) {
+                return GestureDetector(
+                  onTap: UserInterface.controlsAreVisibleNotifier.value
+                      ? UserInterface.hideControls
+                      : UserInterface.keepControlsAlive,
+                  child: FittedBox(
+                    fit: BoxFit.cover,
 
-                /// Main visuals
-                /// This [ListenableBuilder] rebuilds whenever any [ShaderTweakModel] changes.
-                child: ListenableBuilder(
-                  listenable: AlgernonPlayer.painterConfig,
-                  builder: (BuildContext context, Widget? child) {
-                    return AlgernonShaderPainter(
-                      elapsedSeconds: _elapsedSeconds,
-                      painterConfig: AlgernonPlayer.painterConfig,
-                    );
-                  },
-                ),
-              ),
+                    /// Main visuals
+                    /// This [ListenableBuilder] rebuilds whenever any [ShaderTweakModel] changes.
+                    child: ListenableBuilder(
+                      listenable: AlgernonPlayer.painterConfig,
+                      builder: (BuildContext context, Widget? child) {
+                        return AlgernonShaderPainter(
+                          elapsedSeconds: _elapsedSeconds,
+                          painterConfig: AlgernonPlayer.painterConfig,
+                        );
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           //Positioned.fill(
@@ -284,7 +291,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
         _lateFrameMeasurement.length;
 
     if (droppedFrameRatio > 0.95) {
-      debugPrint(droppedFrameRatio.toString());
+      //debugPrint(droppedFrameRatio.toString());
       _changeResolution(DirectionOfChange.decrease);
 
       /// For now, only decrease as oscillation made it stupid.
