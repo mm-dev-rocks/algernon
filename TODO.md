@@ -3,9 +3,6 @@
 
 mic input
 
-fullscreen with leanflutter/window_manager package
-F11 plus toggle/icon
-
 delete unused shaders
 
 media keys?
@@ -162,3 +159,5 @@ file playback
     multiple creates playlist
 first run steer towards 'add some tracks'
 hairy or grassy shaders
+fullscreen with leanflutter/window_manager package
+F11 plus toggle/icon
