@@ -23,17 +23,17 @@ out vec4 fragColor;
 // This is the most "generative" shader in the set — the visual form emerges
 // from the audio rather than being predetermined by the layout.
 //
-//precision mediump float;
+// precision mediump float;
 //
-//uniform vec2 u_resolution;
-//uniform float u_time;
-//uniform sampler2D u_fftData;
+// uniform vec2 u_resolution;
+// uniform float u_time;
+// uniform sampler2D u_fftData;
 //
-//uniform float u_warp;
-//uniform float u_countPrimary;
-//uniform float u_emphasis;
+// uniform float u_warp;
+// uniform float u_countPrimary;
+// uniform float u_emphasis;
 //
-//out vec4 fragColor;
+// out vec4 fragColor;
 
 // Number of mirror-fold axes. 6 gives hexagonal kaleidoscope symmetry.
 // Must be a positive integer; non-integer values produce asymmetric tears.
@@ -53,6 +53,13 @@ float sampleBin(float binIndex) {
   return texture(u_fftData, vec2((binIndex + 0.5) / 256.0, 0.5)).r;
 }
 
+int energyDerivedCount() {
+  float countRange = float(u_energyMax - u_energyMin);
+  float count = float(u_energyMin) +
+                texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * countRange;
+  return int(round(count));
+}
+
 // Helper: folds an angle into the first sector of a FOLD_COUNT-way symmetry.
 // Works by repeatedly reflecting the angle until it lands in [0, sectorAngle].
 //   - atan2 gives -pi..pi, so we first shift to 0..2pi
@@ -62,7 +69,10 @@ float foldAngle(float theta) {
   float t = mod(theta + PI, 2.0 * PI);
 
   // Width of one sector in radians
-  float sectorAngle = PI / u_countPrimary;
+
+  int sectors =
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
+  float sectorAngle = PI / sectors;
 
   // Map t into 0..2pi, then into the nearest sector
   t = mod(t, 2.0 * sectorAngle);

@@ -17,9 +17,13 @@ class FileChooser extends StatefulWidget {
   static Future<void> chooseFiles() async {
     FilePickerResult? filePickerResult = await FileManager.pickFile();
     if (filePickerResult != null && filePickerResult.files.isNotEmpty) {
-      FileChooser.notifier.currentPlaylist = filePickerResult.files
-          .map((PlatformFile file) => file.path.toString())
-          .toList();
+      List<String> list = FileChooser.notifier.currentPlaylist;
+      list.addAll(
+        filePickerResult.files
+            .map((PlatformFile file) => file.path.toString())
+            .toList(),
+      );
+      FileChooser.notifier.currentPlaylist = List<String>.of(list);
     }
   }
 

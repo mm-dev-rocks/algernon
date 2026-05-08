@@ -64,7 +64,7 @@ class ALGERNON {
   static const double buttonBorderThickness = 1;
 
   static const int droppedFrameMeasurementLength = 30;
-  static const int finalAimFps = 30;
+  static const int finalAimFps = 60;
   static const int oneMillion = 1000000;
 
   static const String autoCountPrefSuffix = 'auto';

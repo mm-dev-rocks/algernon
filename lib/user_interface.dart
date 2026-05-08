@@ -20,7 +20,7 @@ class UserInterface extends StatefulWidget {
 
   static Timer _hideControlsTimer = Timer(
     ALGERNON.hideControlsDelay,
-    _hideControls,
+    hideControls,
   );
 
   static ValueNotifier<bool> controlsAreVisibleNotifier = ValueNotifier(true);
@@ -29,22 +29,23 @@ class UserInterface extends StatefulWidget {
   State<UserInterface> createState() => _UserInterfaceState();
 
   static void keepControlsAlive() {
+    //AppState.log("UserInterface::keepControlsAlive()");
     AppState.debounceVoidFunction(
       callerKey: 'UserInterface.keepControlsAlive',
       debounceDuration: ALGERNON.showControlsDebounceDuration,
       voidFunction: () {
         _hideControlsTimer.cancel();
-        _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, _hideControls);
+        _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, hideControls);
 
         UserInterface.controlsAreVisibleNotifier.value = true;
       },
     );
   }
 
-  static void _hideControls() {
+  static void hideControls() {
     /// If there are no tracks in the playlist, leave the UI visible as a hint.
     if (FileChooser.notifier.currentPlaylist.isNotEmpty) {
-      //AppState.log("_hideControls()");
+      //AppState.log("UserInterface::hideControls()");
       _hideControlsTimer.cancel();
       UserInterface.controlsAreVisibleNotifier.value = false;
     }

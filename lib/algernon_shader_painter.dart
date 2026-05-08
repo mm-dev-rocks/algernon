@@ -102,6 +102,8 @@ class ShaderPainter extends CustomPainter {
         if (tweak.isEnergyUniform && tweak.useEnergyDerivedCount) {
           shader.setFloat(tweakTypeIndexEnergyMin, tweak.min);
           shader.setFloat(tweakTypeIndexEnergyMax, tweak.max);
+
+          /// Hide slider value
           shader.setFloat(tweak.tweakType.index + tweakTypeIndexOffset, -1);
         } else {
           shader.setFloat(

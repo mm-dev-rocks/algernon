@@ -48,6 +48,14 @@ vec3 hueRotate(vec3 col, float a) {
                   col.b * (0.114 + 0.886 * c - 0.203 * s));
 }
 
+float energyDerivedCount() {
+  float countRange = float(u_energyMax - u_energyMin);
+  float count = float(u_energyMin) +
+                texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b * countRange;
+  // return int(round(count));
+  return count;
+}
+
 void main() {
   // Mnemonic: st = 'space transform'
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
@@ -73,7 +81,10 @@ void main() {
 
   float distFromCentre = length(fragmentOffset);
   float binValue = texture(u_fftData, vec2(mirroredFraction, 0.5)).r;
-  float intensity = binValue / distFromCentre * 0.15 * 4.0 * u_emphasis;
+  float finalEmphasis =
+      u_emphasis == -1.0 ? energyDerivedCount() : float(u_emphasis);
+  float intensity =
+      binValue / distFromCentre * 0.15 * 4.0 * (finalEmphasis / 100);
   // Normalised 0..1 across the colour range — drives the original RGB formula
   // which naturally blows out to white when intensity exceeds 1.0
   float colorPosition = mirroredFraction * 2.0;

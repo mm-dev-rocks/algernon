@@ -157,8 +157,11 @@ void main() {
   float radius = u_zoom * breathe;
 
   // --- Slow orientation drift driven by u_time and energy ---
-  float rotAngleY = u_time * u_speed + energy * 0.6;
-  float rotAngleX = sin(u_time * u_speed * 0.37) * 0.4 + energy * 0.2;
+  float rotAngleY = (mod(u_time * u_speed, 6.28318530)) + energy * 0.6;
+  float rotAngleX =
+      sin((mod(u_time * u_speed, 6.28318530)) * 0.37) * 0.4 + energy * 0.2;
+  // float rotAngleY = u_time * u_speed + energy * 0.6;
+  // float rotAngleX = sin(u_time * u_speed * 0.37) * 0.4 + energy * 0.2;
   mat3 orient = rotX(rotAngleX) * rotY(rotAngleY);
 
   // --- Accumulate blob contributions ---

@@ -58,7 +58,7 @@ void main() {
   float angle = atan(p.y, p.x); // -pi..pi
 
   int nBands =
-      u_countSecondary == -1.0 ? energyDerivedCount() : int(u_countSecondary);
+      u_countPrimary == -1.0 ? energyDerivedCount() : int(u_countPrimary);
   // --- Per-ring twist ---
   //
   // Map this fragment's radius to a radial band index (0..BAND_COUNT-1).
@@ -89,13 +89,13 @@ void main() {
 
   // --- Spiral arm pattern ---
   //
-  // Map the twisted angle onto u_countPrimary arms using a cosine wave.
-  // The argument is (twistedAngle / pi) * u_countPrimary * pi = twistedAngle *
-  // u_countPrimary, which goes through u_countPrimary full oscillations per
-  // full circle.
-  float armSignal = cos(twistedAngle * u_countPrimary);
+  // Map the twisted angle onto u_countSecondary arms using a cosine wave.
+  // The argument is (twistedAngle / pi) * u_countSecondary * pi = twistedAngle
+  // * u_countSecondary, which goes through u_countSecondary full oscillations
+  // per full circle.
+  float armSignal = cos(twistedAngle * u_countSecondary);
   // float noise = sin(radius * 20.0 + charge * 10.0);
-  // float armSignal = cos(twistedAngle * u_countPrimary + noise * 0.3);
+  // float armSignal = cos(twistedAngle * u_countSecondary + noise * 0.3);
 
   // Remap -1..1 → 0..1 and apply contrast.
   // float armBrightness = pow(armSignal * 0.5 + 0.5, u_emphasis);
