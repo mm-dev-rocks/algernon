@@ -55,12 +55,11 @@ out vec4 fragColor;
 //                 1.0 = fully vivid. Values around 0.8–1.0 recommended.
 //                 min: 0.0  max: 1.0  default: 0.9
 //
-//   u_speed     — TweakType.uniformSpeed  (repurposed as spectral sensitivity)
-//                 Scales how strongly the music pulls hue within u_hueRange.
-//                 0.0 = hue locked to u_hueShift (static palette, no music
-//                 reactivity). 1.0 = full excursion across u_hueRange on
-//                 strong bass/treble contrast. The tilt is computed from raw
-//                 unsmoothed bins so it reacts to individual transients.
+//   u_speed     — TweakType.uniformSpeed  (repurposed as spectral pull)
+//                 How strongly the spectral balance (bass vs treble ratio) pulls
+//                 the hue away from u_hueShift. 0.0 = hue locked to shift only;
+//                 1.0 = full spectral modulation. Lets you dial between a fixed
+//                 colour palette and one that chases the music's tonal character.
 //                 min: 0.0  max: 1.0  default: 0.7
 
 // ---------------------------------------------------------------------------
@@ -221,35 +220,35 @@ void main() {
   // Colour is expressed in HSV so hue, saturation and brightness are
   // independently controllable.
   //
-  // HUE — built from three signals at very different timescales:
+  // HUE — three additive contributions:
   //
-  //   1. u_hueShift — static palette anchor.
+  //   1. u_hueShift — static anchor, sets the base palette zone.
   //
-  //   2. spectralTilt — the primary music-reactive signal. Reads raw
-  //      (unsmoothed) bins at the extremes of the spectrum: a deep bass bin
-  //      (bin 3) and a high treble bin (bin 180). Using raw values rather
-  //      than the smoothed band averages means transients register fully.
-  //      Using bins far apart maximises the difference signal — nearby bins
-  //      move together, distant bins genuinely diverge with the music.
+  //   2. Time drift — u_time * u_speed keeps the hue slowly cycling so
+  //      colour is always in motion even on a steady-state signal.
   //
-  //      rawBass and rawTreble are independent 0..1 values. Their difference
-  //      is in −1..+1. u_hueRange sets the full palette width, u_speed
-  //      scales how strongly music pulls within that range.
+  //   3. spectralTilt — signed difference (treble − bass) normalised by
+  //      total band energy. Range −1..+1. Pulls the hue across u_hueRange
+  //      as the mix shifts from bass-heavy to treble-heavy. Using the
+  //      signed difference rather than a ratio gives a much larger and more
+  //      musically meaningful excursion.
   //
-  //   3. midCharge — the G channel at bin 40, remapped to −1..+1. This is
-  //      a faster, unsmoothed signal that adds transient flicker on hits
-  //      and note attacks on top of the slower tilt.
+  //   4. midCharge — fast transient nudge from the mid-band charge value.
+  //      Because charge is not smoothed it reacts to individual hits and
+  //      note attacks, adding a snappy secondary colour flicker on top of
+  //      the slower spectral drift. Scaled to ±20° so it's felt without
+  //      overwhelming the tilt signal.
   //
-  float rawBass   = sampleBin(3.0);    // single deep bass bin, unsmoothed
-  float rawTreble = sampleBin(180.0);  // single high treble bin, unsmoothed
-  float rawTotal  = rawBass + rawTreble + 0.001;
+  float totalEnergy = bassEnergy + midEnergy + trebleEnergy;
 
-  // Signed tilt in −1..+1: negative = bass-heavy, positive = treble-heavy.
-  float spectralTilt = (rawTreble - rawBass) / rawTotal;
+  float spectralTilt = totalEnergy > 0.001
+      ? (trebleEnergy - bassEnergy) / totalEnergy  // −1..+1
+      : 0.0;
 
   float hue = u_hueShift
-            + spectralTilt * u_hueRange * u_speed   // music pulls across range
-            + midCharge * 30.0 * u_speed;            // transient charge flicker
+            + u_time * u_speed * 10.0             // slow continuous drift
+            + spectralTilt * u_hueRange * 0.5     // musical tilt ±halfRange
+            + midCharge * 20.0;                   // transient charge flicker
 
   // SATURATION — u_size sets the base level (0 = grey, 1 = vivid).
   // globalEnergy boosts saturation on loud passages so the palette gets

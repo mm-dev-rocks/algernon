@@ -27,60 +27,19 @@ out vec4 fragColor;
 //   rings_radial        — pure polar, concentric bands
 //   rose_tunnel         — polar angle, radial gradient
 //   THIS SHADER         — parametric SDF, no predetermined geometry
-//
-// Uniforms:
-//
-//   u_zoom      — TweakType.uniformZoom
-//                 Glow radius in normalised screen units. Larger = softer/wider blobs.
-//                 min: 0.05  max: 1.0  default: 0.35
-//
-//   u_emphasis  — TweakType.uniformEmphasis
-//                 Glow falloff exponent. Higher = sharper, thinner line.
-//                 2.0 = soft neon glow; 6.0+ = fine wire.
-//                 min: 1.0  max: 10.0  default: 4.0
-//
-//   u_hueShift  — TweakType.uniformHueShift
-//                 Base hue offset in degrees. Rotates the entire colour palette
-//                 around the wheel regardless of signal content.
-//                 min: 0.0  max: 360.0  default: 200.0
-//
-//   u_hueRange  — TweakType.uniformHueRange
-//                 Hue sweep range in degrees. Controls how far the hue travels
-//                 as the spectral balance shifts from bass-heavy → treble-heavy.
-//                 0 = single fixed hue; 360 = full rainbow sweep.
-//                 min: 0.0  max: 360.0  default: 120.0
-//
-//   u_size      — TweakType.uniformSize  (repurposed as saturation)
-//                 Colour saturation. 0.0 = fully desaturated (greyscale glow),
-//                 1.0 = fully vivid. Values around 0.8–1.0 recommended.
-//                 min: 0.0  max: 1.0  default: 0.9
-//
-//   u_speed     — TweakType.uniformSpeed  (repurposed as spectral sensitivity)
-//                 Scales how strongly the music pulls hue within u_hueRange.
-//                 0.0 = hue locked to u_hueShift (static palette, no music
-//                 reactivity). 1.0 = full excursion across u_hueRange on
-//                 strong bass/treble contrast. The tilt is computed from raw
-//                 unsmoothed bins so it reacts to individual transients.
-//                 min: 0.0  max: 1.0  default: 0.7
 
-// ---------------------------------------------------------------------------
-// HSV → RGB — H in [0,360], S/V in [0,1].
-// Identical implementation used across all shaders in this project.
-// ---------------------------------------------------------------------------
-vec3 hsv2rgb(float h, float s, float v) {
-  h = mod(h, 360.0);
-  float c = v * s;
-  float x = c * (1.0 - abs(mod(h / 60.0, 2.0) - 1.0));
-  float m = v - c;
-  vec3 rgb;
-  if      (h < 60.0)  rgb = vec3(c, x, 0.0);
-  else if (h < 120.0) rgb = vec3(x, c, 0.0);
-  else if (h < 180.0) rgb = vec3(0.0, c, x);
-  else if (h < 240.0) rgb = vec3(0.0, x, c);
-  else if (h < 300.0) rgb = vec3(x, 0.0, c);
-  else                rgb = vec3(c, 0.0, x);
-  return rgb + m;
-}
+// How many points to sample along the parametric curve when computing the
+// approximate distance. More samples = smoother curve, higher cost.
+// 80 is a good balance for mediump precision on mobile GPUs.
+// const int SAMPLE_COUNT = 40;
+
+// The glow falloff exponent. Higher = thinner, sharper line.
+// 2.0 gives a soft neon glow; 4.0+ gives a fine wire look.
+// const float GLOW_POWER = 6.5;
+
+// Half-width of the curve in normalised screen units (0..1 range).
+// The glow fades to zero beyond this distance from the curve.
+// const float GLOW_RADIUS = 0.82;
 
 // Helper: reads a single bin by float index and returns amplitude 0..1.
 // The +0.5 texel-centre offset prevents bleeding across texel boundaries —
@@ -169,23 +128,6 @@ void main() {
   // Scale factor: loud overall signal expands the figure toward the edges.
   float scale = 0.35 + (bassEnergy + trebleEnergy) * 0.08;
 
-  // --- Broad energy envelope (B channel of bin 0) ---
-  //
-  // Pre-computed low-frequency RMS-like envelope baked into the texture by
-  // the host. Moves more slowly and smoothly than any individual bin average,
-  // making it ideal for global breathing effects that shouldn't flicker.
-  float globalEnergy = texture(u_fftData, vec2(0.5 / 256.0, 0.5)).b;
-
-  // --- Charge from mid band (G channel, remapped 0..1 → −1..+1) ---
-  //
-  // More transient and immediate than the smoothed magnitude. Reading from
-  // bin 40 (mid band centre) captures vocal and snare-hit character.
-  float midCharge = (sampleCharge(40.0) - 0.5) * 2.0;  // −1..+1
-
-  // Breathe the figure scale with global energy — blobs expand on loud
-  // passages independently of the shape parameters.
-  scale *= 1.0 + globalEnergy * 0.18;
-
   // --- Approximate SDF: minimum distance to the parametric curve ---
   //
   // We step t uniformly through 0..2*pi and find the curve point closest
@@ -218,51 +160,26 @@ void main() {
 
   // --- Colour ---
   //
-  // Colour is expressed in HSV so hue, saturation and brightness are
-  // independently controllable.
+  // FIX: the original code added large fixed baselines (0.6, 0.3, 0.8) to
+  // every channel, so when music is playing all three bands saturate near
+  // 1.0 and the result is always white. Colour only appeared during fade-out
+  // when energy dropped low enough for the band ratios to matter.
   //
-  // HUE — built from three signals at very different timescales:
+  // The corrected approach removes the baselines entirely and normalises the
+  // band sum so the channels *compete* rather than all adding toward white:
   //
-  //   1. u_hueShift — static palette anchor.
+  //   total = bass + mid + treble  (varies with signal but > 0)
+  //   r = bass   / total  →  warm when bass dominates
+  //   g = mid    / total  →  green when mids dominate
+  //   b = treble / total  →  cool when treble dominates
   //
-  //   2. spectralTilt — the primary music-reactive signal. Reads raw
-  //      (unsmoothed) bins at the extremes of the spectrum: a deep bass bin
-  //      (bin 3) and a high treble bin (bin 180). Using raw values rather
-  //      than the smoothed band averages means transients register fully.
-  //      Using bins far apart maximises the difference signal — nearby bins
-  //      move together, distant bins genuinely diverge with the music.
-  //
-  //      rawBass and rawTreble are independent 0..1 values. Their difference
-  //      is in −1..+1. u_hueRange sets the full palette width, u_speed
-  //      scales how strongly music pulls within that range.
-  //
-  //   3. midCharge — the G channel at bin 40, remapped to −1..+1. This is
-  //      a faster, unsmoothed signal that adds transient flicker on hits
-  //      and note attacks on top of the slower tilt.
-  //
-  float rawBass   = sampleBin(3.0);    // single deep bass bin, unsmoothed
-  float rawTreble = sampleBin(180.0);  // single high treble bin, unsmoothed
-  float rawTotal  = rawBass + rawTreble + 0.001;
+  // A small epsilon prevents division-by-zero during silence.
+  // The result is then modulated by intensity so dark areas stay dark.
+  float total = bassEnergy + midEnergy + trebleEnergy + 0.001;
+  float r = intensity * (bassEnergy   / total);
+  float g = intensity * (midEnergy    / total);
+  float b = intensity * (trebleEnergy / total);
 
-  // Signed tilt in −1..+1: negative = bass-heavy, positive = treble-heavy.
-  float spectralTilt = (rawTreble - rawBass) / rawTotal;
-
-  float hue = u_hueShift
-            + spectralTilt * u_hueRange * u_speed   // music pulls across range
-            + midCharge * 30.0 * u_speed;            // transient charge flicker
-
-  // SATURATION — u_size sets the base level (0 = grey, 1 = vivid).
-  // globalEnergy boosts saturation on loud passages so the palette gets
-  // richer when the music is full, and gentler in quiet moments.
-  float sat = clamp(u_size + globalEnergy * 0.2, 0.0, 1.0);
-
-  // VALUE — intensity is the primary brightness driver (glow shape).
-  // globalEnergy adds a small ambient floor so the background lifts
-  // slightly on loud passages rather than staying absolute black —
-  // this gives the blobs a sense of radiating into their surroundings.
-  float val = clamp(intensity + globalEnergy * 0.06, 0.0, 1.0);
-
-  vec3 rgb = hsv2rgb(hue, sat, val);
-
-  fragColor = vec4(rgb, 1.0);
+  fragColor =
+      vec4(clamp(r, 0.0, 1.0), clamp(g, 0.0, 1.0), clamp(b, 0.0, 1.0), 1.0);
 }

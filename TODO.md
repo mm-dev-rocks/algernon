@@ -1,9 +1,7 @@
-    curently selection replaces playlist, should add to it
-    read/write .m3u
+curently selection replaces playlist, should add to it
+read/write .m3u
 
 mic input
-
-delete unused shaders
 
 media keys?
 
@@ -11,7 +9,6 @@ choose great defaults for all shaders
 
 add hue range / adjustment to voronoi
 lissajous make hue less jumpy, add saturation slider
-ros tunnel smooth start/end?
 
 kb shortcuts don't work on fftsmoothing slider
 
@@ -54,19 +51,12 @@ pause button shows wrong state
 
 chooser silently fails when trying to add new tracks (happened after trying to open broken opus??)
 
-volume = 0 / black screen
+when adding new tracks, selector still shows old track
 
 Not experienced this yet but worth implementing workarounds
 https://github.com/alnitak/flutter_soloud/issues/126
 
-Permissions for all OSes
-Keep eye on
-https://github.com/miguelpruivo/flutter_file_picker/wiki/Setup#--android
-
 Black screen on Tab S4
-
-mac/ios builds
-https://docs.page/alnitak/flutter_soloud_docs/get_started/setup#ios-and-macos-configuration
 
 ---
 
@@ -161,3 +151,11 @@ first run steer towards 'add some tracks'
 hairy or grassy shaders
 fullscreen with leanflutter/window_manager package
 F11 plus toggle/icon
+delete unused shaders
+ros tunnel smooth start/end?
+volume = 0 / black screen
+Permissions for all OSes
+Keep eye on
+https://github.com/miguelpruivo/flutter_file_picker/wiki/Setup#--android
+mac/ios builds
+https://docs.page/alnitak/flutter_soloud_docs/get_started/setup#ios-and-macos-configuration
