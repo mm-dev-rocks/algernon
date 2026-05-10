@@ -2,6 +2,7 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
+import 'package:algernon/file_chooser.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
@@ -88,7 +89,20 @@ class _AlgernonAppState extends State<AlgernonApp> {
       switch (event.logicalKey.keyLabel) {
         /// Space toggle pause
         case " ":
+        case "Media Play Pause":
           AlgernonPlayer.currentSoundNotifier.togglePause();
+
+        /// Media skip
+        case "Media Track Next":
+          FileChooser.selectNext();
+          AlgernonPlayer.playSelectedSound(
+            reason: 'main::Media Track Next keypress',
+          );
+        case "Media Track Previous":
+          FileChooser.selectPrev();
+          AlgernonPlayer.playSelectedSound(
+            reason: 'main::Media Track Previous keypress',
+          );
 
         /// Fullscreen
         case "F11":
