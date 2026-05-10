@@ -34,12 +34,12 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Timer? _resChangeLockoutTimer;
   static bool _resChangeEnabled = true;
-  static int _resRaisedLockoutSecs = ALGERNON.resRaisedLockoutSecs;
+  static int _resLoweredLockoutSecs = ALGERNON.resLoweredLockoutSecs;
   static DirectionOfChange _lastResolutionChange = DirectionOfChange.none;
   static void resetResChangeLockout() {
     debugPrint('AlgernonPlayer::_resetResChangeLockout()');
     AlgernonPlayer._lastResolutionChange = DirectionOfChange.none;
-    AlgernonPlayer._resRaisedLockoutSecs = ALGERNON.resRaisedLockoutSecs;
+    AlgernonPlayer._resLoweredLockoutSecs = ALGERNON.resLoweredLockoutSecs;
     AlgernonPlayer._resChangeLockoutTimer?.cancel();
     AlgernonPlayer._resChangeEnabled = true;
   }
@@ -300,14 +300,14 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
     int lockoutSeconds = 0;
     //if (direction != _lastResolutionChange) {
     if (direction == DirectionOfChange.increase) {
-      lockoutSeconds = AlgernonPlayer._resRaisedLockoutSecs;
+      lockoutSeconds = ALGERNON.resRaisedLockoutSecs;
       AlgernonPlayer.painterConfig.increaseResolution();
     } else if (direction == DirectionOfChange.decrease) {
-      lockoutSeconds = ALGERNON.resLoweredLockoutSecs;
+      lockoutSeconds = AlgernonPlayer._resLoweredLockoutSecs;
 
       /// Res has already gone up and then down again, so lockout for longer next time.
       if (AlgernonPlayer._lastResolutionChange == DirectionOfChange.increase) {
-        AlgernonPlayer._resRaisedLockoutSecs *= 2;
+        AlgernonPlayer._resLoweredLockoutSecs *= 2;
       }
       AlgernonPlayer.painterConfig.decreaseResolution();
     }
