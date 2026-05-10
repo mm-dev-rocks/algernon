@@ -1,8 +1,7 @@
 #version 460 core
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
-
-precision lowp float;
+#include <precision.frag>
 
 out vec4 fragColor;
 

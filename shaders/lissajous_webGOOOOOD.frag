@@ -1,8 +1,7 @@
 #version 460 core
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
-
-precision lowp float;
+#include <precision.frag>
 
 out vec4 fragColor;
 
@@ -31,8 +30,8 @@ out vec4 fragColor;
 // Uniforms:
 //
 //   u_zoom      — TweakType.uniformZoom
-//                 Glow radius in normalised screen units. Larger = softer/wider blobs.
-//                 min: 0.05  max: 1.0  default: 0.35
+//                 Glow radius in normalised screen units. Larger = softer/wider
+//                 blobs. min: 0.05  max: 1.0  default: 0.35
 //
 //   u_emphasis  — TweakType.uniformEmphasis
 //                 Glow falloff exponent. Higher = sharper, thinner line.
@@ -46,8 +45,8 @@ out vec4 fragColor;
 //
 //   u_hueRange  — TweakType.uniformHueRange
 //                 Hue sweep range in degrees. Controls how far the hue travels
-//                 as the spectral balance shifts from bass-heavy → treble-heavy.
-//                 0 = single fixed hue; 360 = full rainbow sweep.
+//                 as the spectral balance shifts from bass-heavy →
+//                 treble-heavy. 0 = single fixed hue; 360 = full rainbow sweep.
 //                 min: 0.0  max: 360.0  default: 120.0
 //
 //   u_size      — TweakType.uniformSize  (repurposed as saturation)
@@ -56,11 +55,11 @@ out vec4 fragColor;
 //                 min: 0.0  max: 1.0  default: 0.9
 //
 //   u_speed     — TweakType.uniformSpeed  (repurposed as spectral pull)
-//                 How strongly the spectral balance (bass vs treble ratio) pulls
-//                 the hue away from u_hueShift. 0.0 = hue locked to shift only;
-//                 1.0 = full spectral modulation. Lets you dial between a fixed
-//                 colour palette and one that chases the music's tonal character.
-//                 min: 0.0  max: 1.0  default: 0.7
+//                 How strongly the spectral balance (bass vs treble ratio)
+//                 pulls the hue away from u_hueShift. 0.0 = hue locked to shift
+//                 only; 1.0 = full spectral modulation. Lets you dial between a
+//                 fixed colour palette and one that chases the music's tonal
+//                 character. min: 0.0  max: 1.0  default: 0.7
 
 // ---------------------------------------------------------------------------
 // HSV → RGB — H in [0,360], S/V in [0,1].
@@ -72,12 +71,18 @@ vec3 hsv2rgb(float h, float s, float v) {
   float x = c * (1.0 - abs(mod(h / 60.0, 2.0) - 1.0));
   float m = v - c;
   vec3 rgb;
-  if      (h < 60.0)  rgb = vec3(c, x, 0.0);
-  else if (h < 120.0) rgb = vec3(x, c, 0.0);
-  else if (h < 180.0) rgb = vec3(0.0, c, x);
-  else if (h < 240.0) rgb = vec3(0.0, x, c);
-  else if (h < 300.0) rgb = vec3(x, 0.0, c);
-  else                rgb = vec3(c, 0.0, x);
+  if (h < 60.0)
+    rgb = vec3(c, x, 0.0);
+  else if (h < 120.0)
+    rgb = vec3(x, c, 0.0);
+  else if (h < 180.0)
+    rgb = vec3(0.0, c, x);
+  else if (h < 240.0)
+    rgb = vec3(0.0, x, c);
+  else if (h < 300.0)
+    rgb = vec3(x, 0.0, c);
+  else
+    rgb = vec3(c, 0.0, x);
   return rgb + m;
 }
 
@@ -149,8 +154,8 @@ void main() {
   //
   // Band centres and half-widths chosen to cover bass / mid / treble ranges
   // without overlapping so the three colour channels stay independent.
-  float bassEnergy   = smoothBand( 7.0, 6.0);   // ~20–250 Hz region
-  float midEnergy    = smoothBand(40.0, 18.0);  // ~250 Hz–2 kHz region
+  float bassEnergy = smoothBand(7.0, 6.0);      // ~20–250 Hz region
+  float midEnergy = smoothBand(40.0, 18.0);     // ~250 Hz–2 kHz region
   float trebleEnergy = smoothBand(110.0, 30.0); // ~2 kHz–8 kHz region
 
   // The horizontal frequency ratio: bass pushes it from 1→3.
@@ -179,7 +184,7 @@ void main() {
   //
   // More transient and immediate than the smoothed magnitude. Reading from
   // bin 40 (mid band centre) captures vocal and snare-hit character.
-  float midCharge = (sampleCharge(40.0) - 0.5) * 2.0;  // −1..+1
+  float midCharge = (sampleCharge(40.0) - 0.5) * 2.0; // −1..+1
 
   // Breathe the figure scale with global energy — blobs expand on loud
   // passages independently of the shape parameters.
@@ -242,13 +247,12 @@ void main() {
   float totalEnergy = bassEnergy + midEnergy + trebleEnergy;
 
   float spectralTilt = totalEnergy > 0.001
-      ? (trebleEnergy - bassEnergy) / totalEnergy  // −1..+1
-      : 0.0;
+                           ? (trebleEnergy - bassEnergy) / totalEnergy // −1..+1
+                           : 0.0;
 
-  float hue = u_hueShift
-            + u_time * u_speed * 10.0             // slow continuous drift
-            + spectralTilt * u_hueRange * 0.5     // musical tilt ±halfRange
-            + midCharge * 20.0;                   // transient charge flicker
+  float hue = u_hueShift + u_time * u_speed * 10.0 // slow continuous drift
+              + spectralTilt * u_hueRange * 0.5    // musical tilt ±halfRange
+              + midCharge * 20.0;                  // transient charge flicker
 
   // SATURATION — u_size sets the base level (0 = grey, 1 = vivid).
   // globalEnergy boosts saturation on loud passages so the palette gets

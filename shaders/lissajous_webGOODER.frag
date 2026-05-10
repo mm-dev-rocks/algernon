@@ -1,8 +1,7 @@
 #version 460 core
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
-
-precision lowp float;
+#include <precision.frag>
 
 out vec4 fragColor;
 
@@ -109,8 +108,8 @@ void main() {
   //
   // Band centres and half-widths chosen to cover bass / mid / treble ranges
   // without overlapping so the three colour channels stay independent.
-  float bassEnergy   = smoothBand( 7.0, 6.0);   // ~20–250 Hz region
-  float midEnergy    = smoothBand(40.0, 18.0);  // ~250 Hz–2 kHz region
+  float bassEnergy = smoothBand(7.0, 6.0);      // ~20–250 Hz region
+  float midEnergy = smoothBand(40.0, 18.0);     // ~250 Hz–2 kHz region
   float trebleEnergy = smoothBand(110.0, 30.0); // ~2 kHz–8 kHz region
 
   // The horizontal frequency ratio: bass pushes it from 1→3.
@@ -176,8 +175,8 @@ void main() {
   // A small epsilon prevents division-by-zero during silence.
   // The result is then modulated by intensity so dark areas stay dark.
   float total = bassEnergy + midEnergy + trebleEnergy + 0.001;
-  float r = intensity * (bassEnergy   / total);
-  float g = intensity * (midEnergy    / total);
+  float r = intensity * (bassEnergy / total);
+  float g = intensity * (midEnergy / total);
   float b = intensity * (trebleEnergy / total);
 
   fragColor =

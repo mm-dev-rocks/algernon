@@ -1,8 +1,7 @@
 #version 460 core
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
-
-precision lowp float;
+#include <precision.frag>
 
 out vec4 fragColor;
 
@@ -61,9 +60,9 @@ void main() {
 
   // Sway uses raw u_time so the speed slider cannot scrub position.
   // Amplitudes kept modest so bass (windBeat) is the dominant driver.
-  float windBase = sin(u_time * 0.5)            * 0.25
-                 + sin(u_time * 0.19 + 1.5708)  * 0.12
-                 + sin(u_time * 0.37 + 3.14159) * 0.06;
+  float windBase = sin(u_time * 0.5) * 0.25 +
+                   sin(u_time * 0.19 + 1.5708) * 0.12 +
+                   sin(u_time * 0.37 + 3.14159) * 0.06;
 
   // Lower pow exponent so bass registers at moderate levels, not just peaks.
   float windBeat = pow(bassMag, 0.7) * 0.8;
@@ -104,7 +103,7 @@ void main() {
 
     float myPhase = h1 * 6.28318;
     float myWindResp = 0.5 + h3 * 0.7;
-    float myFreq = (0.8 + h4 * 0.5) * u_speed;  // u_speed = ripple density
+    float myFreq = (0.8 + h4 * 0.5) * u_speed; // u_speed = ripple density
 
     // z: 0 = back, 1 = front. Drives spectral layering and parallax.
     // Back blades are bass-driven, darker, narrower, less mobile.
@@ -113,14 +112,14 @@ void main() {
 
     // Spectral energy for this blade — crossfade from bass (z=0) to high (z=1).
     // A blade at z=0.5 is equally driven by bass and treble (mid territory).
-    float myBassAmt   = 1.0 - z;
+    float myBassAmt = 1.0 - z;
     float myTrebleAmt = z;
-    float myMidAmt    = 1.0 - abs(z - 0.5) * 2.0;  // peaks at z=0.5
+    float myMidAmt = 1.0 - abs(z - 0.5) * 2.0; // peaks at z=0.5
 
     // abs() guards against negative charge values causing NaN in pow().
-    float myEnergy = myBassAmt   * pow(max(bassMag,           0.0), 0.7)
-                   + myMidAmt    * pow(max(midMag,            0.0), 0.7) * 0.6
-                   + myTrebleAmt * pow(max(abs(highCharge),   0.0), 0.7) * 0.5;
+    float myEnergy = myBassAmt * pow(max(bassMag, 0.0), 0.7) +
+                     myMidAmt * pow(max(midMag, 0.0), 0.7) * 0.6 +
+                     myTrebleAmt * pow(max(abs(highCharge), 0.0), 0.7) * 0.5;
     myEnergy = clamp(myEnergy, 0.0, 1.0);
 
     // Parallax: front blades shift more with wind than back blades.
@@ -133,10 +132,9 @@ void main() {
 
     // Global sway signal — shared by all blades, modulated by their spectral
     // energy so bass-heavy moments push the back more, treble pushes the front.
-    float globalSway = sin(u_time * 0.5)            * 0.25
-                     + sin(u_time * 0.19 + 1.5708)  * 0.12
-                     + sin(u_time * 0.37 + 3.14159) * 0.06
-                     + myEnergy * 0.8;
+    float globalSway = sin(u_time * 0.5) * 0.25 +
+                       sin(u_time * 0.19 + 1.5708) * 0.12 +
+                       sin(u_time * 0.37 + 3.14159) * 0.06 + myEnergy * 0.8;
 
     float swayFactor = pow(ht, 1.4);
     // Front blades (high z) sway more — they catch the wind more readily.
@@ -144,8 +142,8 @@ void main() {
     float curl = u_warp * (0.05 + h3 * 0.10) * swayFactor;
     float primarySway =
         (globalSway * myWindResp + curl) * u_zoom * swayScale * swayFactor;
-    float midRipple = sin(myFreq * ht * 3.14159 + u_time * 0.9 + myPhase)
-                      * midMag * 0.18 * swayFactor * swayFactor;
+    float midRipple = sin(myFreq * ht * 3.14159 + u_time * 0.9 + myPhase) *
+                      midMag * 0.18 * swayFactor * swayFactor;
 
     float bendAmount = abs(primarySway + midRipple) / max(myLen, 0.001);
     float arcCorrection = sqrt(max(0.0, 1.0 - bendAmount * bendAmount));
@@ -157,13 +155,14 @@ void main() {
     // Recompute sway-dependent values with corrected ht.
     swayFactor = pow(correctedHt, 1.4);
     curl = u_warp * (0.05 + h3 * 0.10) * swayFactor;
-    primarySway = (globalSway * myWindResp + curl) * u_zoom * swayScale * swayFactor;
-    midRipple = sin(myFreq * correctedHt * 3.14159 + u_time * 0.9 + myPhase)
-                * midMag * 0.18 * swayFactor * swayFactor;
+    primarySway =
+        (globalSway * myWindResp + curl) * u_zoom * swayScale * swayFactor;
+    midRipple = sin(myFreq * correctedHt * 3.14159 + u_time * 0.9 + myPhase) *
+                midMag * 0.18 * swayFactor * swayFactor;
 
     // Tip flutter: treble-driven, more pronounced on front blades.
-    float tipFlutter = sin(u_time * 3.5 + myPhase * 1.7)
-                       * highCharge * 0.05 * (0.3 + z * 0.7) * pow(correctedHt, 3.0);
+    float tipFlutter = sin(u_time * 3.5 + myPhase * 1.7) * highCharge * 0.05 *
+                       (0.3 + z * 0.7) * pow(correctedHt, 3.0);
 
     float tendrilX = rootXp + primarySway + midRipple + tipFlutter;
 
@@ -176,14 +175,14 @@ void main() {
     if (coverage < 0.005)
       continue;
 
-    float tipGlow  = 0.25 + pow(correctedHt, 1.8) * 0.75;
+    float tipGlow = 0.25 + pow(correctedHt, 1.8) * 0.75;
     // Back blades darker, front blades brighter.
     float depthVal = 0.25 + z * 0.75;
     float tendrilVal = tipGlow * depthVal;
 
-    glow     += coverage * depthVal;
-    hueAcc   += (h1 + myMidAmt * 0.3) * coverage;
-    valAcc   += tendrilVal * coverage;
+    glow += coverage * depthVal;
+    hueAcc += (h1 + myMidAmt * 0.3) * coverage;
+    valAcc += tendrilVal * coverage;
     wgtTotal += coverage;
   }
 

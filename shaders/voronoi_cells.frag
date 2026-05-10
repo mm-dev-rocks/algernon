@@ -1,8 +1,7 @@
 #version 460 core
 #include <all_uniforms.frag>
 #include <flutter/runtime_effect.glsl>
-
-precision lowp float;
+#include <precision.frag>
 
 out vec4 fragColor;
 
@@ -28,17 +27,17 @@ out vec4 fragColor;
 //   rings_radial        — concentric bands, polar
 //   THIS SHADER         — nearest-neighbour partition, discrete cells
 
-//precision mediump float;
+// precision mediump float;
 //
-//uniform vec2 u_resolution;
-//uniform float u_time;
-//uniform sampler2D u_fftData;
+// uniform vec2 u_resolution;
+// uniform float u_time;
+// uniform sampler2D u_fftData;
 //
-//uniform float u_spread;
-//uniform float u_emphasis;
-//uniform float u_zoom;
+// uniform float u_spread;
+// uniform float u_emphasis;
+// uniform float u_zoom;
 //
-//out vec4 fragColor;
+// out vec4 fragColor;
 
 // Number of Voronoi cells / FFT bins used. 16 is legible and maps naturally
 // onto the low-frequency end of the 256-bin array where energy concentrates.
