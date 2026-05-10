@@ -340,15 +340,36 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
   /// We pass data into the shader as an image format, but it isn't an image as such, just an efficient way of passing
   /// our data.
+  //Future<ui.Image> _shaderImageFromPixels(Float32List pixels) async {
+  //  final Completer<ui.Image> completer = Completer<ui.Image>();
+  //  ui.decodeImageFromPixels(
+  //    pixels.buffer.asUint8List(),
+
+  //    /// We just pass all data in a single row.
+  //    256,
+  //    1,
+  //    ui.PixelFormat.rgbaFloat32,
+  //    (ui.Image image) => completer.complete(image),
+  //  );
+  //  return completer.future;
+  //}
+
+  /// That's a real lead. PixelFormat.rgbaFloat32 with decodeImageFromPixels — there's a known Flutter issue: decodeImageFromPixels float32 does not work correctly in Impeller. GitHubThat's a real lead. PixelFormat.rgbaFloat32 with decodeImageFromPixels — there's a known Flutter issue: decodeImageFromPixels float32 does not work correctly in Impeller. GitHub
+  /// You lose some precision (8-bit vs 32-bit per channel), but for FFT visualisation that's unlikely to matter perceptually.
   Future<ui.Image> _shaderImageFromPixels(Float32List pixels) async {
     final Completer<ui.Image> completer = Completer<ui.Image>();
-    ui.decodeImageFromPixels(
-      pixels.buffer.asUint8List(),
 
-      /// We just pass all data in a single row.
+    // Convert float32 [0,1] to uint8 [0,255]
+    final bytes = Uint8List(256 * 4);
+    for (int i = 0; i < pixels.length; i++) {
+      bytes[i] = (pixels[i] * 255).clamp(0, 255).toInt();
+    }
+
+    ui.decodeImageFromPixels(
+      bytes,
       256,
       1,
-      ui.PixelFormat.rgbaFloat32,
+      ui.PixelFormat.rgba8888,
       (ui.Image image) => completer.complete(image),
     );
     return completer.future;
