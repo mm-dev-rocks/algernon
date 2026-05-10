@@ -1,8 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'dart:io' show Platform;
+
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
 import 'package:algernon/file_chooser.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
@@ -14,7 +17,11 @@ import 'pages/root_page.dart';
 /// Main app entry point / main class.
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await windowManager.ensureInitialized();
+
+  // Only initialize window_manager on desktop
+  if (!kIsWeb && (Platform.isLinux || Platform.isWindows || Platform.isMacOS)) {
+    await windowManager.ensureInitialized();
+  }
 
   /// App preferences [SharedPreferencesWithCache] require async setup
   await AppState.initPreferences();

@@ -1,18 +1,20 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'dart:async';
+import 'dart:io' show Platform;
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/algernon_window.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
-import 'package:algernon/algernon_window.dart';
 import 'package:algernon/loop_cycle_button.dart';
 import 'package:algernon/main_control_panel.dart';
 import 'package:algernon/pause_toggle.dart';
 import 'package:algernon/playback_bar.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/volume_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class UserInterface extends StatefulWidget {
@@ -73,11 +75,15 @@ class _UserInterfaceState extends State<UserInterface> {
                   : ALGERNON.hideControlsFadeDuration,
               child: Stack(
                 children: [
-                  PositionedDirectional(
-                    top: 0,
-                    start: 0,
-                    child: AlgernonWindow(),
-                  ),
+                  if (!kIsWeb &&
+                      (Platform.isLinux ||
+                          Platform.isWindows ||
+                          Platform.isMacOS))
+                    PositionedDirectional(
+                      top: 0,
+                      start: 0,
+                      child: AlgernonWindow(),
+                    ),
                   PositionedDirectional(
                     bottom: 0,
                     start: 0,
