@@ -27,7 +27,7 @@ class AlgernonShaderPainter extends StatelessWidget {
 
         /// Scale/magnitude is irrelevant as the shader uses screen resolution, but **this [Size] does create an aspect
         /// ratio**.
-        size: const Size(600, 600),
+        size: const Size(512, 512),
         painter: ShaderPainter(
           shader: shader,
           painterConfig: painterConfig,
