@@ -66,6 +66,8 @@ class ALGERNON {
   static const int droppedFrameMeasurementLength = 30;
   static const int finalAimFps = 60;
   static const int oneMillion = 1000000;
+  static const int resRaisedLockoutSecs = 15;
+  static const int resLoweredLockoutSecs = 3;
 
   static const String autoCountPrefSuffix = 'auto';
   static const String memorySlotPrefPrefix = 'memslot';

@@ -17,8 +17,6 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
-  //static ValueNotifier<String> debugTextValueNotifier = ValueNotifier('');
-
   static SoundHandle? currentSoundHandle;
 
   static bool get soLoudIsReady =>
@@ -33,6 +31,18 @@ class AlgernonPlayer extends StatefulWidget {
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
   /// [AlgernonShaderPainter] to rebuild.
   static final PainterConfigModel painterConfig = PainterConfigModel();
+
+  static Timer? _resChangeLockoutTimer;
+  static bool _resChangeEnabled = true;
+  static int _resRaisedLockoutSecs = ALGERNON.resRaisedLockoutSecs;
+  static DirectionOfChange _lastResolutionChange = DirectionOfChange.none;
+  static void resetResChangeLockout() {
+    debugPrint('AlgernonPlayer::_resetResChangeLockout()');
+    AlgernonPlayer._lastResolutionChange = DirectionOfChange.none;
+    AlgernonPlayer._resRaisedLockoutSecs = ALGERNON.resRaisedLockoutSecs;
+    AlgernonPlayer._resChangeLockoutTimer?.cancel();
+    AlgernonPlayer._resChangeEnabled = true;
+  }
 
   static Future<void> playSelectedSound({required String reason}) async {
     debugPrint('AlgernonPlayer::playSelectedSound(): $reason');
@@ -75,15 +85,8 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> stopAllSounds() async {
     debugPrint('AlgernonPlayer::stopAllSounds()');
-    //if (AlgernonPlayer.currentSoundHandle != null) {
-    //  await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
-    //}
     await SoLoud.instance.disposeAllSources();
   }
-
-  //static void setOverallEffectMagnitude(double magnitude) {
-  //  debugPrint('AlgernonPlayer::setOverallEffectMagnitude($magnitude)');
-  //}
 
   static Future<void> _startListeningForTrackFinished() async {
     debugPrint('AlgernonPlayer::_startListeningForTrackFinished()');
@@ -98,10 +101,6 @@ class AlgernonPlayer extends StatefulWidget {
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
     debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
-    //await AlgernonPlayer.stopAllSounds();
-    //SoLoud.instance.disposeSource(
-    //  AlgernonPlayer.currentSoundNotifier.source!,
-    //);
     AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
     switch (AlgernonPlayer.currentSoundNotifier.loopType) {
@@ -124,14 +123,10 @@ class AlgernonPlayer extends StatefulWidget {
           await AlgernonPlayer.playSelectedSound(
             reason: '_onAllInstancesFinished',
           );
-          //} else {
-          //AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
         }
         break;
     }
-    //FileChooser.selectNext();
     debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
-    //await AlgernonPlayer.playSelectedSound(reason: '_onAllInstancesFinished');
   }
 
   static Future<void> _ensureSoLoudIsInitialised() async {
@@ -159,24 +154,20 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
   bool _isProcessing = false;
 
-  late final Timer _timer;
-  final Stopwatch _stopwatch = Stopwatch();
+  late final Timer _tickTimer;
+
   // Frame rate we aim for
   final Duration _fpsAimDuration = const Duration(
     microseconds: ALGERNON.oneMillion ~/ ALGERNON.finalAimFps,
   );
-  double _elapsedSeconds = 0;
   final List<bool> _lateFrameMeasurement = List<bool>.generate(
     ALGERNON.droppedFrameMeasurementLength,
     (index) => false,
   );
 
-  DirectionOfChange _lastResolutionChange = DirectionOfChange.none;
-
   @override
   void initState() {
-    _stopwatch.start();
-    _timer = Timer.periodic(
+    _tickTimer = Timer.periodic(
       Duration(
         microseconds: (ALGERNON.oneMillion / ALGERNON.finalAimFps).toInt(),
       ),
@@ -193,7 +184,8 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
   @override
   dispose() {
     SchedulerBinding.instance.removeTimingsCallback(_onFrameTimings);
-    _timer.cancel();
+    _tickTimer.cancel();
+    AlgernonPlayer._resChangeLockoutTimer?.cancel();
     _audioData.dispose();
     AlgernonPlayer.painterConfig.dispose();
     SoLoud.instance.deinit();
@@ -202,9 +194,11 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
   }
 
   void _onFrameTimings(List<FrameTiming> timings) {
-    for (final t in timings) {
-      final bool isLate = t.rasterDuration > _fpsAimDuration;
-      _checkFrameRate(isLate);
+    if (AlgernonPlayer._resChangeEnabled) {
+      for (final t in timings) {
+        final bool isLate = t.rasterDuration > _fpsAimDuration;
+        _checkFrameRate(isLate);
+      }
     }
   }
 
@@ -235,7 +229,18 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
                       listenable: AlgernonPlayer.painterConfig,
                       builder: (BuildContext context, Widget? child) {
                         return AlgernonShaderPainter(
-                          elapsedSeconds: _elapsedSeconds,
+                          elapsedSeconds:
+                              (AlgernonPlayer.currentSoundHandle != null
+                                      ? SoLoud.instance
+                                                .getPosition(
+                                                  AlgernonPlayer
+                                                      .currentSoundHandle!,
+                                                )
+                                                .inMicroseconds /
+                                            ALGERNON.oneMillion
+                                      : 0)
+                                  .toDouble(),
+
                           painterConfig: AlgernonPlayer.painterConfig,
                         );
                       },
@@ -245,16 +250,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
               },
             ),
           ),
-          //Positioned.fill(
-          //  child: Center(
-          //    child: ValueListenableBuilder(
-          //      valueListenable: AlgernonPlayer.debugTextValueNotifier,
-          //      builder: (context, value, child) {
-          //        return Text(value);
-          //      },
-          //    ),
-          //  ),
-          //),
           const UserInterface(),
         ],
       ),
@@ -265,8 +260,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
   void _onTick(Timer timer) async {
     if (!_isProcessing && context.mounted && AlgernonPlayer.soLoudIsReady) {
       {
-        _elapsedSeconds =
-            _stopwatch.elapsed.inMicroseconds / ALGERNON.oneMillion;
         _isProcessing = true;
         try {
           await _updatePainterDataImage();
@@ -291,30 +284,54 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
         _lateFrameMeasurement.length;
 
     if (droppedFrameRatio > 0.95) {
-      //debugPrint(droppedFrameRatio.toString());
+      debugPrint(droppedFrameRatio.toString());
       _changeResolution(DirectionOfChange.decrease);
-
-      /// For now, only decrease as oscillation made it stupid.
-      //} else if (droppedFrameRatio < 0.05) {
-      //  debugPrint(droppedFrameRatio.toString());
-      //  _changeResolution(DirectionOfChange.increase);
+    } else if (droppedFrameRatio < 0.005) {
+      debugPrint(droppedFrameRatio.toString());
+      _changeResolution(DirectionOfChange.increase);
     }
   }
 
   void _changeResolution(DirectionOfChange direction) {
-    if (direction != _lastResolutionChange) {
-      if (direction == DirectionOfChange.increase) {
-        AlgernonPlayer.painterConfig.increaseResolution();
-      } else if (direction == DirectionOfChange.decrease) {
-        AlgernonPlayer.painterConfig.decreaseResolution();
-      }
+    int lockoutSeconds = 0;
+    //if (direction != _lastResolutionChange) {
+    if (direction == DirectionOfChange.increase) {
+      lockoutSeconds = AlgernonPlayer._resRaisedLockoutSecs;
+      AlgernonPlayer.painterConfig.increaseResolution();
+    } else if (direction == DirectionOfChange.decrease) {
+      lockoutSeconds = ALGERNON.resLoweredLockoutSecs;
 
-      /// Set alternating true/false to ratio is in the middle
-      //for (var i = 0; i < ALGERNON.droppedFrameMeasurementLength; i++) {
-      //  _lateFrameMeasurement[i] = i.isEven;
-      //}
-      _lastResolutionChange = direction;
+      /// Res has already gone up and then down again, so lockout for longer next time.
+      if (AlgernonPlayer._lastResolutionChange == DirectionOfChange.increase) {
+        AlgernonPlayer._resRaisedLockoutSecs *= 2;
+      }
+      AlgernonPlayer.painterConfig.decreaseResolution();
     }
+    debugPrint(
+      'SCALE CHANGE: ${AlgernonPlayer.painterConfig.scale.toString()}',
+    );
+
+    for (var i = 0; i < ALGERNON.droppedFrameMeasurementLength; i++) {
+      //_lateFrameMeasurement[i] = false;
+
+      /// Set alternating true/false to put ratio in the middle
+      _lateFrameMeasurement[i] = i.isEven;
+    }
+    AlgernonPlayer._lastResolutionChange = direction;
+
+    _lockoutResChange(lockoutSeconds);
+  }
+
+  void _lockoutResChange(int seconds) {
+    debugPrint('AlgernonPlayer::_lockoutResChange($seconds)');
+    AlgernonPlayer._resChangeEnabled = false;
+    AlgernonPlayer._resChangeLockoutTimer?.cancel();
+    AlgernonPlayer._resChangeLockoutTimer = Timer(
+      Duration(seconds: seconds),
+      () {
+        AlgernonPlayer._resChangeEnabled = true;
+      },
+    );
   }
 
   /// We pass data into the shader as an image format, but it isn't an image as such, just an efficient way of passing

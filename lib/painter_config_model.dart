@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum.dart';
@@ -24,6 +25,7 @@ class PainterConfigModel with ChangeNotifier {
   set currentMemorySlot(int index) {
     AppState.setPreference('selectedMemorySlotIndex', index);
     debugPrint('PainterConfigModel::currentMemorySlot NOTIFY LISTENERS');
+    AlgernonPlayer.resetResChangeLockout();
     notifyListeners();
   }
 
@@ -49,6 +51,7 @@ class PainterConfigModel with ChangeNotifier {
     }
     _currentShader.calibrateAudioEnergy();
     debugPrint('PainterConfigModel::currentShader NOTIFY LISTENERS');
+    AlgernonPlayer.resetResChangeLockout();
     notifyListeners();
   }
 
