@@ -1,9 +1,6 @@
-curently selection replaces playlist, should add to it
 read/write .m3u
 
 mic input
-
-media keys?
 
 choose great defaults for all shaders
 
@@ -12,7 +9,6 @@ lissajous make hue less jumpy, add saturation slider
 
 kb shortcuts don't work on fftsmoothing slider
 
-when track stops, time-based uniform should stop (or even slow to a stop)
 
 handle missing/renamed files
 [ERROR:flutter/runtime/dart_vm_initializer.cc(40)] Unhandled Exception: SoLoudFileNotFoundException: The file was not found (on the C++ side).
@@ -159,3 +155,6 @@ Keep eye on
 https://github.com/miguelpruivo/flutter_file_picker/wiki/Setup#--android
 mac/ios builds
 https://docs.page/alnitak/flutter_soloud_docs/get_started/setup#ios-and-macos-configuration
+curently selection replaces playlist, should add to it
+media keys?
+when track stops, time-based uniform should stop (or even slow to a stop)

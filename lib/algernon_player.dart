@@ -52,11 +52,11 @@ class AlgernonPlayer extends StatefulWidget {
       await AlgernonPlayer.stopAllSounds();
 
       AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-          .loadFile(FileChooser.notifier.selectedFilePath);
+          .loadFile(FileChooser.playlistNotifier.selectedFilePath);
 
       if (AlgernonPlayer.currentSoundNotifier.source != null) {
         await AudioAnalysis.analyseTrackOnLoad(
-          filePath: FileChooser.notifier.selectedFilePath,
+          filePath: FileChooser.playlistNotifier.selectedFilePath,
           trackDuration: SoLoud.instance.getLength(
             AlgernonPlayer.currentSoundNotifier.source!,
           ),
@@ -75,8 +75,12 @@ class AlgernonPlayer extends StatefulWidget {
       );
     } on SoLoudFileNotFoundException catch (e) {
       debugPrint('AlgernonPlayer::loadFile error: File not found\n$e');
+      FileChooser.setCurrentItemIsMissing();
+      FileChooser.selectNext();
     } on SoLoudFileLoadFailedException catch (e) {
       debugPrint('AlgernonPlayer::loadFile error: Problem loading file\n$e');
+      FileChooser.setCurrentItemIsUnplayable();
+      FileChooser.selectNext();
     } catch (e) {
       debugPrint('AlgernonPlayer::loadFile error:\n$e');
     }
@@ -100,7 +104,7 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
-    debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
+    debugPrint('\t${FileChooser.playlistNotifier.selectedFilePathIndex}');
     AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
     switch (AlgernonPlayer.currentSoundNotifier.loopType) {
@@ -126,7 +130,7 @@ class AlgernonPlayer extends StatefulWidget {
         }
         break;
     }
-    debugPrint('\t${FileChooser.notifier.selectedFilePathIndex}');
+    debugPrint('\t${FileChooser.playlistNotifier.selectedFilePathIndex}');
   }
 
   static Future<void> _ensureSoLoudIsInitialised() async {

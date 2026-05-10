@@ -44,7 +44,7 @@ class UserInterface extends StatefulWidget {
 
   static void hideControls() {
     /// If there are no tracks in the playlist, leave the UI visible as a hint.
-    if (FileChooser.notifier.currentPlaylist.isNotEmpty) {
+    if (FileChooser.playlistNotifier.currentPlaylist.isNotEmpty) {
       //AppState.log("UserInterface::hideControls()");
       _hideControlsTimer.cancel();
       UserInterface.controlsAreVisibleNotifier.value = false;

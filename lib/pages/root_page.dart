@@ -12,9 +12,9 @@ class RootPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //return ListenableBuilder(
-    //  listenable: FileChooser.notifier,
+    //  listenable: FileChooser.playlistNotifier,
     //  builder: (BuildContext context, Widget? child) {
-    //    bool playlistIsEmpty = FileChooser.notifier.currentPlaylist.isEmpty;
+    //    bool playlistIsEmpty = FileChooser.playlistNotifier.currentPlaylist.isEmpty;
     //    debugPrint(
     //      'RootPage::ListenableBuilder: playlistIsEmpty: $playlistIsEmpty',
     //    );

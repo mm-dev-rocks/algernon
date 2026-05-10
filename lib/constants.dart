@@ -64,7 +64,7 @@ class ALGERNON {
   static const double buttonBorderThickness = 1;
 
   static const int droppedFrameMeasurementLength = 30;
-  static const int finalAimFps = 60;
+  static const int finalAimFps = 30;
   static const int oneMillion = 1000000;
   static const int resRaisedLockoutSecs = 15;
   static const int resLoweredLockoutSecs = 3;

@@ -2,8 +2,9 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
-import 'package:algernon/file_chooser_notifier.dart';
+import 'package:algernon/playlist_notifier.dart';
 import 'package:algernon/file_manager.dart';
+import 'package:algernon/playlist_item_model.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:file_picker/file_picker.dart';
@@ -12,60 +13,86 @@ import 'package:flutter/material.dart';
 class FileChooser extends StatefulWidget {
   const FileChooser({super.key});
 
-  static FileChooserNotifier notifier = FileChooserNotifier();
+  static PlaylistNotifier playlistNotifier = PlaylistNotifier();
 
   static Future<void> chooseFiles() async {
     FilePickerResult? filePickerResult = await FileManager.pickFile();
     if (filePickerResult != null && filePickerResult.files.isNotEmpty) {
-      List<String> list = FileChooser.notifier.currentPlaylist;
+      List<PlaylistItemModel> list =
+          FileChooser.playlistNotifier.currentPlaylist;
       list.addAll(
         filePickerResult.files
-            .map((PlatformFile file) => file.path.toString())
+            .map(
+              (PlatformFile file) =>
+                  PlaylistItemModel(filepath: file.path.toString()),
+            )
             .toList(),
       );
-      FileChooser.notifier.currentPlaylist = List<String>.of(list);
+      FileChooser.playlistNotifier.currentPlaylist = List<PlaylistItemModel>.of(
+        list,
+      );
     }
   }
 
   static void selectPrev() {
     debugPrint('FileChooser::selectPrev()');
     debugPrint(
-      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+      '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
     );
-    int nextTrackIndex = FileChooser.notifier.selectedFilePathIndex - 1;
-    if (nextTrackIndex == -1) {
-      nextTrackIndex = FileChooser.notifier.currentPlaylist.length - 1;
+    if (FileChooser.playlistNotifier.playableItemCount > 0) {
+      int nextTrackIndex =
+          FileChooser.playlistNotifier.selectedFilePathIndex - 1;
+      if (nextTrackIndex == -1) {
+        nextTrackIndex =
+            FileChooser.playlistNotifier.currentPlaylist.length - 1;
+      }
+      FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
+      debugPrint(
+        '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
+      );
     }
-    FileChooser.notifier.selectedFilePathIndex = nextTrackIndex;
-    debugPrint(
-      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
-    );
   }
 
   static void selectNext() {
     debugPrint('FileChooser::selectNext()');
     debugPrint(
-      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
+      '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
     );
-    int nextTrackIndex = FileChooser.notifier.selectedFilePathIndex + 1;
-    if (nextTrackIndex == FileChooser.notifier.currentPlaylist.length) {
-      nextTrackIndex = 0;
+    if (FileChooser.playlistNotifier.playableItemCount > 0) {
+      int nextTrackIndex =
+          FileChooser.playlistNotifier.selectedFilePathIndex + 1;
+      if (nextTrackIndex ==
+          FileChooser.playlistNotifier.currentPlaylist.length) {
+        nextTrackIndex = 0;
+      }
+      FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
+      debugPrint(
+        '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
+      );
     }
-    FileChooser.notifier.selectedFilePathIndex = nextTrackIndex;
-    debugPrint(
-      '\tselectedFilePathIndex: ${FileChooser.notifier.selectedFilePathIndex}',
-    );
   }
 
   static void removeTrackByIndex(int index) {
-    List<String> tracks = List.of(FileChooser.notifier.currentPlaylist);
+    List<PlaylistItemModel> tracks = List.of(
+      FileChooser.playlistNotifier.currentPlaylist,
+    );
     tracks.removeAt(index);
-    FileChooser.notifier.currentPlaylist = tracks;
+    FileChooser.playlistNotifier.currentPlaylist = tracks;
+  }
+
+  static void setCurrentItemIsMissing() {
+    debugPrint('FileChooser::setCurrentItemIsMissing()');
+    FileChooser.playlistNotifier.setCurrentItemIsMissing();
+  }
+
+  static void setCurrentItemIsUnplayable() {
+    debugPrint('FileChooser::setCurrentItemIsUnplayable()');
+    FileChooser.playlistNotifier.setCurrentItemIsUnplayable();
   }
 
   static bool get currentTrackIsLast =>
-      FileChooser.notifier.selectedFilePathIndex ==
-      FileChooser.notifier.currentPlaylist.length - 1;
+      FileChooser.playlistNotifier.selectedFilePathIndex ==
+      FileChooser.playlistNotifier.currentPlaylist.length - 1;
 
   @override
   State<FileChooser> createState() => _FileChooserState();
@@ -77,28 +104,29 @@ class _FileChooserState extends State<FileChooser> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: FileChooser.notifier,
+      listenable: FileChooser.playlistNotifier,
       builder: (context, child) {
         dynamic uiSizes = Screen.uiSizesFromContext(context);
+        List<PlaylistItemModel> playlist =
+            FileChooser.playlistNotifier.currentPlaylist;
+
         return Row(
           children: [
             Expanded(
               child: IgnorePointer(
-                ignoring: FileChooser.notifier.currentPlaylist.isEmpty,
+                ignoring: playlist.isEmpty,
                 child: DropdownMenu<int>(
-                  textAlign: FileChooser.notifier.currentPlaylist.isEmpty
-                      ? TextAlign.end
-                      : TextAlign.start,
+                  textAlign: playlist.isEmpty ? TextAlign.end : TextAlign.start,
                   width: double.infinity,
-                  trailingIcon: FileChooser.notifier.currentPlaylist.isEmpty
+                  trailingIcon: playlist.isEmpty
                       ? Icon(Icons.arrow_right)
                       : null,
                   requestFocusOnTap: false,
-                  initialSelection: FileChooser.notifier.currentPlaylist.isEmpty
+                  initialSelection: playlist.isEmpty
                       ? _emptyPlaylistSpecialIndex
-                      : FileChooser.notifier.selectedFilePathIndex,
+                      : FileChooser.playlistNotifier.selectedFilePathIndex,
                   menuHeight: Screen.height(context) * 0.66,
-                  onSelected: FileChooser.notifier.currentPlaylist.isEmpty
+                  onSelected: playlist.isEmpty
                       ? (value) async {
                           await FileChooser.chooseFiles();
                         }
@@ -106,50 +134,68 @@ class _FileChooserState extends State<FileChooser> {
                           debugPrint('FileChooser::onSelected($value)');
                           if (value != null &&
                               value != _emptyPlaylistSpecialIndex) {
-                            FileChooser.notifier.selectedFilePathIndex = value;
+                            FileChooser.playlistNotifier.selectedFilePathIndex =
+                                value;
                             await AlgernonPlayer.playSelectedSound(
                               reason: 'FileChooser::onSelected($value)',
                             );
                           }
                           UserInterface.keepControlsAlive();
                         },
-                  dropdownMenuEntries:
-                      FileChooser.notifier.currentPlaylist.isEmpty
+                  dropdownMenuEntries: playlist.isEmpty
                       ? [
                           DropdownMenuEntry<int>(
                             value: _emptyPlaylistSpecialIndex,
                             label: ('Add some tracks').toUpperCase(),
                           ),
                         ]
-                      : FileChooser.notifier.currentPlaylist
-                            .asMap()
-                            .entries
-                            .map<DropdownMenuEntry<int>>(
-                              (MapEntry entry) => DropdownMenuEntry<int>(
-                                value: entry.key,
-                                label: FileChooser
-                                    .notifier
-                                    .currentPlaylist[entry.key]
-                                    .split('/')
-                                    .last,
-                                style: MenuItemButton.styleFrom(
-                                  foregroundColor:
-                                      entry.key ==
-                                          FileChooser
-                                              .notifier
-                                              .selectedFilePathIndex
-                                      ? Colors.white
-                                      : ALGERNON.uiDefaultForegroundColor,
-                                ),
-                                trailingIcon: IconButton(
-                                  icon: Icon(Icons.playlist_remove),
-                                  onPressed: () {
-                                    FileChooser.removeTrackByIndex(entry.key);
-                                  },
-                                ),
+                      : playlist.asMap().entries.map<DropdownMenuEntry<int>>((
+                          MapEntry entry,
+                        ) {
+                          int index = entry.key;
+                          PlaylistItemModel item = FileChooser
+                              .playlistNotifier
+                              .currentPlaylist[index];
+                          return DropdownMenuEntry<int>(
+                            enabled: !item.isMissing && !item.isUnplayable,
+                            value: index,
+                            label: item.filepath.split('/').last,
+                            style: MenuItemButton.styleFrom(
+                              foregroundColor:
+                                  index ==
+                                      FileChooser
+                                          .playlistNotifier
+                                          .selectedFilePathIndex
+                                  ? Colors.white
+                                  : ALGERNON.uiDefaultForegroundColor,
+                              disabledForegroundColor:
+                                  item.isMissing || item.isUnplayable
+                                  ? ALGERNON.uiSoftForegroundColor
+                                  : ALGERNON.uiDefaultForegroundColor,
+                            ),
+                            trailingIcon: IconButton(
+                              mouseCursor: SystemMouseCursors.click,
+                              tooltip: item.isMissing
+                                  ? 'Remove MISSING file from playlist'
+                                  : item.isUnplayable
+                                  ? 'Remove UNPLAYABLE file from playlist'
+                                  : 'Remove file from playlist',
+                              icon: Icon(
+                                item.isMissing
+                                    ? Icons.error_outline
+                                    : item.isUnplayable
+                                    ? Icons.question_mark
+                                    : Icons.playlist_remove,
+                                color: item.isMissing || item.isUnplayable
+                                    ? ALGERNON.uiAttractColor
+                                    : ALGERNON.uiDefaultForegroundColor,
                               ),
-                            )
-                            .toList(),
+                              onPressed: () {
+                                FileChooser.removeTrackByIndex(index);
+                              },
+                            ),
+                          );
+                        }).toList(),
                 ),
               ),
             ),
@@ -157,7 +203,7 @@ class _FileChooserState extends State<FileChooser> {
             SizedBox(width: uiSizes.paddingSmall),
 
             ColoredBox(
-              color: FileChooser.notifier.currentPlaylist.isEmpty
+              color: playlist.isEmpty
                   ? ALGERNON.uiAttractColor
                   : Colors.transparent,
               child: IconButton(
