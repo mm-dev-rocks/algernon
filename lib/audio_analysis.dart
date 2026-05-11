@@ -40,7 +40,11 @@ class AudioAnalysis {
       average: true,
     );
 
-    debugPrint('readSamplesFromFile took ${stopwatch.elapsedMilliseconds}ms');
+    debugPrint(
+      'SoLoud.instance.readSamplesFromFile took ${stopwatch.elapsedMilliseconds}ms',
+    );
+    stopwatch.reset();
+    stopwatch.start();
 
     _trackDuration = trackDuration;
     _highResolutionTrackEnergyBuckets = _computeEnergyBuckets(
@@ -48,9 +52,16 @@ class AudioAnalysis {
       numberOfBuckets: numberOfHighResolutionBuckets,
     );
 
+    debugPrint('_computeEnergyBuckets took ${stopwatch.elapsedMilliseconds}ms');
+    stopwatch.reset();
+    stopwatch.start();
+
     _debugPrintEnergyProfile(
       energyBuckets: _highResolutionTrackEnergyBuckets,
       trackDuration: trackDuration,
+    );
+    debugPrint(
+      '_debugPrintEnergyProfile took ${stopwatch.elapsedMilliseconds}ms',
     );
   }
 
