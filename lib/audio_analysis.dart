@@ -54,38 +54,6 @@ class AudioAnalysis {
     );
   }
 
-  /// Call when a new shader is loaded. Downsamples the high-resolution energy
-  /// profile to the requested coarseness and caches the min/max so that
-  /// [energyValueAtPosition] can be called cheaply on every frame.
-  static void calibrateForShader({
-    required int coarseness,
-    required int divisions,
-    required int min,
-    required int max,
-  }) {
-    assert(
-      coarseness >= 1 && coarseness <= _highResolutionTrackEnergyBuckets.length,
-      'coarseness must be between 1 and ${_highResolutionTrackEnergyBuckets.length}',
-    );
-    _calibratedEnergyBuckets = _resampleEnergyBuckets(
-      sourceEnergyBuckets: _highResolutionTrackEnergyBuckets,
-      targetNumberOfBuckets: coarseness,
-    );
-    _calibratedMinEnergy = _calibratedEnergyBuckets.reduce(
-      (a, b) => a < b ? a : b,
-    );
-    _calibratedMaxEnergy = _calibratedEnergyBuckets.reduce(
-      (a, b) => a > b ? a : b,
-    );
-    _calibratedDivisions = divisions;
-    _calibratedMin = min;
-    _calibratedMax = max;
-
-    debugPrint(
-      '_calibratedEnergyBuckets: ${_calibratedEnergyBuckets.toString()}',
-    );
-  }
-
   static void calibrateForShaderWithZones({
     required double boundaryThreshold,
     required int divisions,
@@ -177,12 +145,78 @@ class AudioAnalysis {
     debugPrint(buffer.toString());
   }
 
-  // ─── Query ───────────────────────────────────────────────────────────────────
+  static double normalisedEnergyValueAtPosition({
+    required Duration playbackPosition,
+  }) {
+    final int rawValue = _energyValueAtPosition(
+      playbackPosition: playbackPosition,
+    );
+    return (rawValue - _calibratedMin) / (_calibratedMax - _calibratedMin);
+  }
 
-  /// Returns a single integer representing the energy at the given playback
-  /// position, quantised using the currently calibrated coarseness, divisions,
-  /// min and max. Cheap to call every frame after [calibrateForShader] has run.
-  static int energyValueAtPosition({required Duration playbackPosition}) {
+  static double suggestedBoundaryThreshold({double sensitivity = 1.0}) {
+    final List<double> differences = [];
+    for (int i = 1; i < _highResolutionTrackEnergyBuckets.length; i++) {
+      differences.add(
+        (_highResolutionTrackEnergyBuckets[i] -
+                _highResolutionTrackEnergyBuckets[i - 1])
+            .abs(),
+      );
+    }
+    final double mean =
+        differences.reduce((a, b) => a + b) / differences.length;
+    final double variance =
+        differences
+            .map((d) => (d - mean) * (d - mean))
+            .reduce((a, b) => a + b) /
+        differences.length;
+    final double standardDeviation = sqrt(variance);
+
+    return mean + standardDeviation * sensitivity;
+  }
+
+  // ─── Internal ─────────────────────────────────────────────────────────────────
+
+  static List<double> _computeEnergyBuckets({
+    required Float32List rawSamples,
+    required int numberOfBuckets,
+  }) {
+    final int samplesPerBucket = rawSamples.length ~/ numberOfBuckets;
+    return List<double>.generate(numberOfBuckets, (int bucketIndex) {
+      double bucketEnergySum = 0;
+      for (
+        int i = bucketIndex * samplesPerBucket;
+        i < (bucketIndex + 1) * samplesPerBucket;
+        i++
+      ) {
+        bucketEnergySum += rawSamples[i].abs();
+      }
+      return bucketEnergySum / samplesPerBucket;
+    });
+  }
+
+  static void _debugPrintEnergyProfile({
+    required List<double> energyBuckets,
+    required Duration trackDuration,
+  }) {
+    final double bucketDurationInSeconds =
+        trackDuration.inSeconds / energyBuckets.length;
+    final StringBuffer buffer = StringBuffer('Track energy profile:\n');
+    for (int b = 0; b < energyBuckets.length; b++) {
+      final double energy = energyBuckets[b];
+      final String bar = '█' * (energy * 40).round();
+      final int seconds = (b * bucketDurationInSeconds).round();
+      final String mm = (seconds ~/ 60).toString().padLeft(2, '0');
+      final String ss = (seconds % 60).toString().padLeft(2, '0');
+      buffer.writeln('$mm:$ss  $bar ${energy.toStringAsFixed(3)}');
+    }
+    debugPrint(buffer.toString());
+  }
+
+  /// Returns a single integer representing the energy at the given playback position, quantised using the currently
+  /// calibrated coarseness, divisions, min and max. Cheap to call every frame after [calibrateForShaderWithZones] has
+  /// run.
+  static int _energyValueAtPosition({required Duration playbackPosition}) {
     if (_calibratedEnergyBuckets.isEmpty || _trackDuration == Duration.zero) {
       return _calibratedMin;
     }
@@ -210,109 +244,6 @@ class AudioAnalysis {
     return (_calibratedMin + stepFraction * (_calibratedMax - _calibratedMin))
         .round();
   }
-
-  static double normalisedEnergyValueAtPosition({
-    required Duration playbackPosition,
-  }) {
-    final int rawValue = energyValueAtPosition(
-      playbackPosition: playbackPosition,
-    );
-    return (rawValue - _calibratedMin) / (_calibratedMax - _calibratedMin);
-  }
-
-  // ─── Internal ─────────────────────────────────────────────────────────────────
-
-  static List<double> _computeEnergyBuckets({
-    required Float32List rawSamples,
-    required int numberOfBuckets,
-  }) {
-    final int samplesPerBucket = rawSamples.length ~/ numberOfBuckets;
-    return List<double>.generate(numberOfBuckets, (int bucketIndex) {
-      double bucketEnergySum = 0;
-      for (
-        int i = bucketIndex * samplesPerBucket;
-        i < (bucketIndex + 1) * samplesPerBucket;
-        i++
-      ) {
-        bucketEnergySum += rawSamples[i].abs();
-      }
-      return bucketEnergySum / samplesPerBucket;
-    });
-  }
-
-  static List<double> _resampleEnergyBuckets({
-    required List<double> sourceEnergyBuckets,
-    required int targetNumberOfBuckets,
-  }) {
-    final double sourceBucketsPerTargetBucket =
-        sourceEnergyBuckets.length / targetNumberOfBuckets;
-    return List<double>.generate(targetNumberOfBuckets, (
-      int targetBucketIndex,
-    ) {
-      final int sourceStart = (targetBucketIndex * sourceBucketsPerTargetBucket)
-          .floor();
-      final int sourceEnd =
-          ((targetBucketIndex + 1) * sourceBucketsPerTargetBucket)
-              .floor()
-              .clamp(0, sourceEnergyBuckets.length);
-      final List<double> sourceBucketsInRange = sourceEnergyBuckets.sublist(
-        sourceStart,
-        sourceEnd,
-      );
-      return sourceBucketsInRange.reduce((a, b) => a + b) /
-          sourceBucketsInRange.length;
-    });
-  }
-
-  static void _debugPrintEnergyProfile({
-    required List<double> energyBuckets,
-    required Duration trackDuration,
-  }) {
-    final double bucketDurationInSeconds =
-        trackDuration.inSeconds / energyBuckets.length;
-    final StringBuffer buffer = StringBuffer('Track energy profile:\n');
-    for (int b = 0; b < energyBuckets.length; b++) {
-      final double energy = energyBuckets[b];
-      final String bar = '█' * (energy * 40).round();
-      final int seconds = (b * bucketDurationInSeconds).round();
-      final String mm = (seconds ~/ 60).toString().padLeft(2, '0');
-      final String ss = (seconds % 60).toString().padLeft(2, '0');
-      buffer.writeln('$mm:$ss  $bar ${energy.toStringAsFixed(3)}');
-    }
-    debugPrint(buffer.toString());
-  }
-
-  static double suggestedBoundaryThreshold({double sensitivity = 1.0}) {
-    final List<double> differences = [];
-    for (int i = 1; i < _highResolutionTrackEnergyBuckets.length; i++) {
-      differences.add(
-        (_highResolutionTrackEnergyBuckets[i] -
-                _highResolutionTrackEnergyBuckets[i - 1])
-            .abs(),
-      );
-    }
-    final double mean =
-        differences.reduce((a, b) => a + b) / differences.length;
-    final double variance =
-        differences
-            .map((d) => (d - mean) * (d - mean))
-            .reduce((a, b) => a + b) /
-        differences.length;
-    final double standardDeviation = sqrt(variance);
-
-    return mean + standardDeviation * sensitivity;
-  }
-
-  //static List<double> _equalise(List<double> buckets) {
-  //  final int n = buckets.length;
-  //  final List<double> sorted = List<double>.from(buckets)..sort();
-
-  //  return buckets.map((value) {
-  //    // Find what fraction of buckets are <= this value
-  //    int rank = sorted.lastIndexWhere((s) => s <= value) + 1;
-  //    return rank / n;
-  //  }).toList();
-  //}
 
   static List<double> _equalise(List<double> buckets, {double strength = 1.0}) {
     final int n = buckets.length;
