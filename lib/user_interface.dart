@@ -80,8 +80,8 @@ class _UserInterfaceState extends State<UserInterface> {
                           Platform.isWindows ||
                           Platform.isMacOS))
                     PositionedDirectional(
-                      top: 0,
-                      start: 0,
+                      top: uiSizes.paddingSmall,
+                      start: uiSizes.paddingSmall,
                       child: AlgernonWindow(),
                     ),
                   PositionedDirectional(
@@ -168,7 +168,7 @@ class _UserInterfaceState extends State<UserInterface> {
                     bottom:
                         kToolbarHeight +
                         Screen.uiSizesFromContext(context).paddingSmall,
-                    start: 0,
+                    start: uiSizes.paddingSmall,
                     child: const VolumeSlider(),
                   ),
                 ],
