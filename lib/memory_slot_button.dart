@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/constants.dart';
+import 'package:algernon/screen.dart';
 import 'package:flutter/material.dart';
 
 class MemorySlotButton extends StatelessWidget {
@@ -22,6 +23,11 @@ class MemorySlotButton extends StatelessWidget {
     width: ALGERNON.buttonBorderThickness,
   );
 
+  final BoxBorder borderSoft = Border.all(
+    color: ALGERNON.uiSoftForegroundColor,
+    width: ALGERNON.buttonBorderThickness,
+  );
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -31,31 +37,37 @@ class MemorySlotButton extends StatelessWidget {
       child: Tooltip(
         message: 'Memory slot ${index + 1}',
         child: Container(
-          //width: double.infinity,
-          width: ALGERNON.memorySlotButtonSize.width,
-          height: ALGERNON.memorySlotButtonSize.height,
-          //padding: EdgeInsets.all(
-          //  Screen.uiSizesFromContext(context).paddingSmall,
-          //),
+          //width: ALGERNON.memorySlotButtonSize.width,
+          ////height: ALGERNON.memorySlotButtonSize.height,
           decoration: highlighted
-              ? BoxDecoration(
-                  //border: border,
-                  color: ALGERNON.uiAttractColor,
-                )
+              ? BoxDecoration(border: border, color: ALGERNON.uiAttractColor)
               : selected
-              ? BoxDecoration(
-                  //border: border
-                )
-              : null,
-          child: Icon(
-            IconData(
-              /// Icons actually use a font so we can step through the sequential 'numbers in a box' (filter_n)
-              /// characters.
-              Icons.filter_1.codePoint + index,
-              fontFamily: 'MaterialIcons',
+              ? BoxDecoration(border: border)
+              : BoxDecoration(border: borderSoft),
+          child: Padding(
+            padding: EdgeInsets.all(
+              Screen.uiSizesFromContext(context).paddingSmall,
             ),
-            color: selected ? Colors.white : ALGERNON.uiDefaultForegroundColor,
+            child: Text(
+              '${index + 1}',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: selected
+                    ? Colors.white
+                    : ALGERNON.uiDefaultForegroundColor,
+              ),
+            ),
           ),
+
+          //Icon(
+          //    IconData(
+          //      /// Icons actually use a font so we can step through the sequential 'numbers in a box' (filter_n)
+          //      /// characters.
+          //      Icons.filter_1.codePoint + index,
+          //      fontFamily: 'MaterialIcons',
+          //    ),
+          //    color: selected ? Colors.white : ALGERNON.uiDefaultForegroundColor,
+          //  ),
         ),
       ),
     );

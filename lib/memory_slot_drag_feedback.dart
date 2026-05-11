@@ -28,7 +28,7 @@ class MemorySlotDragFeedback extends StatelessWidget {
             alpha: ALGERNON.fadeDarkBackgroundOpacity,
           ),
         ),
-        child: Text('Drag to another slot to \ncopy slot [$index] to it'),
+        child: Text('Drag to another slot to \ncopy slot [${index + 1}] to it'),
       ),
     );
   }

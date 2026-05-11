@@ -26,10 +26,13 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
     return SizedBox(
       width: Screen.mainControlPanelWidth(context),
       child: Padding(
-        padding: EdgeInsets.only(left: uiSizes.paddingSmall),
+        padding: EdgeInsets.only(
+          left: uiSizes.paddingSmall,
+          right: uiSizes.paddingSmall,
+        ),
         child: Row(
           mainAxisSize: .max,
-          mainAxisAlignment: .spaceBetween,
+          //mainAxisAlignment: .spaceBetween,
           children: List.generate(
             ALGERNON.totalMemorySlots,
             (int index) => Expanded(
