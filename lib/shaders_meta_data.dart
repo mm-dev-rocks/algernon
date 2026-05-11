@@ -379,7 +379,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'root_system',
         tweakType: TweakType.uniformEmphasis,
-        min: 0.04,
+        min: 0.025,
         max: 2,
         defaultValue: 0.6,
       ),
