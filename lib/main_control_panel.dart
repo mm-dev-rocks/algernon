@@ -69,15 +69,18 @@ class _MainControlPanelState extends State<MainControlPanel> {
         ),
 
         /// FFT smoothing
-        SizedBox(
+        ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight:
+                Screen.height(context) -
+                (kToolbarHeight * 2 +
+                    ALGERNON.memorySlotButtonSize.height +
+                    uiSizes.paddingLarge),
+          ),
           // [kToolbarHeight] matches [DropdownMenu] height.
-          height:
-              Screen.height(context) -
-              (kToolbarHeight * 2 +
-                  ALGERNON.memorySlotButtonSize.height +
-                  uiSizes.paddingLarge),
           child: SingleChildScrollView(
             child: Column(
+              mainAxisSize: .min,
               children: [
                 ShaderTweakSlider(
                   shaderTweak: _fftSmoothingTweak,

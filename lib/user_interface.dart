@@ -136,7 +136,12 @@ class _UserInterfaceState extends State<UserInterface> {
 
                         SizedBox(width: uiSizes.paddingMedium),
 
-                        const Flexible(child: FileChooser()),
+                        SizedBox(
+                          width:
+                              Screen.mainControlPanelWidth(context) +
+                              ALGERNON.autoCountButtonSize.width,
+                          child: FileChooser(),
+                        ),
                       ],
                     ),
                   ),
