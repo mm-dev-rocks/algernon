@@ -30,6 +30,34 @@ class PlaylistNotifier extends ChangeNotifier {
       .where((PlaylistItemModel item) => !item.isMissing && !item.isUnplayable)
       .length;
 
+  //int get preloadableFilePathIndex => playableItemCount > 1 ? sdfsdf : -1;
+
+  //currentPlaylist
+  //.where((PlaylistItemModel item) => !item.isMissing && !item.isUnplayable)
+  //.length;
+
+  int get nextPlayableIndex {
+    int index = -1;
+    if (playableItemCount > 0) {
+      index = selectedFilePathIndex + 1;
+      if (index == currentPlaylist.length) {
+        index = 0;
+      }
+    }
+    return index;
+  }
+
+  int get prevPlayableIndex {
+    int index = -1;
+    if (playableItemCount > 0) {
+      index = selectedFilePathIndex - 1;
+      if (index == -1) {
+        index = currentPlaylist.length - 1;
+      }
+    }
+    return index;
+  }
+
   int get selectedFilePathIndex =>
       AppState.getPreference('selectedPlaylistFilePathIndex');
   set selectedFilePathIndex(int index) {

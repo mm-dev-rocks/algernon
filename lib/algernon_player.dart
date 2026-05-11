@@ -18,6 +18,8 @@ class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
   static SoundHandle? currentSoundHandle;
+  static AudioSource? _preloadedSource;
+  static String? _preloadedFilepath;
 
   static bool get soLoudIsReady =>
       SoLoud.instance.isInitialized &&
@@ -49,25 +51,54 @@ class AlgernonPlayer extends StatefulWidget {
     await _ensureSoLoudIsInitialised();
 
     try {
-      await AlgernonPlayer.stopAllSounds();
+      final Stopwatch stopwatch = Stopwatch()..start();
+      await AlgernonPlayer.stopCurrentSound();
+      debugPrint(
+        'AlgernonPlayer.stopCurrentSound() took ${stopwatch.elapsedMilliseconds}ms',
+      );
 
-      AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-          .loadFile(FileChooser.playlistNotifier.selectedFilePath);
+      debugPrint(
+        '0. AlgernonPlayer._preloadedSource:\n\t${AlgernonPlayer._preloadedSource}',
+      );
+      debugPrint(
+        '0. AlgernonPlayer._preloadedSource:\n\t${AlgernonPlayer._preloadedSource}',
+      );
+      debugPrint(
+        '1. AlgernonPlayer.currentSoundNotifier.source:\n\t${AlgernonPlayer.currentSoundNotifier.source}',
+      );
+      if (AlgernonPlayer._preloadedSource != null &&
+          AlgernonPlayer._preloadedFilepath ==
+              FileChooser.playlistNotifier.selectedFilePath) {
+        AlgernonPlayer.currentSoundNotifier.source =
+            AlgernonPlayer._preloadedSource;
+      } else {
+        AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
+            .loadFile(FileChooser.playlistNotifier.selectedFilePath);
+      }
+      debugPrint(
+        '2. AlgernonPlayer.currentSoundNotifier.source:\n\t${AlgernonPlayer.currentSoundNotifier.source}',
+      );
+      AlgernonPlayer._preloadedSource = null;
 
       if (AlgernonPlayer.currentSoundNotifier.source != null) {
+        stopwatch.reset();
+        stopwatch.start();
         AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(
           AlgernonPlayer.currentSoundNotifier.source!,
         );
-        await _startListeningForTrackFinished();
+        debugPrint(
+          'SoLoud.instance.play took ${stopwatch.elapsedMilliseconds}ms',
+        );
 
-        /// Analyse **after** starting playback to remove delay
-        //await AudioAnalysis.analyseTrackOnLoad(
-        //  filePath: FileChooser.playlistNotifier.selectedFilePath,
-        //  trackDuration: SoLoud.instance.getLength(
-        //    AlgernonPlayer.currentSoundNotifier.source!,
-        //  ),
-        //);
-        //AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
+        stopwatch.reset();
+        stopwatch.start();
+        await _startListeningForTrackFinished();
+        debugPrint(
+          'AlgernonPlayer._startListeningForTrackFinished() took ${stopwatch.elapsedMilliseconds}ms',
+        );
+
+        await _calibrateCurrentTrack();
+        await _preloadNextTrack();
       }
     } on SoLoudNotInitializedException catch (e) {
       debugPrint(
@@ -84,22 +115,76 @@ class AlgernonPlayer extends StatefulWidget {
     } catch (e) {
       debugPrint('AlgernonPlayer::loadFile error:\n$e');
     }
+
+    /// Start unpaused
     AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: false);
   }
 
-  static Future<void> stopAllSounds() async {
-    debugPrint('AlgernonPlayer::stopAllSounds()');
-    await SoLoud.instance.disposeAllSources();
+  static Future<void> stopCurrentSound() async {
+    await _trackFinishedSubscription?.cancel();
+    debugPrint('AlgernonPlayer::stopCurrentSound()');
+    //await SoLoud.instance.disposeAllSources();
+    if (AlgernonPlayer.currentSoundHandle != null) {
+      await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
+      AlgernonPlayer.currentSoundHandle = null;
+    }
+    await _disposeSourceIfNotNull(AlgernonPlayer.currentSoundNotifier.source);
+  }
+
+  static Future<void> _disposeSourceIfNotNull(AudioSource? source) async {
+    if (source != null) {
+      await SoLoud.instance.disposeSource(source);
+    }
+  }
+
+  static Future<void> _calibrateCurrentTrack() async {
+    debugPrint('AlgernonPlayer::_calibrateCurrentTrack()');
+    if (AlgernonPlayer.currentSoundNotifier.source != null) {
+      await AudioAnalysis.analyseTrackOnLoad(
+        filePath: FileChooser.playlistNotifier.selectedFilePath,
+        trackDuration: SoLoud.instance.getLength(
+          AlgernonPlayer.currentSoundNotifier.source!,
+        ),
+      );
+      AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
+    }
+  }
+
+  static Future<void> _preloadNextTrack() async {
+    debugPrint('AlgernonPlayer::_preloadNextTrack()');
+    await _disposeSourceIfNotNull(AlgernonPlayer._preloadedSource);
+    AlgernonPlayer._preloadedFilepath = null;
+    AlgernonPlayer._preloadedSource = null;
+
+    int nextPlayableIndex = FileChooser.playlistNotifier.nextPlayableIndex;
+    if (nextPlayableIndex != -1) {
+      final Stopwatch stopwatch = Stopwatch()..start();
+      debugPrint('- Preloading [$nextPlayableIndex]');
+      AlgernonPlayer._preloadedFilepath = FileChooser
+          .playlistNotifier
+          .currentPlaylist[nextPlayableIndex]
+          .filepath;
+      if (AlgernonPlayer._preloadedFilepath != null) {
+        AlgernonPlayer._preloadedSource = await SoLoud.instance.loadFile(
+          AlgernonPlayer._preloadedFilepath!,
+        );
+      }
+      debugPrint(
+        '- SoLoud.instance.loadFile took ${stopwatch.elapsedMilliseconds}ms',
+      );
+    }
   }
 
   static Future<void> _startListeningForTrackFinished() async {
     debugPrint('AlgernonPlayer::_startListeningForTrackFinished()');
     await _trackFinishedSubscription?.cancel();
-    _trackFinishedSubscription = AlgernonPlayer
-        .currentSoundNotifier
-        .source!
-        .allInstancesFinished
-        .listen(_onAllInstancesFinished);
+    if (AlgernonPlayer.currentSoundNotifier.source != null) {
+      _trackFinishedSubscription = AlgernonPlayer
+          .currentSoundNotifier
+          .source!
+          .allInstancesFinished
+          .listen(_onAllInstancesFinished);
+    }
   }
 
   static Future<void> _onAllInstancesFinished(_) async {

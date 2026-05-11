@@ -16,7 +16,7 @@ class AudioSourceNotifier extends ChangeNotifier {
 
   /// Paused state
   bool get isPaused =>
-      AlgernonPlayer.currentSoundNotifier.source == null ||
+      source == null ||
           AlgernonPlayer.currentSoundHandle == null ||
           (AlgernonPlayer.currentSoundHandle != null &&
               SoLoud.instance.getPause(AlgernonPlayer.currentSoundHandle!))

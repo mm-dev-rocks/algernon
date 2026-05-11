@@ -34,18 +34,32 @@ class FileChooser extends StatefulWidget {
     }
   }
 
-  static void selectPrev() {
-    debugPrint('FileChooser::selectPrev()');
+  //static void selectPrev() {
+  //  debugPrint('FileChooser::selectPrev()');
+  //  debugPrint(
+  //    '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
+  //  );
+  //  if (FileChooser.playlistNotifier.playableItemCount > 0) {
+  //    int nextTrackIndex =
+  //        FileChooser.playlistNotifier.selectedFilePathIndex - 1;
+  //    if (nextTrackIndex == -1) {
+  //      nextTrackIndex =
+  //          FileChooser.playlistNotifier.currentPlaylist.length - 1;
+  //    }
+  //    FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
+  //    debugPrint(
+  //      '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
+  //    );
+  //  }
+  //}
+
+  static void selectNext() {
+    debugPrint('FileChooser::selectNext()');
     debugPrint(
       '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
     );
-    if (FileChooser.playlistNotifier.playableItemCount > 0) {
-      int nextTrackIndex =
-          FileChooser.playlistNotifier.selectedFilePathIndex - 1;
-      if (nextTrackIndex == -1) {
-        nextTrackIndex =
-            FileChooser.playlistNotifier.currentPlaylist.length - 1;
-      }
+    int nextTrackIndex = FileChooser.playlistNotifier.nextPlayableIndex;
+    if (nextTrackIndex != -1) {
       FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
       debugPrint(
         '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
@@ -53,19 +67,14 @@ class FileChooser extends StatefulWidget {
     }
   }
 
-  static void selectNext() {
-    debugPrint('FileChooser::selectNext()');
+  static void selectPrev() {
+    debugPrint('FileChooser::selectPrev()');
     debugPrint(
       '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
     );
-    if (FileChooser.playlistNotifier.playableItemCount > 0) {
-      int nextTrackIndex =
-          FileChooser.playlistNotifier.selectedFilePathIndex + 1;
-      if (nextTrackIndex ==
-          FileChooser.playlistNotifier.currentPlaylist.length) {
-        nextTrackIndex = 0;
-      }
-      FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
+    int prevTrackIndex = FileChooser.playlistNotifier.prevPlayableIndex;
+    if (prevTrackIndex != -1) {
+      FileChooser.playlistNotifier.selectedFilePathIndex = prevTrackIndex;
       debugPrint(
         '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
       );

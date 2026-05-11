@@ -56,10 +56,10 @@ class AudioAnalysis {
     stopwatch.reset();
     stopwatch.start();
 
-    _debugPrintEnergyProfile(
-      energyBuckets: _highResolutionTrackEnergyBuckets,
-      trackDuration: trackDuration,
-    );
+    //_debugPrintEnergyProfile(
+    //  energyBuckets: _highResolutionTrackEnergyBuckets,
+    //  trackDuration: trackDuration,
+    //);
     debugPrint(
       '_debugPrintEnergyProfile took ${stopwatch.elapsedMilliseconds}ms',
     );
@@ -142,18 +142,18 @@ class AudioAnalysis {
     _calibratedMin = min;
     _calibratedMax = max;
 
-    final double bucketDurationInSeconds =
-        _trackDuration.inSeconds / _calibratedEnergyBuckets.length;
-    final StringBuffer buffer = StringBuffer('Zone energy profile:\n');
-    for (int b = 0; b < _calibratedEnergyBuckets.length; b++) {
-      final double energy = _calibratedEnergyBuckets[b];
-      final String bar = '█' * (energy * 40).round();
-      final int seconds = (b * bucketDurationInSeconds).round();
-      final String mm = (seconds ~/ 60).toString().padLeft(2, '0');
-      final String ss = (seconds % 60).toString().padLeft(2, '0');
-      buffer.writeln('$mm:$ss  $bar ${energy.toStringAsFixed(3)}');
-    }
-    debugPrint(buffer.toString());
+    //final double bucketDurationInSeconds =
+    //    _trackDuration.inSeconds / _calibratedEnergyBuckets.length;
+    //final StringBuffer buffer = StringBuffer('Zone energy profile:\n');
+    //for (int b = 0; b < _calibratedEnergyBuckets.length; b++) {
+    //  final double energy = _calibratedEnergyBuckets[b];
+    //  final String bar = '█' * (energy * 40).round();
+    //  final int seconds = (b * bucketDurationInSeconds).round();
+    //  final String mm = (seconds ~/ 60).toString().padLeft(2, '0');
+    //  final String ss = (seconds % 60).toString().padLeft(2, '0');
+    //  buffer.writeln('$mm:$ss  $bar ${energy.toStringAsFixed(3)}');
+    //}
+    //debugPrint(buffer.toString());
   }
 
   static double normalisedEnergyValueAtPosition({
