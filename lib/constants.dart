@@ -51,7 +51,7 @@ class ALGERNON {
     'selectedPlaylistFilePathIndex': [int, 0],
   }..addAll(shader_defaults.shaderDefaults);
 
-  static const int soLoudBufferSize = 1024;
+  static const int soLoudBufferSize = 2048;
   static const double binEmaSmoothing = 0.95;
   static const double binChargeSmoothing = 0.5;
   static const int energyZoneBlendBuckets = 3;
