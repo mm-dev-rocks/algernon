@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 import 'dart:ui' as ui;
 
-import 'package:algernon/enum.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/shader_tweak_model.dart';
 import 'package:flutter/material.dart';

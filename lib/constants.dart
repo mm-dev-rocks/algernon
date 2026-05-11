@@ -69,6 +69,9 @@ class ALGERNON {
   static const int resLoweredLockoutSecs = 15;
   static const int resRaisedLockoutSecs = 5;
 
+  static const double material3IconSize = 24.0;
+  static const double material3IconPadding = 8.0;
+
   static const String autoCountPrefSuffix = 'auto';
   static const String memorySlotPrefPrefix = 'memslot';
 

@@ -68,11 +68,11 @@ class ShaderTweakSlider extends StatelessWidget {
       children: [
         Row(
           children: [
+            Expanded(child: slider),
             Padding(
-              padding: EdgeInsets.only(left: uiSizes.paddingSmall),
+              padding: EdgeInsets.only(right: uiSizes.paddingSmall),
               child: infoIcon,
             ),
-            Expanded(child: slider),
             autoCountButton,
           ],
         ),

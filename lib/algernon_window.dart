@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';

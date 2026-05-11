@@ -12,6 +12,7 @@ import 'package:algernon/loop_cycle_button.dart';
 import 'package:algernon/main_control_panel.dart';
 import 'package:algernon/pause_toggle.dart';
 import 'package:algernon/playback_bar.dart';
+import 'package:algernon/scale_meter_widget.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/volume_slider.dart';
 import 'package:flutter/foundation.dart';
@@ -138,6 +139,16 @@ class _UserInterfaceState extends State<UserInterface> {
                         const Flexible(child: FileChooser()),
                       ],
                     ),
+                  ),
+
+                  PositionedDirectional(
+                    start: uiSizes.paddingSmall,
+                    width:
+                        ALGERNON.material3IconSize +
+                        ALGERNON.material3IconPadding * 2,
+                    top: kToolbarHeight + uiSizes.paddingSmall,
+
+                    child: Center(child: ScaleMeterWidget()),
                   ),
 
                   /// Shader-specific controls block

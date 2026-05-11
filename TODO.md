@@ -5,11 +5,9 @@ dots to indicate scale/res
 choose great defaults for all shaders
 
 add hue range / adjustment to voronoi
-lissajous make hue less jumpy, add saturation slider
 
 kb shortcuts don't work on fftsmoothing slider
 
-lag between gapless tracks... try reading next file before end? and/or read fewer samples. time with stopwatch
 
 ---
 
@@ -162,3 +160,6 @@ When the exception was thrown, this was the stack:
 #10     _invoke (dart:ui/hooks.dart:356:13)
 #11     PlatformDispatcher._drawFrame (dart:ui/platform_dispatcher.dart:444:5)
 #12     _drawFrame (dart:ui/hooks.dart:328:31)
+
+lissajous make hue less jumpy, add saturation slider
+lag between gapless tracks... try reading next file before end? and/or read fewer samples. time with stopwatch
