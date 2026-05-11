@@ -1,7 +1,7 @@
 read/write .m3u
 
 mic input
-
+dots to indicate scale/res
 choose great defaults for all shaders
 
 add hue range / adjustment to voronoi
@@ -9,9 +9,14 @@ lissajous make hue less jumpy, add saturation slider
 
 kb shortcuts don't work on fftsmoothing slider
 
+lag between gapless tracks... try reading next file before end? and/or read fewer samples. time with stopwatch
+
 ---
 
 # BUGS
+
+cracky background playback on android (audio service?)
+
 
 BLACK SCREEN ON TAB S4
 
