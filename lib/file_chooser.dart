@@ -18,16 +18,30 @@ class FileChooser extends StatefulWidget {
   static Future<void> chooseFiles() async {
     FilePickerResult? filePickerResult = await FileManager.pickFile();
     if (filePickerResult != null && filePickerResult.files.isNotEmpty) {
-      List<PlaylistItemModel> list =
-          FileChooser.playlistNotifier.currentPlaylist;
-      list.addAll(
-        filePickerResult.files
-            .map(
-              (PlatformFile file) =>
-                  PlaylistItemModel(filepath: file.path.toString()),
-            )
-            .toList(),
-      );
+      /// Add to END of playlist
+
+      //List<PlaylistItemModel> list =
+      //    FileChooser.playlistNotifier.currentPlaylist;
+      //list.addAll(
+      //  filePickerResult.files
+      //      .map(
+      //        (PlatformFile file) =>
+      //            PlaylistItemModel(filepath: file.path.toString()),
+      //      )
+      //      .toList(),
+      //);
+      //FileChooser.playlistNotifier.currentPlaylist = List<PlaylistItemModel>.of(
+      //  list,
+      //);
+      //FileChooser.playlistNotifier.currentPlaylist.insertAll
+      /// Add to START of playlist
+      List<PlaylistItemModel> list = filePickerResult.files
+          .map(
+            (PlatformFile file) =>
+                PlaylistItemModel(filepath: file.path.toString()),
+          )
+          .toList();
+      list.addAll(FileChooser.playlistNotifier.currentPlaylist);
       FileChooser.playlistNotifier.currentPlaylist = List<PlaylistItemModel>.of(
         list,
       );
