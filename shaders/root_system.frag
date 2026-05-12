@@ -77,7 +77,7 @@ void main() {
   vec2 fcLow = sampleBinRange(1.0, 4.0);
   vec2 fcHigh = sampleBin(170.0);
 
-  float dynamicWarp = u_warp - max(0.0, fcLow.y) * 1.2;
+  // float dynamicWarp = u_warp - max(0.0, fcLow.y) * 1.2;
   float fcLowMod = fcLow.x * 0.8 + fcLow.y * 0.4;
 
   float glowTotal = 0.0;
@@ -111,6 +111,7 @@ void main() {
     float armBinStart = fi * binsPerArm;
     float armBinEnd = armBinStart + binsPerArm;
     vec2 fcArm = sampleBinRange(armBinStart, armBinEnd);
+    float dynamicWarp = u_warp - max(0.0, fcArm.y) * 2.5;
 
     float armLen = clamp(0.28 + fcArm.x * 0.25 + fcArm.y * 0.1, 0.05, u_zoom);
     float mainWidth = u_size + fcArm.x * 0.005;
