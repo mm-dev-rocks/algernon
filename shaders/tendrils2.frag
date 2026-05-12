@@ -69,7 +69,7 @@ void main() {
   // swaySignal is per-blade below — each blade responds to its own FFT bin.
 
   float xBleed = 0.2;
-  float xScale = 1.0 + xBleed;
+  float xScale = 1.0 + xBleed * 2.0;
 
   float glow = 0.0;
   float hueAcc = 0.0;

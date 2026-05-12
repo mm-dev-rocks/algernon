@@ -60,8 +60,6 @@ vec3 hsv2rgb(float h, float s, float v) {
 void main() {
   vec2 st = FlutterFragCoord().xy / u_resolution.xy;
   vec2 fragmentOffset = st - vec2(0.5, 0.5);
-  // Final multiplier scales the entire thing up, but inversely (<1 scales up,
-  // >1 scales down)
   float distFromCentre = length(fragmentOffset) * 0.5;
 
   // Map 0..0.5 radial distance onto u_countPrimary rings.
@@ -88,13 +86,13 @@ void main() {
 
   // ---------------------------------------------------------------------------
   // Ring fill: charge expands (+) or contracts (-) the lit band.
-  // The +/-0.18 influence keeps the effect readable without being frantic.
-  // Clamped so a ring never fully disappears or bleeds into the gap.
+  // Cosine falloff at the edge avoids the hard step that caused aliasing.
   // ---------------------------------------------------------------------------
   float dynamicFill = clamp(u_emphasis + charge * 0.18, 0.02, 0.99);
-  // float inBand = step(ringFrac, dynamicFill);
-  float edgeWidth = 0.5; // tweak to taste
-  float inBand = smoothstep(dynamicFill, dynamicFill - edgeWidth, ringFrac);
+  // float inBand = ringFrac < dynamicFill ? 1.0 : clamp(cos((ringFrac -
+  // dynamicFill) * 3.14159 / (1.0 - dynamicFill)) * 0.5 + 0.5, 0.0, 1.0);
+  float inBand =
+      1.0 - smoothstep(dynamicFill - 0.3, dynamicFill + 0.3, ringFrac);
 
   // ---------------------------------------------------------------------------
   // Colour: HSV with hue swept bass->treble across u_hueRange degrees.
@@ -109,6 +107,5 @@ void main() {
 
   vec3 colour = hsv2rgb(hue, sat, val);
 
-  // Mask the gap between rings.
   fragColor = vec4(colour * inBand, 1.0);
 }

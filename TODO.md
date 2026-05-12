@@ -1,10 +1,15 @@
 read/write .m3u
 
 mic input
-dots to indicate scale/res
 choose great defaults for all shaders
 
 add hue range / adjustment to voronoi
+
+tendrils
+- better name
+- make blades appear at back//front depending on freq/bin number
+
+all/many shaders: make bins distribute evenly across eg arms, discs, whatever items
 
 kb shortcuts don't work on fftsmoothing slider
 
@@ -13,10 +18,11 @@ kb shortcuts don't work on fftsmoothing slider
 
 # BUGS
 
+mouse not working on android?
+
 cracky background playback on android (audio service?)
 
-
-BLACK SCREEN ON TAB S4
+chromeos slow no playback bar until rebuild
 
 pause button shows wrong state
 
@@ -163,3 +169,5 @@ When the exception was thrown, this was the stack:
 
 lissajous make hue less jumpy, add saturation slider
 lag between gapless tracks... try reading next file before end? and/or read fewer samples. time with stopwatch
+dots to indicate scale/res
+BLACK SCREEN ON TAB S4

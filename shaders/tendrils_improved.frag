@@ -66,7 +66,13 @@ void main() {
                    sin(u_time * 0.19 + 1.5708) * 0.12 +
                    sin(u_time * 0.37 + 3.14159) * 0.06;
 
-  // swaySignal is per-blade below — each blade responds to its own FFT bin.
+  // Music lifts the sway gently — clamped so it can't dominate.
+  // pow softens the response so quiet passages don't read as silence.
+  float musicLift = clamp(pow(globalBassMag, 0.5) * 0.4, 0.0, 0.35);
+
+  // Combined sway signal: ambient + music lift, then scaled by u_warp.
+  // At u_warp=0 blades barely move; at u_warp=1 they sway fully.
+  float swaySignal = (windBase + musicLift) * u_warp;
 
   float xBleed = 0.2;
   float xScale = 1.0 + xBleed;
@@ -110,7 +116,7 @@ void main() {
 
     float myPhase    = h1 * 6.28318;
     float myWindResp = 0.6 + h3 * 0.4; // tighter range, less variance
-    float myFreq     = 0.8 + h4 * 0.5;
+    float myFreq     = (0.8 + h4 * 0.5) * u_speed;
 
     // Parallax: front blades shift slightly with ambient wind only.
     float parallax = windBase * z * 0.18;
@@ -119,10 +125,10 @@ void main() {
     float ht = world.y / u_zoom;
     float swayFactor = pow(ht, 1.4);
 
-    // Each blade responds to its own bin energy, not a global music signal.
+    // Primary sway: swaySignal (already warp-scaled) modulated per blade.
+    // Front blades sway more (swayScale), all scaled by height^1.4.
     float swayScale = 0.3 + z * 0.2;
-    float swaySignal = (windBase + myEnergy * 0.35) * u_warp;
-    float primarySway = swaySignal * myWindResp * swayScale * swayFactor;
+    float primarySway = swaySignal * myWindResp * u_zoom * swayScale * swayFactor;
 
     // Ripple: u_speed controls frequency, myEnergy controls amplitude.
     // u_warp also scales it so at warp=0 ripple is minimal.
@@ -138,7 +144,7 @@ void main() {
       continue;
 
     swayFactor  = pow(correctedHt, 1.4);
-    primarySway = (windBase + myEnergy * 0.35) * u_warp * myWindResp * swayScale * swayFactor;
+    primarySway = swaySignal * myWindResp * u_zoom * swayScale * swayFactor;
     myRipple    = sin(myFreq * correctedHt * 3.14159 + u_time * 0.9 + myPhase) *
                   rippleAmp * swayFactor * swayFactor;
 

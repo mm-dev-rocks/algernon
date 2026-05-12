@@ -42,7 +42,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Warp Kaleido',
+    friendlyName: 'Kaleido Warp',
     id: 'warp_kaleido',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -78,7 +78,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Cellular',
+    friendlyName: 'Cells',
     id: 'lissajous_web',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -217,7 +217,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Moire',
+    friendlyName: 'Moiré',
     id: 'moire_grid',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -351,7 +351,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Roots',
+    friendlyName: 'Biomorph',
     id: 'root_system',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -408,7 +408,7 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Fluid',
+    friendlyName: 'Liquid',
     id: 'fluid_ink',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
@@ -522,22 +522,15 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Tendrils',
+    friendlyName: 'Grass Blades',
     id: 'tendrils',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         shaderId: 'tendrils',
         tweakType: TweakType.fftDataSmoothing,
         min: 0.1,
-        max: 0.97,
+        max: 0.98,
         defaultValue: 0.85,
-      ),
-      TweakType.uniformSpeed.name: ShaderTweakModel(
-        shaderId: 'tendrils',
-        tweakType: TweakType.uniformSpeed,
-        min: 0.1,
-        max: 1.5,
-        defaultValue: 0.8,
       ),
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'tendrils',
@@ -549,7 +542,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'tendrils',
         tweakType: TweakType.uniformCountPrimary,
-        min: 50,
+        min: 30,
         max: 300,
         defaultValue: 120,
       ),
@@ -563,7 +556,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'tendrils',
         tweakType: TweakType.uniformWarp,
-        min: 0.0,
+        min: 0.1,
         max: 1.5,
         defaultValue: 0.4,
       ),
