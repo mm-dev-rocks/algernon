@@ -72,12 +72,19 @@ class FileChooser extends StatefulWidget {
     }
   }
 
-  static void removeTrackByIndex(int index) {
+  static Future<void> removeTrackByIndex(int index) async {
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
+
+    if (index == AlgernonPlayer.playlistNotifier.selectedFilePathIndex) {
+      await AlgernonPlayer.stopCurrentSound();
+    }
     List<PlaylistItemModel> tracks = List.of(
       AlgernonPlayer.playlistNotifier.currentPlaylist,
     );
     tracks.removeAt(index);
     AlgernonPlayer.playlistNotifier.currentPlaylist = tracks;
+
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = true;
   }
 
   static void setCurrentItemIsMissing() {
@@ -119,6 +126,8 @@ class _FileChooserState extends State<FileChooser> {
         dynamic uiSizes = Screen.uiSizesFromContext(context);
         List<PlaylistItemModel> playlist =
             AlgernonPlayer.playlistNotifier.currentPlaylist;
+        int selectedIndex =
+            AlgernonPlayer.playlistNotifier.selectedFilePathIndex;
 
         return Row(
           children: [
@@ -134,7 +143,7 @@ class _FileChooserState extends State<FileChooser> {
                   requestFocusOnTap: false,
                   initialSelection: playlist.isEmpty
                       ? _emptyPlaylistSpecialIndex
-                      : AlgernonPlayer.playlistNotifier.selectedFilePathIndex,
+                      : selectedIndex,
                   menuHeight: Screen.height(context) * 0.66,
                   onSelected: playlist.isEmpty
                       ? (value) async {
@@ -173,11 +182,7 @@ class _FileChooserState extends State<FileChooser> {
                             value: index,
                             label: item.filepath.split('/').last,
                             style: MenuItemButton.styleFrom(
-                              foregroundColor:
-                                  index ==
-                                      AlgernonPlayer
-                                          .playlistNotifier
-                                          .selectedFilePathIndex
+                              foregroundColor: index == selectedIndex
                                   ? ALGERNON.uiStrongForegroundColor
                                   : ALGERNON.uiDefaultForegroundColor,
                               disabledForegroundColor:
@@ -185,22 +190,33 @@ class _FileChooserState extends State<FileChooser> {
                                   ? ALGERNON.uiSoftForegroundColor
                                   : ALGERNON.uiDefaultForegroundColor,
                             ),
-                            trailingIcon: AlgernonIconButton(
-                              tooltip: item.isMissing
-                                  ? 'Remove MISSING file from playlist'
-                                  : item.isUnplayable
-                                  ? 'Remove UNPLAYABLE file from playlist'
-                                  : 'Remove file from playlist',
-                              iconData: item.isMissing
-                                  ? Icons.error_outline
-                                  : item.isUnplayable
-                                  ? Icons.question_mark
-                                  : Icons.playlist_remove,
-                              color: item.isMissing || item.isUnplayable
-                                  ? ALGERNON.uiAttractColor
-                                  : null,
-                              onPressed: () {
-                                FileChooser.removeTrackByIndex(index);
+                            trailingIcon: ValueListenableBuilder(
+                              valueListenable: AlgernonPlayer
+                                  .playbackControlsEnabledNotifier,
+                              builder: (context, value, child) {
+                                bool controlsAreEnabled = value;
+                                return AlgernonIconButton(
+                                  tooltip: item.isMissing
+                                      ? 'Remove MISSING file from playlist'
+                                      : item.isUnplayable
+                                      ? 'Remove UNPLAYABLE file from playlist'
+                                      : 'Remove file from playlist',
+                                  iconData: item.isMissing
+                                      ? Icons.error_outline
+                                      : item.isUnplayable
+                                      ? Icons.question_mark
+                                      : Icons.playlist_remove,
+                                  color: item.isMissing || item.isUnplayable
+                                      ? ALGERNON.uiAttractColor
+                                      : null,
+                                  onPressed: controlsAreEnabled
+                                      ? () async {
+                                          await FileChooser.removeTrackByIndex(
+                                            index,
+                                          );
+                                        }
+                                      : null,
+                                );
                               },
                             ),
                           );
