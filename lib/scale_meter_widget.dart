@@ -13,32 +13,40 @@ class ScaleMeterWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      message:
-          'Rendering scale: ${AlgernonPlayer.painterConfig.scale.name.toUpperCase()}',
-      child: Column(
-        verticalDirection: .up,
-        spacing: dotSize,
-        children: [
-          ...RenderScale.values.asMap().entries.map(
-            (MapEntry<int, RenderScale> entry) => Container(
-              decoration: BoxDecoration(
-                border: BoxBorder.all(
-                  width: 1,
-                  color: ALGERNON.uiSoftForegroundColor,
-                  //color: entry.key <= AlgernonPlayer.painterConfig.scale.index
-                  //    ? ALGERNON.uiSoftForegroundColor
-                  //    : ALGERNON.uiInactiveForegroundColor,
-                ),
-                color: entry.key <= AlgernonPlayer.painterConfig.scale.index
-                    ? ALGERNON.uiSoftForegroundColor
-                    : null,
-              ),
-              width: dotSize,
-              height: dotSize,
-            ),
+    return SizedBox(
+      width: ALGERNON.material3IconSize + ALGERNON.material3IconPadding * 2,
+      child: Tooltip(
+        message:
+            'Rendering scale: ${AlgernonPlayer.painterConfig.scale.name.toUpperCase()}',
+        child: Padding(
+          padding: EdgeInsets.only(
+            top: Screen.uiSizesFromContext(context).paddingMedium,
           ),
-        ],
+          child: Column(
+            verticalDirection: .up,
+            spacing: dotSize,
+            children: [
+              ...RenderScale.values.asMap().entries.map(
+                (MapEntry<int, RenderScale> entry) => Container(
+                  decoration: BoxDecoration(
+                    border: BoxBorder.all(
+                      width: 1,
+                      color: ALGERNON.uiSoftForegroundColor,
+                      //color: entry.key <= AlgernonPlayer.painterConfig.scale.index
+                      //    ? ALGERNON.uiSoftForegroundColor
+                      //    : ALGERNON.uiInactiveForegroundColor,
+                    ),
+                    color: entry.key <= AlgernonPlayer.painterConfig.scale.index
+                        ? ALGERNON.uiSoftForegroundColor
+                        : null,
+                  ),
+                  width: dotSize,
+                  height: dotSize,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

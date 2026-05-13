@@ -75,15 +75,22 @@ class _UserInterfaceState extends State<UserInterface> {
                   : ALGERNON.hideControlsFadeDuration,
               child: Stack(
                 children: [
-                  if (!kIsWeb &&
-                      (Platform.isLinux ||
-                          Platform.isWindows ||
-                          Platform.isMacOS))
-                    PositionedDirectional(
-                      top: uiSizes.paddingSmall,
-                      start: uiSizes.paddingSmall,
-                      child: AlgernonWindow(),
+                  PositionedDirectional(
+                    top: uiSizes.paddingSmall,
+                    start: uiSizes.paddingSmall,
+                    child: Column(
+                      spacing: uiSizes.paddingMedium,
+                      children: [
+                        if (!kIsWeb &&
+                            (Platform.isLinux ||
+                                Platform.isWindows ||
+                                Platform.isMacOS))
+                          AlgernonWindow(),
+                        ScaleMeterWidget(),
+                      ],
                     ),
+                  ),
+
                   PositionedDirectional(
                     bottom: 0,
                     start: 0,
@@ -107,16 +114,6 @@ class _UserInterfaceState extends State<UserInterface> {
                         ),
                       ],
                     ),
-                  ),
-
-                  PositionedDirectional(
-                    start: uiSizes.paddingSmall,
-                    width:
-                        ALGERNON.material3IconSize +
-                        ALGERNON.material3IconPadding * 2,
-                    top: kToolbarHeight + uiSizes.paddingSmall,
-
-                    child: Center(child: ScaleMeterWidget()),
                   ),
 
                   /// Shader-specific controls block
