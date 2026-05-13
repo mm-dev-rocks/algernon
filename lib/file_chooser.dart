@@ -3,7 +3,6 @@
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/playlist_notifier.dart';
-import 'package:algernon/file_manager.dart';
 import 'package:algernon/playlist_item_model.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/user_interface.dart';
@@ -16,7 +15,7 @@ class FileChooser extends StatefulWidget {
   static PlaylistNotifier playlistNotifier = PlaylistNotifier();
 
   static Future<void> chooseFiles() async {
-    FilePickerResult? filePickerResult = await FileManager.pickFile();
+    FilePickerResult? filePickerResult = await FileChooser.pickFile();
     if (filePickerResult != null && filePickerResult.files.isNotEmpty) {
       /// Add to END of playlist
 
@@ -47,25 +46,6 @@ class FileChooser extends StatefulWidget {
       );
     }
   }
-
-  //static void selectPrev() {
-  //  debugPrint('FileChooser::selectPrev()');
-  //  debugPrint(
-  //    '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
-  //  );
-  //  if (FileChooser.playlistNotifier.playableItemCount > 0) {
-  //    int nextTrackIndex =
-  //        FileChooser.playlistNotifier.selectedFilePathIndex - 1;
-  //    if (nextTrackIndex == -1) {
-  //      nextTrackIndex =
-  //          FileChooser.playlistNotifier.currentPlaylist.length - 1;
-  //    }
-  //    FileChooser.playlistNotifier.selectedFilePathIndex = nextTrackIndex;
-  //    debugPrint(
-  //      '\tselectedFilePathIndex: ${FileChooser.playlistNotifier.selectedFilePathIndex}',
-  //    );
-  //  }
-  //}
 
   static void selectNext() {
     debugPrint('FileChooser::selectNext()');
@@ -111,6 +91,16 @@ class FileChooser extends StatefulWidget {
   static void setCurrentItemIsUnplayable() {
     debugPrint('FileChooser::setCurrentItemIsUnplayable()');
     FileChooser.playlistNotifier.setCurrentItemIsUnplayable();
+  }
+
+  static Future<FilePickerResult?> pickFile() async {
+    FilePickerResult? result = await FilePicker.pickFiles(
+      allowMultiple: true,
+      type: FileType.custom,
+      allowedExtensions: ['mp3', 'wav', 'ogg', 'flac', 'opus'],
+    );
+
+    return result;
   }
 
   static bool get currentTrackIsLast =>
