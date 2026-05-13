@@ -10,6 +10,7 @@ import 'package:algernon/constants.dart';
 import 'package:algernon/enum.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
+import 'package:algernon/playlist_notifier.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -18,6 +19,8 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
+  static PlaylistNotifier playlistNotifier = PlaylistNotifier();
+  
   static final AlgernonAudioHandler _algernonAudioHandler =
       AlgernonAudioHandler();
 
@@ -72,12 +75,12 @@ class AlgernonPlayer extends StatefulWidget {
       );
       if (AlgernonPlayer._preloadedSource != null &&
           AlgernonPlayer._preloadedFilepath ==
-              FileChooser.playlistNotifier.selectedFilePath) {
+              AlgernonPlayer.playlistNotifier.selectedFilePath) {
         AlgernonPlayer.currentSoundNotifier.source =
             AlgernonPlayer._preloadedSource;
       } else {
         AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-            .loadFile(FileChooser.playlistNotifier.selectedFilePath);
+            .loadFile(AlgernonPlayer.playlistNotifier.selectedFilePath);
       }
       debugPrint(
         '2. AlgernonPlayer.currentSoundNotifier.source:\n\t${AlgernonPlayer.currentSoundNotifier.source}',
@@ -147,7 +150,7 @@ class AlgernonPlayer extends StatefulWidget {
     debugPrint('AlgernonPlayer::_calibrateCurrentTrack()');
     if (AlgernonPlayer.currentSoundNotifier.source != null) {
       await AudioAnalysis.analyseTrackOnLoad(
-        filePath: FileChooser.playlistNotifier.selectedFilePath,
+        filePath: AlgernonPlayer.playlistNotifier.selectedFilePath,
         trackDuration: SoLoud.instance.getLength(
           AlgernonPlayer.currentSoundNotifier.source!,
         ),
@@ -162,11 +165,11 @@ class AlgernonPlayer extends StatefulWidget {
     AlgernonPlayer._preloadedFilepath = null;
     AlgernonPlayer._preloadedSource = null;
 
-    int nextPlayableIndex = FileChooser.playlistNotifier.nextPlayableIndex;
+    int nextPlayableIndex = AlgernonPlayer.playlistNotifier.nextPlayableIndex;
     if (nextPlayableIndex != -1) {
       final Stopwatch stopwatch = Stopwatch()..start();
       debugPrint('- Preloading [$nextPlayableIndex]');
-      AlgernonPlayer._preloadedFilepath = FileChooser
+      AlgernonPlayer._preloadedFilepath = AlgernonPlayer
           .playlistNotifier
           .currentPlaylist[nextPlayableIndex]
           .filepath;
@@ -195,7 +198,7 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
-    debugPrint('\t${FileChooser.playlistNotifier.selectedFilePathIndex}');
+    debugPrint('\t${AlgernonPlayer.playlistNotifier.selectedFilePathIndex}');
     AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
     switch (AlgernonPlayer.currentSoundNotifier.loopType) {
@@ -221,7 +224,7 @@ class AlgernonPlayer extends StatefulWidget {
         }
         break;
     }
-    debugPrint('\t${FileChooser.playlistNotifier.selectedFilePathIndex}');
+    debugPrint('\t${AlgernonPlayer.playlistNotifier.selectedFilePathIndex}');
   }
 
   static Future<void> _ensureSoLoudIsInitialised() async {
