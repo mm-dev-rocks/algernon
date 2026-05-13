@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:flutter/material.dart';
@@ -52,10 +53,7 @@ class PlaybackBar extends StatelessWidget {
                       .inMilliseconds *
                   norm)
               .toInt();
-      SoLoud.instance.seek(
-        AlgernonPlayer.currentSoundHandle!,
-        Duration(milliseconds: milliseconds),
-      );
+      AlgernonAudioHandler.instance.seek(Duration(milliseconds: milliseconds));
     }
   }
 

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_shader_painter.dart';
 import 'package:algernon/audio_analysis.dart';
 import 'package:algernon/audio_source_notifier.dart';
@@ -16,6 +17,8 @@ import 'package:flutter_soloud/flutter_soloud.dart';
 
 class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
+
+  static final AlgernonAudioHandler _algernonAudioHandler = AlgernonAudioHandler();
 
   static SoundHandle? currentSoundHandle;
   static AudioSource? _preloadedSource;
@@ -124,10 +127,11 @@ class AlgernonPlayer extends StatefulWidget {
     await _trackFinishedSubscription?.cancel();
     debugPrint('AlgernonPlayer::stopCurrentSound()');
     //await SoLoud.instance.disposeAllSources();
-    if (AlgernonPlayer.currentSoundHandle != null) {
-      await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
-      AlgernonPlayer.currentSoundHandle = null;
-    }
+    _algernonAudioHandler.stop();
+    //if (AlgernonPlayer.currentSoundHandle != null) {
+    //  await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
+    //  AlgernonPlayer.currentSoundHandle = null;
+    //}
     await _disposeSourceIfNotNull(AlgernonPlayer.currentSoundNotifier.source);
   }
 

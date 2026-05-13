@@ -3,6 +3,7 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
+import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
 import 'package:algernon/app_state.dart';
@@ -109,10 +110,7 @@ class _UserInterfaceState extends State<UserInterface> {
                                 color: ALGERNON.uiDefaultForegroundColor,
                               ),
                               onPressed: () async {
-                                FileChooser.selectPrev();
-                                await AlgernonPlayer.playSelectedSound(
-                                  reason: 'UserInterface::skipPrevious button',
-                                );
+                                AlgernonAudioHandler.instance.skipToPrevious();
                                 UserInterface.keepControlsAlive();
                               },
                             ),
@@ -123,10 +121,7 @@ class _UserInterfaceState extends State<UserInterface> {
                                 color: ALGERNON.uiDefaultForegroundColor,
                               ),
                               onPressed: () async {
-                                FileChooser.selectNext();
-                                await AlgernonPlayer.playSelectedSound(
-                                  reason: 'UserInterface::skipNext button',
-                                );
+                                AlgernonAudioHandler.instance.skipToNext();
                                 UserInterface.keepControlsAlive();
                               },
                             ),

@@ -1,6 +1,8 @@
 read/write .m3u
 
 mic input
++mic session setup https://pub.dev/packages/audio_session
+
 choose great defaults for all shaders
 
 add hue range / adjustment to voronoi
@@ -12,6 +14,19 @@ tendrils
 all/many shaders: make bins distribute evenly across eg arms, discs, whatever items
 
 kb shortcuts don't work on fftsmoothing slider
+
+audio_service: https://pub.dev/packages/audio_service
+Note: As of Android 12, an app must have permission to restart a foreground service in the background, otherwise a
+ForegroundServiceStartNotAllowedException will be thrown. To avoid such an exception, you can either set
+androidStopForegroundOnPause to false in your AudioServiceConfig which keeps the service in the foreground during a
+pause so that restarting the foreground service is unnecessary, or you can keep the default androidStopForegroundOnPause
+setting of true (in line with best practices) and request the user to turn of battery optimisation for your app via the
+optimize_battery package. For more information, read this page.
+If you use any custom icons in notification, create the file android/app/src/main/res/raw/keep.xml to prevent them from being stripped during the build process:
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools"
+  tools:keep="@drawable/*" />
+By default plugin's default icons are not stripped by R8. If you don't use them, you may selectively strip them. For example, the rules below will keep all your icons and discard all the plugin's:
 
 
 ---

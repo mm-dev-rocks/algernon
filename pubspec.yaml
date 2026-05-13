@@ -66,6 +66,8 @@ dependencies:
   file_picker: ^11.0.2
   window_manager: ^0.5.1
   flutter_launcher_icons: ^0.14.4
+  audio_service: ^0.18.18
+  audio_session: ^0.2.3
 
   # For audio playback
   #media_kit: ^1.2.3
