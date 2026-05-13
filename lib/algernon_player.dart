@@ -134,9 +134,7 @@ class AlgernonPlayer extends StatefulWidget {
   }
 
   static Future<AudioSource?> _loadFile(String filepath) async {
-    AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
     AudioSource source = await SoLoud.instance.loadFile(filepath);
-    AlgernonPlayer.playbackControlsEnabledNotifier.value = true;
     return source;
   }
 
