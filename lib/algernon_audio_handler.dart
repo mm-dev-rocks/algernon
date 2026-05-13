@@ -129,7 +129,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
     //await audioPlayer.play();
     if (AlgernonPlayer.currentSoundNotifier.source != null) {
-      SoLoud.instance.play(AlgernonPlayer.currentSoundNotifier.source!);
+      AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(AlgernonPlayer.currentSoundNotifier.source!);
     }
 
     playbackState.add(
