@@ -3,16 +3,14 @@
 import 'dart:async';
 import 'dart:io' show Platform;
 
-import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
-import 'package:algernon/loop_cycle_button.dart';
 import 'package:algernon/main_control_panel.dart';
-import 'package:algernon/pause_toggle.dart';
 import 'package:algernon/playback_bar.dart';
+import 'package:algernon/playback_controls.dart';
 import 'package:algernon/scale_meter_widget.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/volume_slider.dart';
@@ -27,7 +25,7 @@ class UserInterface extends StatefulWidget {
     hideControls,
   );
 
-  static ValueNotifier<bool> controlsAreVisibleNotifier = ValueNotifier(true);
+  static ValueNotifier<bool> isVisibleNotifier = ValueNotifier(true);
 
   @override
   State<UserInterface> createState() => _UserInterfaceState();
@@ -41,7 +39,7 @@ class UserInterface extends StatefulWidget {
         _hideControlsTimer.cancel();
         _hideControlsTimer = Timer(ALGERNON.hideControlsDelay, hideControls);
 
-        UserInterface.controlsAreVisibleNotifier.value = true;
+        UserInterface.isVisibleNotifier.value = true;
       },
     );
   }
@@ -51,7 +49,7 @@ class UserInterface extends StatefulWidget {
     if (AlgernonPlayer.playlistNotifier.currentPlaylist.isNotEmpty) {
       //AppState.log("UserInterface::hideControls()");
       _hideControlsTimer.cancel();
-      UserInterface.controlsAreVisibleNotifier.value = false;
+      UserInterface.isVisibleNotifier.value = false;
     }
   }
 }
@@ -64,7 +62,7 @@ class _UserInterfaceState extends State<UserInterface> {
 
     /// Fade controls in or out
     return ValueListenableBuilder(
-      valueListenable: UserInterface.controlsAreVisibleNotifier,
+      valueListenable: UserInterface.isVisibleNotifier,
       builder: (context, controlsAreVisible, child) {
         return SafeArea(
           child: IgnorePointer(
@@ -91,6 +89,7 @@ class _UserInterfaceState extends State<UserInterface> {
                     start: 0,
                     end: 0,
                     child: Row(
+                      spacing: uiSizes.paddingMedium,
                       children: [
                         Expanded(
                           child: AlgernonPlayer.soLoudIsReady
@@ -98,38 +97,7 @@ class _UserInterfaceState extends State<UserInterface> {
                               : const SizedBox.shrink(),
                         ),
 
-                        SizedBox(width: uiSizes.paddingMedium),
-
-                        Row(
-                          children: [
-                            const PauseToggle(),
-                            IconButton(
-                              mouseCursor: SystemMouseCursors.click,
-                              icon: Icon(
-                                Icons.skip_previous,
-                                color: ALGERNON.uiDefaultForegroundColor,
-                              ),
-                              onPressed: () async {
-                                AlgernonAudioHandler.instance.skipToPrevious();
-                                UserInterface.keepControlsAlive();
-                              },
-                            ),
-                            IconButton(
-                              mouseCursor: SystemMouseCursors.click,
-                              icon: Icon(
-                                Icons.skip_next,
-                                color: ALGERNON.uiDefaultForegroundColor,
-                              ),
-                              onPressed: () async {
-                                AlgernonAudioHandler.instance.skipToNext();
-                                UserInterface.keepControlsAlive();
-                              },
-                            ),
-                            const LoopCycleButton(),
-                          ],
-                        ),
-
-                        SizedBox(width: uiSizes.paddingMedium),
+                        PlaybackControls(),
 
                         SizedBox(
                           width:

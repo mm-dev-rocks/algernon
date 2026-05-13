@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -20,9 +21,6 @@ class AlgernonPlayer extends StatefulWidget {
   const AlgernonPlayer({super.key});
 
   static PlaylistNotifier playlistNotifier = PlaylistNotifier();
-  
-  static final AlgernonAudioHandler _algernonAudioHandler =
-      AlgernonAudioHandler();
 
   static SoundHandle? currentSoundHandle;
   static AudioSource? _preloadedSource;
@@ -33,6 +31,10 @@ class AlgernonPlayer extends StatefulWidget {
       SoLoud.instance.getVisualizationEnabled();
 
   static AudioSourceNotifier currentSoundNotifier = AudioSourceNotifier();
+
+  static ValueNotifier<bool> playbackControlsEnabledNotifier = ValueNotifier(
+    true,
+  );
 
   static StreamSubscription? _trackFinishedSubscription;
 
@@ -54,19 +56,21 @@ class AlgernonPlayer extends StatefulWidget {
   }
 
   static Future<void> playSelectedSound({required String reason}) async {
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
     debugPrint('AlgernonPlayer::playSelectedSound(): $reason');
     await _ensureSoLoudIsInitialised();
 
     try {
       final Stopwatch stopwatch = Stopwatch()..start();
-      await AlgernonPlayer.stopCurrentSound();
+      try {
+        await AlgernonPlayer.stopCurrentSound();
+      } catch (e) {
+        exit(1);
+      }
       debugPrint(
         'AlgernonPlayer.stopCurrentSound() took ${stopwatch.elapsedMilliseconds}ms',
       );
 
-      debugPrint(
-        '0. AlgernonPlayer._preloadedSource:\n\t${AlgernonPlayer._preloadedSource}',
-      );
       debugPrint(
         '0. AlgernonPlayer._preloadedSource:\n\t${AlgernonPlayer._preloadedSource}',
       );
@@ -79,8 +83,10 @@ class AlgernonPlayer extends StatefulWidget {
         AlgernonPlayer.currentSoundNotifier.source =
             AlgernonPlayer._preloadedSource;
       } else {
-        AlgernonPlayer.currentSoundNotifier.source = await SoLoud.instance
-            .loadFile(AlgernonPlayer.playlistNotifier.selectedFilePath);
+        AlgernonPlayer.currentSoundNotifier.source =
+            await AlgernonPlayer._loadFile(
+              AlgernonPlayer.playlistNotifier.selectedFilePath,
+            );
       }
       debugPrint(
         '2. AlgernonPlayer.currentSoundNotifier.source:\n\t${AlgernonPlayer.currentSoundNotifier.source}',
@@ -90,10 +96,8 @@ class AlgernonPlayer extends StatefulWidget {
       if (AlgernonPlayer.currentSoundNotifier.source != null) {
         stopwatch.reset();
         stopwatch.start();
-        await AlgernonAudioHandler.instance.play();
-        //AlgernonPlayer.currentSoundHandle = SoLoud.instance.play(
-        //  AlgernonPlayer.currentSoundNotifier.source!,
-        //);
+        AlgernonPlayer.currentSoundHandle = await AlgernonAudioHandler.instance
+            .play();
         debugPrint(
           'SoLoud.instance.play took ${stopwatch.elapsedMilliseconds}ms',
         );
@@ -125,19 +129,50 @@ class AlgernonPlayer extends StatefulWidget {
     }
 
     /// Start unpaused
-    AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: false);
+    await AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: false);
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = true;
+  }
+
+  static Future<AudioSource?> _loadFile(String filepath) async {
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
+    AudioSource source = await SoLoud.instance.loadFile(filepath);
+    AlgernonPlayer.playbackControlsEnabledNotifier.value = true;
+    return source;
   }
 
   static Future<void> stopCurrentSound() async {
-    await _trackFinishedSubscription?.cancel();
     debugPrint('AlgernonPlayer::stopCurrentSound()');
+    await _trackFinishedSubscription?.cancel();
+    debugPrint(
+      'AlgernonPlayer::stopCurrentSound() 1. SoLoud.instance.getActiveVoiceCount(): ${SoLoud.instance.getActiveVoiceCount().toString()}',
+    );
+    debugPrint(
+      'AlgernonPlayer::stopCurrentSound() 1. SoLoud.instance.activeSounds.length: ${SoLoud.instance.activeSounds.length.toString()}',
+    );
+
+    //AudioSource? tempSource = AlgernonPlayer._preloadedSource;
+    //debugPrint('AlgernonPlayer::stopCurrentSound() 1. tempSource: $tempSource');
+
+    await AlgernonAudioHandler.instance.stop();
+
+    //AlgernonPlayer._preloadedSource = tempSource;
     //await SoLoud.instance.disposeAllSources();
-    await _algernonAudioHandler.stop();
+    //debugPrint('AlgernonPlayer::stopCurrentSound() 2. tempSource: $tempSource');
+    debugPrint(
+      'AlgernonPlayer::stopCurrentSound() 2. SoLoud.instance.getActiveVoiceCount(): ${SoLoud.instance.getActiveVoiceCount().toString()}',
+    );
+    debugPrint(
+      'AlgernonPlayer::stopCurrentSound() 2. SoLoud.instance.activeSounds.length: ${SoLoud.instance.activeSounds.length.toString()}',
+    );
     //if (AlgernonPlayer.currentSoundHandle != null) {
     //  await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
     //  AlgernonPlayer.currentSoundHandle = null;
     //}
     await _disposeSourceIfNotNull(AlgernonPlayer.currentSoundNotifier.source);
+
+    if (SoLoud.instance.getActiveVoiceCount() > 0) {
+      throw (Exception('STILL PLAYING SOUNDS!!!!'));
+    }
   }
 
   static Future<void> _disposeSourceIfNotNull(AudioSource? source) async {
@@ -174,7 +209,7 @@ class AlgernonPlayer extends StatefulWidget {
           .currentPlaylist[nextPlayableIndex]
           .filepath;
       if (AlgernonPlayer._preloadedFilepath != null) {
-        AlgernonPlayer._preloadedSource = await SoLoud.instance.loadFile(
+        AlgernonPlayer._preloadedSource = await AlgernonPlayer._loadFile(
           AlgernonPlayer._preloadedFilepath!,
         );
       }
@@ -199,7 +234,7 @@ class AlgernonPlayer extends StatefulWidget {
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
     debugPrint('\t${AlgernonPlayer.playlistNotifier.selectedFilePathIndex}');
-    AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
+    await AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
     switch (AlgernonPlayer.currentSoundNotifier.loopType) {
       case LoopType.all:
@@ -312,10 +347,10 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
         children: [
           Positioned.fill(
             child: ValueListenableBuilder(
-              valueListenable: UserInterface.controlsAreVisibleNotifier,
+              valueListenable: UserInterface.isVisibleNotifier,
               builder: (context, value, child) {
                 return GestureDetector(
-                  onTap: UserInterface.controlsAreVisibleNotifier.value
+                  onTap: UserInterface.isVisibleNotifier.value
                       ? UserInterface.hideControls
                       : UserInterface.keepControlsAlive,
                   child: FittedBox(

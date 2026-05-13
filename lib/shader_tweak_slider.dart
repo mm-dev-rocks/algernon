@@ -54,10 +54,8 @@ class ShaderTweakSlider extends StatelessWidget {
                 child: Icon(
                   Icons.auto_awesome,
                   color: shaderTweak.useEnergyDerivedCount
-                      ? Colors.white
-                      : Colors.white.withValues(
-                          alpha: ALGERNON.disabledControlOpacity,
-                        ),
+                      ? ALGERNON.uiStrongForegroundColor
+                      : ALGERNON.uiSoftForegroundColor,
                 ),
               ),
             )

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
-import 'package:algernon/constants.dart';
+import 'package:algernon/algernon_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -58,13 +58,10 @@ class _AlgernonWindowState extends State<AlgernonWindow> with WindowListener {
       valueListenable: AlgernonWindow.isFullscreenNotifier,
       builder: (context, value, child) {
         bool isFullscreen = value;
-        return IconButton(
-          mouseCursor: SystemMouseCursors.click,
+        return AlgernonIconButton(
+          tooltip: isFullscreen ? 'EXIT fullscreen' : 'ENTER fullscreen',
+          iconData: isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
           onPressed: AlgernonWindow.toggleFullscreen,
-          icon: Icon(
-            isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
-            color: ALGERNON.uiDefaultForegroundColor,
-          ),
         );
       },
     );

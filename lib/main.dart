@@ -112,7 +112,7 @@ class _AlgernonAppState extends State<AlgernonApp> {
         /// Space toggle pause
         case " ":
         case "Media Play Pause":
-          AlgernonAudioHandler.instance.togglePause();
+          AlgernonPlayer.currentSoundNotifier.togglePause();
 
         /// Media skip
         case "Media Track Next":
@@ -122,6 +122,8 @@ class _AlgernonAppState extends State<AlgernonApp> {
 
         /// Fullscreen
         case "F11":
+
+          /// TODO Does this fail gracefully on non-mobile OSes?
           AlgernonWindow.toggleFullscreen();
 
         /// Number keys for memory slots
@@ -154,7 +156,7 @@ class _AlgernonAppState extends State<AlgernonApp> {
       theme: ThemeData(
         brightness: Brightness.dark,
         dropdownMenuTheme: Theme.of(context).dropdownMenuTheme.copyWith(
-          textStyle: const TextStyle(color: Colors.white),
+          textStyle: TextStyle(color: ALGERNON.uiStrongForegroundColor),
           inputDecorationTheme: InputDecorationTheme(
             border: _dropdownBorder,
             enabledBorder: _dropdownBorder,
@@ -182,12 +184,17 @@ class _AlgernonAppState extends State<AlgernonApp> {
           ),
         ),
         sliderTheme: SliderThemeData(
-          activeTrackColor: Colors.white.withValues(alpha: 0.2),
-          inactiveTrackColor: Colors.white.withValues(alpha: 0.2),
-          thumbColor: Colors.white,
-          overlayColor: Colors.white.withValues(alpha: 0.2),
-          valueIndicatorColor: Colors.black,
-          valueIndicatorTextStyle: TextStyle(color: Colors.white),
+          activeTrackColor: ALGERNON.uiSoftForegroundColor,
+          inactiveTrackColor: ALGERNON.uiSoftForegroundColor,
+          disabledThumbColor: ALGERNON.uiInactiveForegroundColor,
+          disabledActiveTrackColor: ALGERNON.uiInactiveForegroundColor,
+          disabledInactiveTrackColor: ALGERNON.uiInactiveForegroundColor,
+          thumbColor: ALGERNON.uiStrongForegroundColor,
+          overlayColor: ALGERNON.uiSoftForegroundColor,
+          valueIndicatorColor: ALGERNON.uiStrongBackgroundColor,
+          valueIndicatorTextStyle: TextStyle(
+            color: ALGERNON.uiStrongForegroundColor,
+          ),
           trackHeight: 1.0,
           thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
           overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
@@ -200,8 +207,8 @@ class _AlgernonAppState extends State<AlgernonApp> {
           ),
         ),
         tooltipTheme: TooltipThemeData(
-          decoration: BoxDecoration(color: Colors.black),
-          textStyle: TextStyle(color: Colors.white),
+          decoration: BoxDecoration(color: ALGERNON.uiStrongBackgroundColor),
+          textStyle: TextStyle(color: ALGERNON.uiStrongForegroundColor),
         ),
       ),
       home: Scaffold(

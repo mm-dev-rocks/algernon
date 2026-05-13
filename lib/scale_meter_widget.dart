@@ -14,7 +14,8 @@ class ScaleMeterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
-      message: 'Rendering scale: ${AlgernonPlayer.painterConfig.scale.name}',
+      message:
+          'Rendering scale: ${AlgernonPlayer.painterConfig.scale.name.toUpperCase()}',
       child: Column(
         verticalDirection: .up,
         spacing: dotSize,
@@ -24,10 +25,14 @@ class ScaleMeterWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 border: BoxBorder.all(
                   width: 1,
-                  color: entry.key <= AlgernonPlayer.painterConfig.scale.index
-                      ? ALGERNON.uiDefaultForegroundColor
-                      : ALGERNON.uiSoftForegroundColor,
+                  color: ALGERNON.uiSoftForegroundColor,
+                  //color: entry.key <= AlgernonPlayer.painterConfig.scale.index
+                  //    ? ALGERNON.uiSoftForegroundColor
+                  //    : ALGERNON.uiInactiveForegroundColor,
                 ),
+                color: entry.key <= AlgernonPlayer.painterConfig.scale.index
+                    ? ALGERNON.uiSoftForegroundColor
+                    : null,
               ),
               width: dotSize,
               height: dotSize,

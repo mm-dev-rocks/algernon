@@ -21,7 +21,7 @@ class MemorySlotDragFeedback extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           border: Border.all(
-            color: Colors.white,
+            color: ALGERNON.uiStrongForegroundColor,
             width: ALGERNON.buttonBorderThickness,
           ),
           color: Colors.black.withValues(

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/algernon_icon_button.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum.dart';
@@ -18,18 +19,22 @@ class _LoopCycleButtonState extends State<LoopCycleButton> {
     return ListenableBuilder(
       listenable: AlgernonPlayer.currentSoundNotifier,
       builder: (context, child) {
-        return IconButton(
-                              mouseCursor: SystemMouseCursors.click,
+        return AlgernonIconButton(
           onPressed: AlgernonPlayer.currentSoundNotifier.cycleLoopType,
-          icon: switch (AlgernonPlayer.currentSoundNotifier.loopType) {
-            LoopType.none => Icon(
-              Icons.repeat,
-              color: ALGERNON.uiDefaultForegroundColor,
-            ),
-
-            /// Default colour is white (brighter than [uiDefaultForegroundColor]) so states below indicate 'on'.
-            LoopType.all => Icon(Icons.repeat),
-            LoopType.one => Icon(Icons.repeat_one),
+          tooltip: switch (AlgernonPlayer.currentSoundNotifier.loopType) {
+            LoopType.none => 'Loop NONE',
+            LoopType.all => 'Loop ALL',
+            LoopType.one => 'Loop ONE',
+          },
+          iconData: switch (AlgernonPlayer.currentSoundNotifier.loopType) {
+            LoopType.none => Icons.repeat,
+            LoopType.all => Icons.repeat,
+            LoopType.one => Icons.repeat_one,
+          },
+          color: switch (AlgernonPlayer.currentSoundNotifier.loopType) {
+            LoopType.none => ALGERNON.uiDefaultForegroundColor,
+            LoopType.all => ALGERNON.uiStrongForegroundColor,
+            LoopType.one => ALGERNON.uiStrongForegroundColor,
           },
         );
       },

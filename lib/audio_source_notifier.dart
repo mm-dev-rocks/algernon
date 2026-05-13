@@ -1,3 +1,4 @@
+import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/enum.dart';
@@ -10,7 +11,7 @@ class AudioSourceNotifier extends ChangeNotifier {
   AudioSource? get source => _source;
   set source(AudioSource? source) {
     _source = source;
-    debugPrint('AudioSourceNotifier::source : notifying listeners');
+    //debugPrint('AudioSourceNotifier::source : notifying listeners');
     notifyListeners();
   }
 
@@ -24,15 +25,21 @@ class AudioSourceNotifier extends ChangeNotifier {
       : false;
 
   /// Toggle pause, unless [forceState] is non-null, in which case [true] pauses, [false] unpauses.
-  void togglePause({bool? forcedState}) {
+  Future<void> togglePause({bool? forcedState}) async {
     if (AlgernonPlayer.currentSoundHandle != null) {
       if (forcedState != null) {
-        SoLoud.instance.setPause(
-          AlgernonPlayer.currentSoundHandle!,
-          forcedState,
-        );
+        //SoLoud.instance.setPause(
+        //  AlgernonPlayer.currentSoundHandle!,
+        //  forcedState,
+        //);
+        if (forcedState == true) {
+          await AlgernonAudioHandler.instance.pause();
+        } else {
+          await AlgernonAudioHandler.instance.unpause();
+        }
       } else {
-        SoLoud.instance.pauseSwitch(AlgernonPlayer.currentSoundHandle!);
+        await AlgernonAudioHandler.instance.togglePause();
+        //SoLoud.instance.pauseSwitch(AlgernonPlayer.currentSoundHandle!);
       }
     }
     debugPrint('AudioSourceNotifier::togglePause: notifying listeners');

@@ -19,7 +19,7 @@ class MemorySlotButton extends StatelessWidget {
   final bool selected;
 
   final BoxBorder border = Border.all(
-    color: Colors.white,
+    color: ALGERNON.uiStrongForegroundColor,
     width: ALGERNON.buttonBorderThickness,
   );
 
@@ -53,7 +53,7 @@ class MemorySlotButton extends StatelessWidget {
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: selected
-                    ? Colors.white
+                    ? ALGERNON.uiStrongForegroundColor
                     : ALGERNON.uiDefaultForegroundColor,
               ),
             ),
@@ -66,7 +66,7 @@ class MemorySlotButton extends StatelessWidget {
           //      Icons.filter_1.codePoint + index,
           //      fontFamily: 'MaterialIcons',
           //    ),
-          //    color: selected ? Colors.white : ALGERNON.uiDefaultForegroundColor,
+          //    color: selected ? ALGERNON.uiStrongForegroundColor : ALGERNON.uiDefaultForegroundColor,
           //  ),
         ),
       ),

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
+import 'package:algernon/algernon_icon_button.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/playlist_item_model.dart';
@@ -38,9 +39,8 @@ class FileChooser extends StatefulWidget {
           )
           .toList();
       list.addAll(AlgernonPlayer.playlistNotifier.currentPlaylist);
-      AlgernonPlayer.playlistNotifier.currentPlaylist = List<PlaylistItemModel>.of(
-        list,
-      );
+      AlgernonPlayer.playlistNotifier.currentPlaylist =
+          List<PlaylistItemModel>.of(list);
     }
   }
 
@@ -144,7 +144,9 @@ class _FileChooserState extends State<FileChooser> {
                           debugPrint('FileChooser::onSelected($value)');
                           if (value != null &&
                               value != _emptyPlaylistSpecialIndex) {
-                            AlgernonPlayer.playlistNotifier.selectedFilePathIndex =
+                            AlgernonPlayer
+                                    .playlistNotifier
+                                    .selectedFilePathIndex =
                                 value;
                             await AlgernonPlayer.playSelectedSound(
                               reason: 'FileChooser::onSelected($value)',
@@ -176,30 +178,27 @@ class _FileChooserState extends State<FileChooser> {
                                       AlgernonPlayer
                                           .playlistNotifier
                                           .selectedFilePathIndex
-                                  ? Colors.white
+                                  ? ALGERNON.uiStrongForegroundColor
                                   : ALGERNON.uiDefaultForegroundColor,
                               disabledForegroundColor:
                                   item.isMissing || item.isUnplayable
                                   ? ALGERNON.uiSoftForegroundColor
                                   : ALGERNON.uiDefaultForegroundColor,
                             ),
-                            trailingIcon: IconButton(
-                              mouseCursor: SystemMouseCursors.click,
+                            trailingIcon: AlgernonIconButton(
                               tooltip: item.isMissing
                                   ? 'Remove MISSING file from playlist'
                                   : item.isUnplayable
                                   ? 'Remove UNPLAYABLE file from playlist'
                                   : 'Remove file from playlist',
-                              icon: Icon(
-                                item.isMissing
-                                    ? Icons.error_outline
-                                    : item.isUnplayable
-                                    ? Icons.question_mark
-                                    : Icons.playlist_remove,
-                                color: item.isMissing || item.isUnplayable
-                                    ? ALGERNON.uiAttractColor
-                                    : ALGERNON.uiDefaultForegroundColor,
-                              ),
+                              iconData: item.isMissing
+                                  ? Icons.error_outline
+                                  : item.isUnplayable
+                                  ? Icons.question_mark
+                                  : Icons.playlist_remove,
+                              color: item.isMissing || item.isUnplayable
+                                  ? ALGERNON.uiAttractColor
+                                  : null,
                               onPressed: () {
                                 FileChooser.removeTrackByIndex(index);
                               },
@@ -216,12 +215,12 @@ class _FileChooserState extends State<FileChooser> {
               color: playlist.isEmpty
                   ? ALGERNON.uiAttractColor
                   : Colors.transparent,
-              child: IconButton(
-                mouseCursor: SystemMouseCursors.click,
+              child: AlgernonIconButton(
+                tooltip: 'Add files to playlist',
                 onPressed: () async {
                   await FileChooser.chooseFiles();
                 },
-                icon: Icon(Icons.playlist_add),
+                iconData: Icons.playlist_add,
               ),
             ),
           ],

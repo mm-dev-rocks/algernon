@@ -87,11 +87,16 @@ class ALGERNON {
   static const Duration hideControlsFadeDuration = Duration(milliseconds: 800);
   static const Duration showControlsFadeDuration = Duration(milliseconds: 300);
 
+  static final Color uiStrongForegroundColor = Colors.white;
+  static final Color uiStrongBackgroundColor = Colors.black;
   static final Color uiDefaultForegroundColor = Colors.white.withValues(
     alpha: 0.5,
   );
   static final Color uiSoftForegroundColor = Colors.white.withValues(
     alpha: 0.3,
+  );
+  static final Color uiInactiveForegroundColor = Colors.white.withValues(
+    alpha: 0.15,
   );
   //static final Color uiDefaultForegroundColor = Color.alphaBlend(
   //  Colors.white.withValues(alpha: 0.5),

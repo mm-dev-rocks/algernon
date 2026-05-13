@@ -26,7 +26,7 @@ class ShaderChooser extends StatelessWidget {
               value: shaderMeta,
               label: shaderMeta.friendlyName,
               //label: shaderMeta.friendlyName.toUpperCase(),
-              style: MenuItemButton.styleFrom(foregroundColor: Colors.white),
+              style: MenuItemButton.styleFrom(foregroundColor: ALGERNON.uiStrongForegroundColor),
             ),
           )
           .toList(),
