@@ -5,12 +5,6 @@ mic input
 
 choose great defaults for all shaders
 
-add hue range / adjustment to voronoi
-
-tendrils
-- better name
-- make blades appear at back//front depending on freq/bin number
-
 all/many shaders: make bins distribute evenly across eg arms, discs, whatever items
 
 kb shortcuts don't work on fftsmoothing slider
@@ -186,3 +180,7 @@ lissajous make hue less jumpy, add saturation slider
 lag between gapless tracks... try reading next file before end? and/or read fewer samples. time with stopwatch
 dots to indicate scale/res
 BLACK SCREEN ON TAB S4
+add hue range / adjustment to voronoi
+tendrils
+- better name
+- make blades appear at back//front depending on freq/bin number

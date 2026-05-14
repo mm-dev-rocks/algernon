@@ -59,6 +59,31 @@ const int CELL_COUNT = 16;
 // pi — defined locally so we don't rely on any extension constants.
 const float PI = 3.14159265;
 
+// ---------------------------------------------------------------------------
+// HSV → RGB — H in [0,360], S/V in [0,1].
+// Identical implementation used across all shaders in this project.
+// ---------------------------------------------------------------------------
+vec3 hsv2rgb(float h, float s, float v) {
+  h = mod(h, 360.0);
+  float c = v * s;
+  float x = c * (1.0 - abs(mod(h / 60.0, 2.0) - 1.0));
+  float m = v - c;
+  vec3 rgb;
+  if (h < 60.0)
+    rgb = vec3(c, x, 0.0);
+  else if (h < 120.0)
+    rgb = vec3(x, c, 0.0);
+  else if (h < 180.0)
+    rgb = vec3(0.0, c, x);
+  else if (h < 240.0)
+    rgb = vec3(0.0, x, c);
+  else if (h < 300.0)
+    rgb = vec3(x, 0.0, c);
+  else
+    rgb = vec3(c, 0.0, x);
+  return rgb + m;
+}
+
 // Helper: reads a single bin by float index and returns amplitude 0..1.
 // The +0.5 texel-centre offset is the codebase convention for texel-centred
 // sampling, preventing interpolation bleed across bin boundaries.
@@ -94,7 +119,17 @@ void main() {
     // Radial position: silent bin → sites sit on BASE_RADIUS; loud → pushed
     // out.
     // float radius = BASE_RADIUS + binAmp * PUSH_RANGE;
-    float radius = u_zoom + binAmp * u_spread;
+    // float radius = u_zoom + binAmp * u_spread;
+    float radius =
+        u_zoom + pow(binAmp, 2.0) *
+                     u_spread; // quiet bins stay tight, loud bins explode out
+    // float radius = u_zoom + pow(binAmp, 0.5) * u_spread; // even quiet bins
+    // get pushed, loud bins compress
+    // float radius = u_zoom + sin(binAmp * PI * 0.5) * u_spread; // ease-out —
+    // loud bins compress together
+    // float radius = u_zoom + log(1.0 + binAmp * (E - 1.0)) * u_spread;
+    // float radius = u_zoom + (binAmp + sin(binAmp * PI * 3.0) * 0.1) *
+    // u_spread;
 
     // Site position in aspect-corrected screen space.
     vec2 site = vec2(cos(angle), sin(angle)) * radius;
@@ -124,22 +159,33 @@ void main() {
 
   // --- Colour ---
   //
-  // Hue rotates around the colour wheel as sites go around the circle.
-  // We use a simple RGB decomposition of hue rather than a full HSV conversion
-  // to keep the shader compatible with mediump and avoid extra trig.
-  //
-  // The pattern: hue 0 → red, hue 0.33 → green, hue 0.67 → blue, hue 1 → red.
-  // This uses three overlapping triangle waves, each offset by 1/3 of the
-  // cycle.
-  float r = clamp(1.0 - abs(nearHue * 3.0 - 0.0), 0.0, 1.0)    // red lobe
-            + clamp(1.0 - abs(nearHue * 3.0 - 3.0), 0.0, 1.0); // red lobe wraps
-  float g = clamp(1.0 - abs(nearHue * 3.0 - 1.0), 0.0, 1.0);   // green lobe
-  float b = clamp(1.0 - abs(nearHue * 3.0 - 2.0), 0.0, 1.0);   // blue lobe
+  // Hue sweeps across u_hueRange degrees as sites go around the circle,
+  // anchored at u_hueShift. nearHue is 0..1 across the full site ring,
+  // so the total hue span equals u_hueRange, matching the convention used
+  // in spectral_sphere and other shaders in this project.
 
-  // Scale colour by bin amplitude (quiet cells are dark) and border mask
-  // (borders are always dark regardless of amplitude).
-  float cellBrightness = nearAmp * borderProximity;
+  // float hue = u_hueShift + nearHue * u_hueRange;
 
-  fragColor =
-      vec4(r * cellBrightness, g * cellBrightness, b * cellBrightness, 1.0);
+  // float hue = u_hueShift +
+  // pow(nearHue, 2.0) * u_hueRange; // quadratic — hues bunch at start
+
+  // float hue = u_hueShift + pow(nearHue, 0.5) * u_hueRange; // sqrt — hues
+  // bunch at end
+
+  // float hue =
+  // u_hueShift + (1.0 - cos(nearHue * PI)) * 0.5 * u_hueRange; // ease in+out
+
+  // float hue =
+  // u_hueShift + floor(nearHue * N) / N * u_hueRange; // N discrete hue bands
+
+  float hue =
+      u_hueShift + sin(nearHue * PI) * u_hueRange; // rises then falls back
+
+  // float hue =
+  // u_hueShift + log(1.0 + nearHue * (E - 1.0)) * u_hueRange; // E ≈ 2.718
+
+  vec3 cellColour = hsv2rgb(hue, 0.9, nearAmp);
+
+  // Scale by border mask (borders are always dark regardless of amplitude).
+  fragColor = vec4(cellColour * borderProximity, 1.0);
 }
