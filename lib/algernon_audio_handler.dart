@@ -2,7 +2,6 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/file_chooser.dart';
-import 'package:algernon/playlist_notifier.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +27,17 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   // Other classes will get the singleton when they call [AlgernonAudioHandler()].
   factory AlgernonAudioHandler() => instance;
 
+  final List<MediaControl> controlsPaused = [
+    MediaControl.skipToPrevious,
+    MediaControl.play,
+    MediaControl.skipToNext,
+  ];
+  final List<MediaControl> controlsPlaying = [
+    MediaControl.skipToPrevious,
+    MediaControl.pause,
+    MediaControl.skipToNext,
+  ];
+
   Future<void> _initAudioSession() async {
     debugPrint("AlgernonAudioHandler::_initAudioSession()");
     final session = await AudioSession.instance;
@@ -40,7 +50,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
         // Keep the foreground service alive
         androidNotificationOngoing: true,
         // Keep notification on pause
-        //androidStopForegroundOnPause: false,
+        androidStopForegroundOnPause: false,
         notificationColor: Color(0xFF2196F3),
       ),
     );
@@ -48,20 +58,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> dispose() async {
+    debugPrint("AlgernonAudioHandler::dispose()");
     await pause();
     await stop();
   }
-
-  final List<MediaControl> controlsPaused = [
-    MediaControl.skipToPrevious,
-    MediaControl.play,
-    MediaControl.skipToNext,
-  ];
-  final List<MediaControl> controlsPlaying = [
-    MediaControl.skipToPrevious,
-    MediaControl.pause,
-    MediaControl.skipToNext,
-  ];
 
   /// On Android when the user kills the app in the task switcher, ensure that audio stops
   /// (otherwise they get stuck with audio playing and the only way to stop it is to 'force stop').
@@ -183,7 +183,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       MediaItem(
         id: AlgernonPlayer.playlistNotifier.selectedItem.filepath,
         //album: PlaylistManager.curBookCleanedTitle,
-        title: AlgernonPlayer.playlistNotifier.selectedItem.filepath,
+        title: AlgernonPlayer.playlistNotifier.selectedItem.title,
         duration: AlgernonPlayer.currentSoundNotifier.source == null
             ? Duration.zero
             : SoLoud.instance.getLength(

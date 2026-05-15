@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
+import 'package:path/path.dart' as path;
 
 import 'dart:convert';
 
@@ -45,4 +46,6 @@ class PlaylistItemModel {
     //debugPrint(jsonEncode(json));
     return json;
   }
+
+  String get title => path.withoutExtension(path.basename(filepath));
 }
