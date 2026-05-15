@@ -61,10 +61,8 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void _initSoLoud() async {
-    //if (!SoLoud.instance.isInitialized) {
     await SoLoud.instance.init(bufferSize: ALGERNON.soLoudBufferSize);
     SoLoud.instance.setVisualizationEnabled(true);
-    //}
   }
 
   Future<void> dispose() async {
@@ -202,10 +200,6 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       ),
     );
   }
-
-  //void updateProcessingState(AudioProcessingState state) {
-  //  playbackState.add(playbackState.value.copyWith(processingState: state));
-  //}
 
   bool get isPlaying => playbackState.value.playing;
 
