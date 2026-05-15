@@ -92,7 +92,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       playbackState.add(
         playbackState.value.copyWith(playing: true, controls: controlsPlaying),
       );
-      //_updateProcessingState(AudioProcessingState.ready);
+      //_updateProcessingState(AudioProcessingState.completed);
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, false);
     }
   }
@@ -108,8 +108,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       playbackState.add(
         playbackState.value.copyWith(playing: false, controls: controlsPaused),
       );
-      _updateProcessingState(AudioProcessingState.ready);
+      //_updateProcessingState(AudioProcessingState.ready);
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, true);
+    } else {
+      debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
     }
   }
 
@@ -121,6 +123,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     );
 
     if (AlgernonPlayer.currentSoundNotifier.source == null) {
+      debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
       return null;
     } else {
       playbackState.add(
@@ -170,6 +173,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       await SoLoud.instance.disposeSource(
         AlgernonPlayer.currentSoundNotifier.source!,
       );
+    } else {
+      debugPrint(
+        "- IGNORING (AlgernonPlayer.currentSoundNotifier.source == null)",
+      );
     }
 
     //while (SoLoud.instance.activeSounds.isNotEmpty) {
@@ -197,7 +204,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     AlgernonPlayer.currentSoundHandle = null;
 
     // Set the audio_service state to `idle` to deactivate the notification.
-    _updateProcessingState(AudioProcessingState.idle);
+    //_updateProcessingState(AudioProcessingState.idle);
     //}
   }
 
