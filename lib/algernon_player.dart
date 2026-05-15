@@ -289,7 +289,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
       _onTick,
     );
 
-    AlgernonPlayer.playSelectedSound(reason: 'initState');
+    //AlgernonPlayer.playSelectedSound(reason: 'initState');
 
     SchedulerBinding.instance.addTimingsCallback(_onFrameTimings);
 
