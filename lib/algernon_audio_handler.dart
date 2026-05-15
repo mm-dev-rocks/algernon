@@ -32,12 +32,12 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     await stop();
   }
 
-  static final List<MediaControl> controlsPaused = [
+  final List<MediaControl> controlsPaused = [
     MediaControl.skipToPrevious,
     MediaControl.play,
     MediaControl.skipToNext,
   ];
-  static final List<MediaControl> controlsPlaying = [
+  final List<MediaControl> controlsPlaying = [
     MediaControl.skipToPrevious,
     MediaControl.pause,
     MediaControl.skipToNext,
@@ -137,10 +137,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> togglePause() async {
     debugPrint("AlgernonAudioHandler::togglePause()");
-    if (instance.playbackState.value.playing) {
-      await instance.pause();
+    if (playbackState.value.playing) {
+      await pause();
     } else {
-      await instance.unpause();
+      await unpause();
     }
   }
 
@@ -210,11 +210,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     //}
   }
 
-  static AudioProcessingState get audioState =>
-      instance.playbackState.value.processingState;
+  AudioProcessingState get audioState => playbackState.value.processingState;
 
-  static void updateNotification() {
-    instance._updateNotification();
+  void updateNotification() {
+    _updateNotification();
   }
 
   Future<void> _initAudioSession() async {
@@ -279,9 +278,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   /// This is the state the OS will use for info about the audio service, it affects things like the
   /// play/pause buttons in the notification panel. It is also referred to by [PlaybackButton] to
   /// show an appropriate state.
-  static void _updateProcessingState(AudioProcessingState state) {
-    instance.playbackState.add(
-      instance.playbackState.value.copyWith(processingState: state),
-    );
+  void _updateProcessingState(AudioProcessingState state) {
+    playbackState.add(playbackState.value.copyWith(processingState: state));
   }
 }
