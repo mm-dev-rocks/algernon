@@ -67,9 +67,6 @@ class AlgernonPlayer extends StatefulWidget {
       } catch (e) {
         exit(1);
       }
-      debugPrint(
-        'AlgernonPlayer.stopCurrentSound() took ${stopwatch.elapsedMilliseconds}ms',
-      );
 
       debugPrint(
         '0. AlgernonPlayer._preloadedSource:\n\t${AlgernonPlayer._preloadedSource}',
@@ -99,7 +96,7 @@ class AlgernonPlayer extends StatefulWidget {
         AlgernonPlayer.currentSoundHandle = await AlgernonAudioHandler.instance
             .play();
         debugPrint(
-          'SoLoud.instance.play took ${stopwatch.elapsedMilliseconds}ms',
+          'AlgernonAudioHandler.instance.play took ${stopwatch.elapsedMilliseconds}ms',
         );
 
         stopwatch.reset();
@@ -134,38 +131,21 @@ class AlgernonPlayer extends StatefulWidget {
   }
 
   static Future<AudioSource?> _loadFile(String filepath) async {
+    final Stopwatch stopwatch = Stopwatch()..start();
     AudioSource source = await SoLoud.instance.loadFile(filepath);
+    debugPrint(
+      'AlgernonPlayer._loadFile() took ${stopwatch.elapsedMilliseconds}ms',
+    );
     return source;
   }
 
   static Future<void> stopCurrentSound() async {
     debugPrint('AlgernonPlayer::stopCurrentSound()');
-    await _trackFinishedSubscription?.cancel();
-    debugPrint(
-      'AlgernonPlayer::stopCurrentSound() 1. SoLoud.instance.getActiveVoiceCount(): ${SoLoud.instance.getActiveVoiceCount().toString()}',
-    );
-    debugPrint(
-      'AlgernonPlayer::stopCurrentSound() 1. SoLoud.instance.activeSounds.length: ${SoLoud.instance.activeSounds.length.toString()}',
-    );
 
-    //AudioSource? tempSource = AlgernonPlayer._preloadedSource;
-    //debugPrint('AlgernonPlayer::stopCurrentSound() 1. tempSource: $tempSource');
+    await _trackFinishedSubscription?.cancel();
 
     await AlgernonAudioHandler.instance.stop();
 
-    //AlgernonPlayer._preloadedSource = tempSource;
-    //await SoLoud.instance.disposeAllSources();
-    //debugPrint('AlgernonPlayer::stopCurrentSound() 2. tempSource: $tempSource');
-    debugPrint(
-      'AlgernonPlayer::stopCurrentSound() 2. SoLoud.instance.getActiveVoiceCount(): ${SoLoud.instance.getActiveVoiceCount().toString()}',
-    );
-    debugPrint(
-      'AlgernonPlayer::stopCurrentSound() 2. SoLoud.instance.activeSounds.length: ${SoLoud.instance.activeSounds.length.toString()}',
-    );
-    //if (AlgernonPlayer.currentSoundHandle != null) {
-    //  await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
-    //  AlgernonPlayer.currentSoundHandle = null;
-    //}
     await _disposeSourceIfNotNull(AlgernonPlayer.currentSoundNotifier.source);
 
     if (SoLoud.instance.getActiveVoiceCount() > 0) {
@@ -181,6 +161,7 @@ class AlgernonPlayer extends StatefulWidget {
 
   static Future<void> _calibrateCurrentTrack() async {
     debugPrint('AlgernonPlayer::_calibrateCurrentTrack()');
+    final Stopwatch stopwatch = Stopwatch()..start();
     if (AlgernonPlayer.currentSoundNotifier.source != null) {
       await AudioAnalysis.analyseTrackOnLoad(
         filePath: AlgernonPlayer.playlistNotifier.selectedFilePath,
@@ -190,6 +171,9 @@ class AlgernonPlayer extends StatefulWidget {
       );
       AlgernonPlayer.painterConfig.currentShader.calibrateAudioEnergy();
     }
+    debugPrint(
+      'AlgernonPlayer._calibrateCurrentTrack() took ${stopwatch.elapsedMilliseconds}ms',
+    );
   }
 
   static Future<void> _preloadNextTrack() async {

@@ -5,8 +5,6 @@ import 'dart:io' show Platform;
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
 import 'package:algernon/algernon_audio_handler.dart';
-import 'package:algernon/file_chooser.dart';
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,19 +22,6 @@ Future<void> main() async {
   if (!kIsWeb && (Platform.isLinux || Platform.isWindows || Platform.isMacOS)) {
     await windowManager.ensureInitialized();
   }
-
-  await AudioService.init(
-    builder: () => AlgernonAudioHandler(),
-    config: AudioServiceConfig(
-      androidNotificationChannelId: 'rocks.mm_dev.algernon.audio',
-      androidNotificationChannelName: 'Audio Playback',
-      // Keep the foreground service alive
-      androidNotificationOngoing: true,
-      // Keep notification on pause
-      //androidStopForegroundOnPause: false,
-      notificationColor: Color(0xFF2196F3),
-    ),
-  );
 
   /// App preferences [SharedPreferencesWithCache] require async setup
   await AppState.initPreferences();

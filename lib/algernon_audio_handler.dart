@@ -156,6 +156,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> skipToNext() async {
+    debugPrint("AlgernonAudioHandler::skipToNext()");
     FileChooser.selectNext();
     await AlgernonPlayer.playSelectedSound(
       reason: 'AlgernonAudioHandler::skipToNext()',
@@ -164,6 +165,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
   @override
   Future<void> skipToPrevious() async {
+    debugPrint("AlgernonAudioHandler::skipToPrevious()");
     FileChooser.selectPrev();
     await AlgernonPlayer.playSelectedSound(
       reason: 'AlgernonAudioHandler::skipToPrevious()',
@@ -220,9 +222,21 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     debugPrint("AlgernonAudioHandler::_initAudioSession()");
     final session = await AudioSession.instance;
     await session.configure(const AudioSessionConfiguration.music());
+    //await AudioService.init(
+    //  builder: () => AlgernonAudioHandler(),
+    //  //config: ThirdPartyPackageOptions.audioServiceConfiguration,
+    //);
     await AudioService.init(
       builder: () => AlgernonAudioHandler(),
-      //config: ThirdPartyPackageOptions.audioServiceConfiguration,
+      config: AudioServiceConfig(
+        androidNotificationChannelId: 'rocks.mm_dev.algernon.audio',
+        androidNotificationChannelName: 'Audio Playback',
+        // Keep the foreground service alive
+        androidNotificationOngoing: true,
+        // Keep notification on pause
+        //androidStopForegroundOnPause: false,
+        notificationColor: Color(0xFF2196F3),
+      ),
     );
   }
 
