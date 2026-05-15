@@ -59,15 +59,15 @@ class PainterConfigModel with ChangeNotifier {
   void decreaseResolution() {
     if (scale.index > 0) {
       scale = RenderScale.values[scale.index - 1];
+      debugPrint('Resolution change to: ${scale.name}');
     }
-    debugPrint('Resolution change to: ${scale.name}');
   }
 
   void increaseResolution() {
     if (scale.index < RenderScale.values.length - 1) {
       scale = RenderScale.values[scale.index + 1];
+      debugPrint('Resolution change to: ${scale.name}');
     }
-    debugPrint('Resolution change to: ${scale.name}');
   }
 
   @override

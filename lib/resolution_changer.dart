@@ -21,7 +21,7 @@ class ResolutionChanger {
   );
 
   static void resetResChangeLockout() {
-    debugPrint('AlgernonPlayer::_resetResChangeLockout()');
+    //debugPrint('AlgernonPlayer::_resetResChangeLockout()');
     _lastResolutionChange = DirectionOfChange.none;
     _lockoutSecs = ALGERNON.resLoweredLockoutSecs;
     _lockoutTimer?.cancel();
@@ -49,10 +49,10 @@ class ResolutionChanger {
         _lateFrameMeasurement.length;
 
     if (droppedFrameRatio > 0.95) {
-      debugPrint(droppedFrameRatio.toString());
+      //debugPrint(droppedFrameRatio.toString());
       _changeResolution(DirectionOfChange.decrease);
     } else if (droppedFrameRatio < 0.005) {
-      debugPrint(droppedFrameRatio.toString());
+      //debugPrint(droppedFrameRatio.toString());
       _changeResolution(DirectionOfChange.increase);
     }
   }
@@ -72,14 +72,13 @@ class ResolutionChanger {
       }
       AlgernonPlayer.painterConfig.decreaseResolution();
     }
-    debugPrint(
-      'SCALE CHANGE: ${AlgernonPlayer.painterConfig.scale.toString()}',
-    );
+    //debugPrint(
+    //  'SCALE CHANGE: ${AlgernonPlayer.painterConfig.scale.toString()}',
+    //);
 
     for (var i = 0; i < ALGERNON.droppedFrameMeasurementLength; i++) {
       //_lateFrameMeasurement[i] = false;
-
-      /// Set alternating true/false to put ratio in the middle
+      // Set alternating true/false to put ratio in the middle
       _lateFrameMeasurement[i] = i.isEven;
     }
     _lastResolutionChange = direction;
@@ -88,7 +87,7 @@ class ResolutionChanger {
   }
 
   static void _lockoutResChange(int seconds) {
-    debugPrint('AlgernonPlayer::_lockoutResChange($seconds)');
+    //debugPrint('AlgernonPlayer::_lockoutResChange($seconds)');
     _enabled = false;
     _lockoutTimer?.cancel();
     _lockoutTimer = Timer(Duration(seconds: seconds), () {
