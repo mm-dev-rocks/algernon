@@ -12,6 +12,7 @@ import 'package:algernon/enum.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/playlist_notifier.dart';
+import 'package:algernon/resolution_changer.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -42,18 +43,6 @@ class AlgernonPlayer extends StatefulWidget {
   /// constantly-updating FFT data. It is a [ChangeNotifier] and changing its properties will cause
   /// [AlgernonShaderPainter] to rebuild.
   static final PainterConfigModel painterConfig = PainterConfigModel();
-
-  static Timer? _resChangeLockoutTimer;
-  static bool _resChangeEnabled = true;
-  static int _resLoweredLockoutSecs = ALGERNON.resLoweredLockoutSecs;
-  static DirectionOfChange _lastResolutionChange = DirectionOfChange.none;
-  static void resetResChangeLockout() {
-    debugPrint('AlgernonPlayer::_resetResChangeLockout()');
-    AlgernonPlayer._lastResolutionChange = DirectionOfChange.none;
-    AlgernonPlayer._resLoweredLockoutSecs = ALGERNON.resLoweredLockoutSecs;
-    AlgernonPlayer._resChangeLockoutTimer?.cancel();
-    AlgernonPlayer._resChangeEnabled = true;
-  }
 
   static Future<void> playSelectedSound({required String reason}) async {
     AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
@@ -271,15 +260,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
   late final Timer _tickTimer;
 
-  // Frame rate we aim for
-  final Duration _fpsAimDuration = const Duration(
-    microseconds: ALGERNON.oneMillion ~/ ALGERNON.finalAimFps,
-  );
-  final List<bool> _lateFrameMeasurement = List<bool>.generate(
-    ALGERNON.droppedFrameMeasurementLength,
-    (index) => false,
-  );
-
   @override
   void initState() {
     _tickTimer = Timer.periodic(
@@ -291,30 +271,25 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
     //AlgernonPlayer.playSelectedSound(reason: 'initState');
 
-    SchedulerBinding.instance.addTimingsCallback(_onFrameTimings);
+    SchedulerBinding.instance.addTimingsCallback(
+      ResolutionChanger.onFrameTimings,
+    );
 
     super.initState();
   }
 
   @override
   dispose() {
-    SchedulerBinding.instance.removeTimingsCallback(_onFrameTimings);
+    SchedulerBinding.instance.removeTimingsCallback(
+      ResolutionChanger.onFrameTimings,
+    );
     _tickTimer.cancel();
-    AlgernonPlayer._resChangeLockoutTimer?.cancel();
+    ResolutionChanger.dispose();
     _audioData.dispose();
     AlgernonPlayer.painterConfig.dispose();
     SoLoud.instance.deinit();
 
     super.dispose();
-  }
-
-  void _onFrameTimings(List<FrameTiming> timings) {
-    if (AlgernonPlayer._resChangeEnabled) {
-      for (final t in timings) {
-        final bool isLate = t.rasterDuration > _fpsAimDuration;
-        _checkFrameRate(isLate);
-      }
-    }
   }
 
   @override
@@ -386,84 +361,6 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
       }
     }
   }
-
-  void _checkFrameRate(bool isLate) {
-    /// Roll along
-    _lateFrameMeasurement.removeAt(0);
-    _lateFrameMeasurement.add(isLate);
-
-    double droppedFrameRatio =
-        _lateFrameMeasurement
-            .where((bool frameWasLate) => frameWasLate == true)
-            .length /
-        _lateFrameMeasurement.length;
-
-    if (droppedFrameRatio > 0.95) {
-      debugPrint(droppedFrameRatio.toString());
-      _changeResolution(DirectionOfChange.decrease);
-    } else if (droppedFrameRatio < 0.005) {
-      debugPrint(droppedFrameRatio.toString());
-      _changeResolution(DirectionOfChange.increase);
-    }
-  }
-
-  void _changeResolution(DirectionOfChange direction) {
-    int lockoutSeconds = 0;
-    //if (direction != _lastResolutionChange) {
-    if (direction == DirectionOfChange.increase) {
-      lockoutSeconds = ALGERNON.resRaisedLockoutSecs;
-      AlgernonPlayer.painterConfig.increaseResolution();
-    } else if (direction == DirectionOfChange.decrease) {
-      lockoutSeconds = AlgernonPlayer._resLoweredLockoutSecs;
-
-      /// Res has already gone up and then down again, so lockout for longer next time.
-      if (AlgernonPlayer._lastResolutionChange == DirectionOfChange.increase) {
-        AlgernonPlayer._resLoweredLockoutSecs *= 2;
-      }
-      AlgernonPlayer.painterConfig.decreaseResolution();
-    }
-    debugPrint(
-      'SCALE CHANGE: ${AlgernonPlayer.painterConfig.scale.toString()}',
-    );
-
-    for (var i = 0; i < ALGERNON.droppedFrameMeasurementLength; i++) {
-      //_lateFrameMeasurement[i] = false;
-
-      /// Set alternating true/false to put ratio in the middle
-      _lateFrameMeasurement[i] = i.isEven;
-    }
-    AlgernonPlayer._lastResolutionChange = direction;
-
-    _lockoutResChange(lockoutSeconds);
-  }
-
-  void _lockoutResChange(int seconds) {
-    debugPrint('AlgernonPlayer::_lockoutResChange($seconds)');
-    AlgernonPlayer._resChangeEnabled = false;
-    AlgernonPlayer._resChangeLockoutTimer?.cancel();
-    AlgernonPlayer._resChangeLockoutTimer = Timer(
-      Duration(seconds: seconds),
-      () {
-        AlgernonPlayer._resChangeEnabled = true;
-      },
-    );
-  }
-
-  /// We pass data into the shader as an image format, but it isn't an image as such, just an efficient way of passing
-  /// our data.
-  //Future<ui.Image> _shaderImageFromPixels(Float32List pixels) async {
-  //  final Completer<ui.Image> completer = Completer<ui.Image>();
-  //  ui.decodeImageFromPixels(
-  //    pixels.buffer.asUint8List(),
-
-  //    /// We just pass all data in a single row.
-  //    256,
-  //    1,
-  //    ui.PixelFormat.rgbaFloat32,
-  //    (ui.Image image) => completer.complete(image),
-  //  );
-  //  return completer.future;
-  //}
 
   /// That's a real lead. PixelFormat.rgbaFloat32 with decodeImageFromPixels — there's a known Flutter issue: decodeImageFromPixels float32 does not work correctly in Impeller. GitHubThat's a real lead. PixelFormat.rgbaFloat32 with decodeImageFromPixels — there's a known Flutter issue: decodeImageFromPixels float32 does not work correctly in Impeller. GitHub
   /// You lose some precision (8-bit vs 32-bit per channel), but for FFT visualisation that's unlikely to matter perceptually.
