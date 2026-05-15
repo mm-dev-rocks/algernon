@@ -1,3 +1,4 @@
+import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/playlist_item_model.dart';
@@ -56,6 +57,7 @@ class PlaylistNotifier extends ChangeNotifier {
       AppState.getPreference('selectedPlaylistFilePathIndex');
   set selectedFilePathIndex(int index) {
     AppState.setPreference('selectedPlaylistFilePathIndex', index);
+    AlgernonAudioHandler.instance.updateNotification();
     notifyListeners();
   }
 

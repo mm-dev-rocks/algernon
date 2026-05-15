@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-/// Used during copy operations between memory slots (eg drag/drop to copy).
+/// An item in a playlist.
 class PlaylistItemModel {
   PlaylistItemModel({
     required this.filepath,

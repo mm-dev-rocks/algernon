@@ -2,6 +2,7 @@
 
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/file_chooser.dart';
+import 'package:algernon/playlist_notifier.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/material.dart';
@@ -124,11 +125,6 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> togglePause() async {
     debugPrint("AlgernonAudioHandler::togglePause()");
     await (isPlaying ? pause() : unpause());
-    //if (isPlaying) {
-    //  await pause();
-    //} else {
-    //  await unpause();
-    //}
   }
 
   @override
@@ -183,23 +179,19 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
   /// Update the sytem notification panel (if there is one).
   void _updateNotification() async {
-    //if (PlaylistManager.playingBookId.value.isEmpty) {
-    //  debugPrint("No book playing - notification not updated");
-    //} else {
-    //  mediaItem.add(
-    //    MediaItem(
-    //      id:
-    //          PlaylistManager.playingBookId.value +
-    //          AudavAudioPlayer.progressNotifier.curChapterIndex.toString(),
-    //      album: PlaylistManager.curBookCleanedTitle,
-    //      title: PlaylistManager.curChapterTitle,
-    //      duration: Duration(
-    //        milliseconds: AudavAudioPlayer.progressNotifier.curChapterDuration,
-    //      ),
-    //      artUri: await _curArtUri,
-    //    ),
-    //  );
-    //}
+    mediaItem.add(
+      MediaItem(
+        id: AlgernonPlayer.playlistNotifier.selectedItem.filepath,
+        //album: PlaylistManager.curBookCleanedTitle,
+        title: AlgernonPlayer.playlistNotifier.selectedItem.filepath,
+        duration: AlgernonPlayer.currentSoundNotifier.source == null
+            ? Duration.zero
+            : SoLoud.instance.getLength(
+                AlgernonPlayer.currentSoundNotifier.source!,
+              ),
+        //artUri: await _curArtUri,
+      ),
+    );
   }
 
   //void updateProcessingState(AudioProcessingState state) {
