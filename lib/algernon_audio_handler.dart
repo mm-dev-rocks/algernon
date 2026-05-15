@@ -49,12 +49,12 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       builder: () => AlgernonAudioHandler(),
       config: AudioServiceConfig(
         androidNotificationChannelId: 'rocks.mm_dev.algernon.audio',
-        androidNotificationChannelName: 'Audio Playback',
+        androidNotificationChannelName: 'Algernon Visualiser Audio Playback',
         // Keep the foreground service alive
         androidNotificationOngoing: true,
         // Keep notification on pause
         //androidStopForegroundOnPause: false,
-        notificationColor: Color(0xFF2196F3),
+        notificationColor: Colors.black,
       ),
     );
     isIdle = true;
