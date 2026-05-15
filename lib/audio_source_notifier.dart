@@ -16,13 +16,13 @@ class AudioSourceNotifier extends ChangeNotifier {
   }
 
   /// Paused state
-  bool get isPaused =>
-      source == null ||
-          AlgernonPlayer.currentSoundHandle == null ||
-          (AlgernonPlayer.currentSoundHandle != null &&
-              SoLoud.instance.getPause(AlgernonPlayer.currentSoundHandle!))
-      ? true
-      : false;
+  //bool get isPaused =>
+  //    source == null ||
+  //        AlgernonPlayer.currentSoundHandle == null ||
+  //        (AlgernonPlayer.currentSoundHandle != null &&
+  //            SoLoud.instance.getPause(AlgernonPlayer.currentSoundHandle!))
+  //    ? true
+  //    : false;
 
   /// Toggle pause, unless [forceState] is non-null, in which case [true] pauses, [false] unpauses.
   Future<void> togglePause({bool? forcedState}) async {

@@ -16,16 +16,15 @@ class PauseToggle extends StatefulWidget {
 class _PauseToggleState extends State<PauseToggle> {
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: AlgernonPlayer.currentSoundNotifier,
+    return StreamBuilder(
+      stream: AlgernonAudioHandler.instance.playbackState,
       builder: (context, child) {
+        bool isPlaying =
+            AlgernonAudioHandler.instance.playbackState.value.playing;
+
         return AlgernonIconButton(
-          tooltip: AlgernonPlayer.currentSoundNotifier.isPaused
-              ? 'Play'
-              : 'Pause',
-          iconData: AlgernonPlayer.currentSoundNotifier.isPaused
-              ? Icons.play_arrow
-              : Icons.pause,
+          tooltip: isPlaying ? 'Pause' : 'Play',
+          iconData: isPlaying ? Icons.pause : Icons.play_arrow,
           onPressed: widget.isEnabled
               ? () async {
                   await AlgernonAudioHandler.instance.togglePause();
