@@ -32,6 +32,17 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     await stop();
   }
 
+  static final List<MediaControl> controlsPaused = [
+    MediaControl.skipToPrevious,
+    MediaControl.play,
+    MediaControl.skipToNext,
+  ];
+  static final List<MediaControl> controlsPlaying = [
+    MediaControl.skipToPrevious,
+    MediaControl.pause,
+    MediaControl.skipToNext,
+  ];
+
   /// Open a file ready for playing. If [startPlaying] is true then play it straight away, otherwise
   /// wait for [play()] to be called manually.
   //Future<void> open({
@@ -79,14 +90,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
     if (AlgernonPlayer.currentSoundHandle != null) {
       playbackState.add(
-        playbackState.value.copyWith(
-          playing: true,
-          controls: [
-            MediaControl.skipToPrevious,
-            MediaControl.play,
-            MediaControl.skipToNext,
-          ],
-        ),
+        playbackState.value.copyWith(playing: true, controls: controlsPlaying),
       );
       //_updateProcessingState(AudioProcessingState.ready);
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, false);
@@ -102,14 +106,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     //await audioPlayer.pause();
     if (AlgernonPlayer.currentSoundHandle != null) {
       playbackState.add(
-        playbackState.value.copyWith(
-          playing: false,
-          controls: [
-            MediaControl.skipToPrevious,
-            MediaControl.play,
-            MediaControl.skipToNext,
-          ],
-        ),
+        playbackState.value.copyWith(playing: false, controls: controlsPaused),
       );
       _updateProcessingState(AudioProcessingState.ready);
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, true);
@@ -127,14 +124,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       return null;
     } else {
       playbackState.add(
-        playbackState.value.copyWith(
-          playing: true,
-          controls: [
-            MediaControl.skipToPrevious,
-            MediaControl.pause,
-            MediaControl.skipToNext,
-          ],
-        ),
+        playbackState.value.copyWith(playing: true, controls: controlsPlaying),
       );
       return SoLoud.instance.play(AlgernonPlayer.currentSoundNotifier.source!);
     }
