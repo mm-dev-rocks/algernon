@@ -94,6 +94,8 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       );
       //_updateProcessingState(AudioProcessingState.completed);
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, false);
+    } else {
+      debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
     }
   }
 
