@@ -27,6 +27,25 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   // Other classes will get the singleton when they call [AlgernonAudioHandler()].
   factory AlgernonAudioHandler() => instance;
 
+  Future<void> _initAudioSession() async {
+    debugPrint("AlgernonAudioHandler::_initAudioSession()");
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration.music());
+    await AudioService.init(
+      builder: () => AlgernonAudioHandler(),
+      config: AudioServiceConfig(
+        androidNotificationChannelId: 'rocks.mm_dev.algernon.audio',
+        androidNotificationChannelName: 'Audio Playback',
+        // Keep the foreground service alive
+        androidNotificationOngoing: true,
+        // Keep notification on pause
+        //androidStopForegroundOnPause: false,
+        notificationColor: Color(0xFF2196F3),
+      ),
+    );
+    isIdle = true;
+  }
+
   Future<void> dispose() async {
     await pause();
     await stop();
@@ -42,35 +61,6 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     MediaControl.pause,
     MediaControl.skipToNext,
   ];
-
-  /// Open a file ready for playing. If [startPlaying] is true then play it straight away, otherwise
-  /// wait for [play()] to be called manually.
-  //Future<void> open({
-  //  required String filepath,
-  //  required bool startPlaying,
-  //}) async {
-  //  if (!_firstTimeInitIsDone) _firstTimeInit();
-
-  //  //_updateProcessingState(AudioProcessingState.loading);
-
-  //  try {
-  //    //_webdavHeaders ??= await WebDav.getDefaultHeaders();
-  //    //await audioPlayer.open(
-  //    //  Media(
-  //    //    ServerFunctions.decodedFilepath(filepath),
-  //    //    httpHeaders: _webdavHeaders,
-  //    //  ),
-  //    //  play: startPlaying,
-  //    //);
-  //    //_updateProcessingState(AudioProcessingState.ready);
-
-  //    /// Ensure state matches
-  //    playbackState.add(playbackState.value.copyWith(playing: startPlaying));
-  //  } catch (e) {
-  //    debugPrint('•☽────✧˖°˖☆˖°˖✧────☾•');
-  //    debugPrint('[_audioHandler.open()] ERROR: $e\n\n');
-  //  }
-  //}
 
   /// On Android when the user kills the app in the task switcher, ensure that audio stops
   /// (otherwise they get stuck with audio playing and the only way to stop it is to 'force stop').
@@ -89,10 +79,8 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     debugPrint("AlgernonAudioHandler::unpause()");
 
     if (AlgernonPlayer.currentSoundHandle != null) {
-      playbackState.add(
-        playbackState.value.copyWith(playing: true, controls: controlsPlaying),
-      );
-      //_updateProcessingState(AudioProcessingState.completed);
+      isPlaying = true;
+      isIdle = false;
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, false);
     } else {
       debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
@@ -103,14 +91,9 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   Future<void> pause() async {
     debugPrint("AlgernonAudioHandler::pause()");
 
-    //await AudavAudioObserver.stopPlaybackListeners();
-
-    //await audioPlayer.pause();
     if (AlgernonPlayer.currentSoundHandle != null) {
-      playbackState.add(
-        playbackState.value.copyWith(playing: false, controls: controlsPaused),
-      );
-      //_updateProcessingState(AudioProcessingState.ready);
+      isPlaying = false;
+      isIdle = false;
       SoLoud.instance.setPause(AlgernonPlayer.currentSoundHandle!, true);
     } else {
       debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
@@ -123,25 +106,29 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     debugPrint(
       'AlgernonAudioHandler::play() SoLoud.instance.getActiveVoiceCount(): ${SoLoud.instance.getActiveVoiceCount().toString()}',
     );
+    SoundHandle? handle;
 
-    if (AlgernonPlayer.currentSoundNotifier.source == null) {
-      debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
-      return null;
-    } else {
-      playbackState.add(
-        playbackState.value.copyWith(playing: true, controls: controlsPlaying),
+    if (AlgernonPlayer.currentSoundNotifier.source != null) {
+      isPlaying = true;
+      isIdle = false;
+      handle = SoLoud.instance.play(
+        AlgernonPlayer.currentSoundNotifier.source!,
       );
-      return SoLoud.instance.play(AlgernonPlayer.currentSoundNotifier.source!);
+    } else {
+      debugPrint("- IGNORING (AlgernonPlayer.currentSoundHandle == null)");
     }
+
+    return handle;
   }
 
   Future<void> togglePause() async {
     debugPrint("AlgernonAudioHandler::togglePause()");
-    if (playbackState.value.playing) {
-      await pause();
-    } else {
-      await unpause();
-    }
+    await (isPlaying ? pause() : unpause());
+    //if (isPlaying) {
+    //  await pause();
+    //} else {
+    //  await unpause();
+    //}
   }
 
   @override
@@ -170,8 +157,9 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   @override
   Future<void> stop() async {
     debugPrint("AlgernonAudioHandler::stop()");
-    //if (AlgernonPlayer.currentSoundHandle != null) {
     if (AlgernonPlayer.currentSoundNotifier.source != null) {
+      isPlaying = false;
+      isIdle = true;
       await SoLoud.instance.disposeSource(
         AlgernonPlayer.currentSoundNotifier.source!,
       );
@@ -181,33 +169,10 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
       );
     }
 
-    //while (SoLoud.instance.activeSounds.isNotEmpty) {
-    //for (AudioSource source in SoLoud.instance.activeSounds) {
-    //  debugPrint(
-    //    '- SoLoud.instance.activeSounds.length: ${SoLoud.instance.activeSounds.length}',
-    //  );
-    //  debugPrint(
-    //    '- SoLoud.instance.countAudioSource(source): ${SoLoud.instance.countAudioSource(source)}',
-    //  );
-    //  debugPrint("- source.soundHash: ${source.soundHash}");
-    //  if (SoLoud.instance.countAudioSource(source) > 0) {
-    //    //for (SoundHandle handle in source.handles) {
-    //    //  debugPrint("  - handle.id: ${handle.id}");
-    //    //  await SoLoud.instance.stop(handle);
-    //    //}
-    //    await SoLoud.instance.disposeSource(source);
-    //  }
-    //}
-
-    //[0] as AudioSource).handles
-    //}
-    //await SoLoud.instance.stop(AlgernonPlayer.currentSoundHandle!);
-
     AlgernonPlayer.currentSoundHandle = null;
 
     // Set the audio_service state to `idle` to deactivate the notification.
     //_updateProcessingState(AudioProcessingState.idle);
-    //}
   }
 
   AudioProcessingState get audioState => playbackState.value.processingState;
@@ -215,44 +180,6 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   void updateNotification() {
     _updateNotification();
   }
-
-  Future<void> _initAudioSession() async {
-    debugPrint("AlgernonAudioHandler::_initAudioSession()");
-    final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration.music());
-    //await AudioService.init(
-    //  builder: () => AlgernonAudioHandler(),
-    //  //config: ThirdPartyPackageOptions.audioServiceConfiguration,
-    //);
-    await AudioService.init(
-      builder: () => AlgernonAudioHandler(),
-      config: AudioServiceConfig(
-        androidNotificationChannelId: 'rocks.mm_dev.algernon.audio',
-        androidNotificationChannelName: 'Audio Playback',
-        // Keep the foreground service alive
-        androidNotificationOngoing: true,
-        // Keep notification on pause
-        //androidStopForegroundOnPause: false,
-        notificationColor: Color(0xFF2196F3),
-      ),
-    );
-  }
-
-  /// Start/end of seek is a significant event that we handle in this class.
-  //void _startObserverForPlaybackOrSeeking() {
-  //  //if (audioPlayer.platform is NativePlayer) {
-  //  //  (audioPlayer.platform as NativePlayer).observeProperty(
-  //  //    'seeking',
-  //  //    _onSeekingStateChange,
-  //  //  );
-  //  //}
-  //}
-
-  //void _cancelObserverForPlaybackOrSeeking() {
-  //  //if (audioPlayer.platform is NativePlayer) {
-  //  //  (audioPlayer.platform as NativePlayer).unobserveProperty('seeking');
-  //  //}
-  //}
 
   /// Update the sytem notification panel (if there is one).
   void _updateNotification() async {
@@ -275,10 +202,31 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     //}
   }
 
+  //void updateProcessingState(AudioProcessingState state) {
+  //  playbackState.add(playbackState.value.copyWith(processingState: state));
+  //}
+
+  bool get isPlaying => playbackState.value.playing;
+
+  set isPlaying(bool isPlaying) {
+    playbackState.add(
+      playbackState.value.copyWith(
+        playing: isPlaying,
+        controls: isPlaying ? controlsPlaying : controlsPaused,
+      ),
+    );
+  }
+
   /// This is the state the OS will use for info about the audio service, it affects things like the
   /// play/pause buttons in the notification panel. It is also referred to by [PlaybackButton] to
   /// show an appropriate state.
-  void _updateProcessingState(AudioProcessingState state) {
-    playbackState.add(playbackState.value.copyWith(processingState: state));
+  set isIdle(bool isIdle) {
+    playbackState.add(
+      playbackState.value.copyWith(
+        processingState: isIdle
+            ? AudioProcessingState.idle
+            : AudioProcessingState.ready,
+      ),
+    );
   }
 }
