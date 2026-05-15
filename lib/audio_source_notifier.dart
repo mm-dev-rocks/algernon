@@ -26,6 +26,7 @@ class AudioSourceNotifier extends ChangeNotifier {
 
   /// Toggle pause, unless [forceState] is non-null, in which case [true] pauses, [false] unpauses.
   Future<void> togglePause({bool? forcedState}) async {
+    debugPrint('AudioSourceNotifier::togglePause(forcedState: $forcedState)');
     if (AlgernonPlayer.currentSoundHandle != null) {
       if (forcedState != null) {
         //SoLoud.instance.setPause(
