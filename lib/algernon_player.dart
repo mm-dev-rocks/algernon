@@ -43,7 +43,6 @@ class AlgernonPlayer extends StatefulWidget {
   static Future<void> playSelectedSound({required String reason}) async {
     AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
     debugPrint('AlgernonPlayer::playSelectedSound(): $reason');
-    //await _ensureSoLoudIsInitialised();
 
     try {
       final Stopwatch stopwatch = Stopwatch()..start();
