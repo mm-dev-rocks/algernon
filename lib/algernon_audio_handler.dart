@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/constants.dart';
 import 'package:algernon/file_chooser.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:audio_session/audio_session.dart';
@@ -21,6 +22,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   /// [instance].
   AlgernonAudioHandler._internal() {
     _initAudioSession();
+    _initSoLoud();
   }
   static final AlgernonAudioHandler instance = AlgernonAudioHandler._internal();
 
@@ -32,6 +34,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     MediaControl.play,
     MediaControl.skipToNext,
   ];
+
   final List<MediaControl> controlsPlaying = [
     MediaControl.skipToPrevious,
     MediaControl.pause,
@@ -50,11 +53,18 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
         // Keep the foreground service alive
         androidNotificationOngoing: true,
         // Keep notification on pause
-        androidStopForegroundOnPause: false,
+        //androidStopForegroundOnPause: false,
         notificationColor: Color(0xFF2196F3),
       ),
     );
     isIdle = true;
+  }
+
+  void _initSoLoud() async {
+    //if (!SoLoud.instance.isInitialized) {
+    await SoLoud.instance.init(bufferSize: ALGERNON.soLoudBufferSize);
+    SoLoud.instance.setVisualizationEnabled(true);
+    //}
   }
 
   Future<void> dispose() async {
@@ -124,7 +134,13 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> togglePause() async {
     debugPrint("AlgernonAudioHandler::togglePause()");
-    await (isPlaying ? pause() : unpause());
+    await (isPlaying
+        ? pause()
+        : (!isPlaying && isIdle)
+        ? AlgernonPlayer.playSelectedSound(
+            reason: "AlgernonAudioHandler::togglePause but no track loaded",
+          )
+        : unpause());
   }
 
   @override
@@ -166,19 +182,12 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
     }
 
     AlgernonPlayer.currentSoundHandle = null;
-
-    // Set the audio_service state to `idle` to deactivate the notification.
-    //_updateProcessingState(AudioProcessingState.idle);
   }
 
   AudioProcessingState get audioState => playbackState.value.processingState;
 
-  void updateNotification() {
-    _updateNotification();
-  }
-
   /// Update the sytem notification panel (if there is one).
-  void _updateNotification() async {
+  void updateNotification() async {
     mediaItem.add(
       MediaItem(
         id: AlgernonPlayer.playlistNotifier.selectedItem.filepath,
@@ -212,6 +221,9 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
   /// This is the state the OS will use for info about the audio service, it affects things like the
   /// play/pause buttons in the notification panel. It is also referred to by [PlaybackButton] to
   /// show an appropriate state.
+  bool get isIdle =>
+      playbackState.value.processingState == AudioProcessingState.idle;
+
   set isIdle(bool isIdle) {
     playbackState.add(
       playbackState.value.copyWith(

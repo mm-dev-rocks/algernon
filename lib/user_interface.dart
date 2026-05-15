@@ -16,6 +16,7 @@ import 'package:algernon/screen.dart';
 import 'package:algernon/volume_slider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_soloud/flutter_soloud.dart';
 
 class UserInterface extends StatefulWidget {
   const UserInterface({super.key});
@@ -99,7 +100,7 @@ class _UserInterfaceState extends State<UserInterface> {
                       spacing: uiSizes.paddingMedium,
                       children: [
                         Expanded(
-                          child: AlgernonPlayer.soLoudIsReady
+                          child: SoLoud.instance.isInitialized
                               ? const PlaybackBar()
                               : const SizedBox.shrink(),
                         ),

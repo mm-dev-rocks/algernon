@@ -44,7 +44,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
     /// [widget.currentShader] will always be up-to-date with the latest memory slot and shader as this widget gets
     /// built on a [ListenableBuilder] listening for changes to [AlgernonPlayer.painterConfig] which includes the
     /// shader.
-    if (AlgernonPlayer.soLoudIsReady) {
+    if (SoLoud.instance.isInitialized) {
       SoLoud.instance.setFftSmoothing(_fftSmoothingTweak.storedValue);
     }
 
@@ -85,7 +85,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
                 ShaderTweakSlider(
                   shaderTweak: _fftSmoothingTweak,
                   onChanged: (double value) {
-                    if (AlgernonPlayer.soLoudIsReady) {
+                    if (SoLoud.instance.isInitialized) {
                       setState(() {
                         _fftSmoothingTweak.storedValue = value;
                       });
@@ -115,7 +115,7 @@ class _MainControlPanelState extends State<MainControlPanel> {
                                 entry.value.useEnergyDerivedCount)
                             ? null
                             : (double value) {
-                                if (AlgernonPlayer.soLoudIsReady) {
+                                if (SoLoud.instance.isInitialized) {
                                   setState(() {
                                     entry.value.storedValue = value;
                                   });

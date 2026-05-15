@@ -29,7 +29,7 @@ class _VolumeSliderState extends State<VolumeSlider> {
                     )
                   : 1,
               onChanged: (double value) {
-                if (AlgernonPlayer.soLoudIsReady &&
+                if (SoLoud.instance.isInitialized &&
                     AlgernonPlayer.currentSoundHandle != null) {
                   setState(() {
                     SoLoud.instance.setVolume(

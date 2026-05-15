@@ -27,10 +27,6 @@ class AlgernonPlayer extends StatefulWidget {
   static AudioSource? _preloadedSource;
   static String? _preloadedFilepath;
 
-  static bool get soLoudIsReady =>
-      SoLoud.instance.isInitialized &&
-      SoLoud.instance.getVisualizationEnabled();
-
   static AudioSourceNotifier currentSoundNotifier = AudioSourceNotifier();
 
   static ValueNotifier<bool> playbackControlsEnabledNotifier = ValueNotifier(
@@ -47,7 +43,7 @@ class AlgernonPlayer extends StatefulWidget {
   static Future<void> playSelectedSound({required String reason}) async {
     AlgernonPlayer.playbackControlsEnabledNotifier.value = false;
     debugPrint('AlgernonPlayer::playSelectedSound(): $reason');
-    await _ensureSoLoudIsInitialised();
+    //await _ensureSoLoudIsInitialised();
 
     try {
       final Stopwatch stopwatch = Stopwatch()..start();
@@ -233,13 +229,6 @@ class AlgernonPlayer extends StatefulWidget {
     debugPrint('\t${AlgernonPlayer.playlistNotifier.selectedFilePathIndex}');
   }
 
-  static Future<void> _ensureSoLoudIsInitialised() async {
-    if (!AlgernonPlayer.soLoudIsReady) {
-      await SoLoud.instance.init(bufferSize: ALGERNON.soLoudBufferSize);
-      SoLoud.instance.setVisualizationEnabled(true);
-    }
-  }
-
   @override
   State<AlgernonPlayer> createState() => _AlgernonPlayerState();
 }
@@ -348,7 +337,7 @@ class _AlgernonPlayerState extends State<AlgernonPlayer> {
 
   /// The beating heart of the audio animation
   void _onTick(Timer timer) async {
-    if (!_isProcessing && context.mounted && AlgernonPlayer.soLoudIsReady) {
+    if (!_isProcessing && context.mounted && SoLoud.instance.isInitialized) {
       {
         _isProcessing = true;
         try {
