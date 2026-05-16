@@ -68,6 +68,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   audio_service: ^0.18.18
   audio_session: ^0.2.3
+  wakelock_plus: ^1.5.2
 
   # For audio playback
   #media_kit: ^1.2.3

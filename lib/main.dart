@@ -2,6 +2,7 @@
 
 import 'dart:io' show Platform;
 
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/algernon_window.dart';
 import 'package:algernon/algernon_audio_handler.dart';
@@ -25,6 +26,8 @@ Future<void> main() async {
 
   /// App preferences [SharedPreferencesWithCache] require async setup
   await AppState.initPreferences();
+
+  WakelockPlus.enable();
 
   runApp(const AlgernonApp());
 }
