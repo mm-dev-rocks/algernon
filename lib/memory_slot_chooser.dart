@@ -37,6 +37,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
             ALGERNON.totalMemorySlots,
             (int index) => Expanded(
               child: LongPressDraggable<MemorySlotCopyModel>(
+                delay: Duration(milliseconds: 150),
                 dragAnchorStrategy: pointerDragAnchorStrategy,
                 feedback: MemorySlotDragFeedback(index: index),
                 data: MemorySlotCopyModel(
