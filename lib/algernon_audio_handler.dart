@@ -55,7 +55,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
         // Keep notification on pause
         //androidStopForegroundOnPause: false,
         notificationColor: Colors.black,
-        androidNotificationIcon: 'mipmap/algernon-icon-monochrome.png',
+        androidNotificationIcon: 'drawable/ic_launcher_monochrome',
       ),
     );
     isIdle = true;
