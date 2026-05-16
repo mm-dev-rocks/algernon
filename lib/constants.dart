@@ -68,6 +68,8 @@ class ALGERNON {
   static const int oneMillion = 1000000;
   static const int resLoweredLockoutSecs = 15;
   static const int resRaisedLockoutSecs = 5;
+  
+  static const int longPressMillisecs = 500;
 
   static const double material3IconSize = 24.0;
   static const double material3IconPadding = 8.0;
