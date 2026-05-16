@@ -69,6 +69,8 @@ class ALGERNON {
   static const int resLoweredLockoutSecs = 15;
   static const int resRaisedLockoutSecs = 5;
 
+  /// Must be less than 500 otherwise long press doesn't register on touch on Android.
+  /// [kLongPressTimeout] (the default delay for [LongPressDraggable]) is 500, so the bug is likely related to that.
   static const int longPressMillisecs = 450;
 
   static const double material3IconSize = 24.0;

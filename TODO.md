@@ -2,8 +2,6 @@ read/write .m3u
 
 mac/ipad look into best file types to support
 
-need to keep screen awake optionally?
-
 mic input
 +mic session setup https://pub.dev/packages/audio_session
 
@@ -30,8 +28,6 @@ By default plugin's default icons are not stripped by R8. If you don't use them,
 ---
 
 # BUGS
-
-cant long press mem slot on android
 
 mouse not working on android?
 
@@ -188,3 +184,5 @@ tendrils
 - make blades appear at back//front depending on freq/bin number
 cracky background playback on android (audio service?)
 pause button shows wrong state
+cant long press mem slot on android
+need to keep screen awake optionally?
