@@ -82,33 +82,21 @@ void main() {
   float binValue = texture(u_fftData, vec2(mirroredFraction, 0.5)).r;
   float finalEmphasis =
       u_emphasis == -1.0 ? energyDerivedCount() : float(u_emphasis);
+  float intensity =
+      binValue / distFromCentre * 0.15 * 4.0 * (finalEmphasis / 100);
+  // Normalised 0..1 across the colour range — drives the original RGB formula
+  // which naturally blows out to white when intensity exceeds 1.0
+  float colorPosition = mirroredFraction * 2.0;
+  // vec3 colour = vec3(intensity * (2.0 - colorPosition),
+  // intensity * colorPosition * 0.5,
+  // intensity);
 
-  // ---------------------------------------------------------------------------
-  // Fix 1 — clamp the denominator so 1/r can't explode near the centre.
-  // Anything closer than coreRadius is treated as if it were at coreRadius,
-  // capping the white disc at a controlled size. The 1/r gradient shape is
-  // completely preserved everywhere outside this radius.
-  // coreRadius ≈ fraction of screen half-width for the white spot.
-  // 0.04 = tight pinpoint; raise toward 0.10 for a larger soft core.
-  // ---------------------------------------------------------------------------
-  const float coreRadius = 0.04;
-  float r = max(distFromCentre, coreRadius);
-
-  float intensity = binValue / r * 0.15 * 4.0 * (finalEmphasis / 100.0);
-
-  // ---------------------------------------------------------------------------
-  // Fix 2 — tone compression via power curve below the white threshold.
-  // Exponents < 1.0 lift mid-tones upward, spreading the coloured band across
-  // a wider radius without raising the peak. The branch keeps values ≥ 1.0
-  // (white) untouched so the hot core is preserved exactly as before.
-  // gamma 0.55 ≈ aggressive lift; raise toward 1.0 to reduce the effect.
-  // ---------------------------------------------------------------------------
-  const float gamma = 0.55;
-  float displayIntensity = intensity >= 1.0 ? intensity : pow(intensity, gamma);
-
-  // Hue rotation applied after intensity so white remains white.
+  // Hue rotation applied after intensity so white (all channels equal
+  // above 1.0) remains white — the full dynamic range including blow-out is
+  // preserved
+  // colour = hueRotate(colour, u_hueShift * PI / 180.0);
   vec3 colour =
-      hueRotate(vec3(1.0, 0.6, 0.3), u_hueShift * PI / 180.0) * displayIntensity;
+      hueRotate(vec3(1.0, 0.6, 0.3), u_hueShift * PI / 180.0) * intensity;
 
   fragColor = vec4(colour, 1.0);
 }

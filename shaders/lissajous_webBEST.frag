@@ -30,35 +30,37 @@ out vec4 fragColor;
 // Uniforms:
 //
 //   u_zoom      — TweakType.uniformZoom
-//                 Stroke width / glow radius. Controls how far brightness
-//                 spreads from the curve. Larger = fatter, softer strokes.
-//                 min: 0.05  max: 1.0  default: 0.35
+//                 Glow radius in normalised screen units. Larger = softer/wider
+//                 blobs. min: 0.05  max: 1.0  default: 0.35
 //
 //   u_emphasis  — TweakType.uniformEmphasis
-//                 Colour saturation / vibrancy. 0.0 = greyscale, 1.0 = fully
-//                 vivid. Affects how punchy the palette feels overall.
-//                 min: 0.0  max: 1.0  default: 0.9
+//                 Glow falloff exponent. Higher = sharper, thinner line.
+//                 2.0 = soft neon glow; 6.0+ = fine wire.
+//                 min: 1.0  max: 10.0  default: 4.0
 //
 //   u_hueShift  — TweakType.uniformHueShift
-//                 Base hue in degrees — the anchor of the colour window.
+//                 Base hue offset in degrees. Rotates the entire colour palette
+//                 around the wheel regardless of signal content.
 //                 min: 0.0  max: 360.0  default: 200.0
 //
 //   u_hueRange  — TweakType.uniformHueRange
-//                 Width of the hue window in degrees. Hue is hard-clamped to
-//                 [u_hueShift, u_hueShift + u_hueRange] — the music moves
-//                 within this window but can never leave it.
-//                 0 = single fixed hue; 360 = full-spectrum sweep.
+//                 Hue sweep range in degrees. Controls how far the hue travels
+//                 as the spectral balance shifts from bass-heavy →
+//                 treble-heavy. 0 = single fixed hue; 360 = full rainbow sweep.
 //                 min: 0.0  max: 360.0  default: 120.0
 //
-//   u_size      — TweakType.uniformSize  (not read — see u_emphasis)
-//                 Reserved for ABI compatibility; ignored by this shader.
+//   u_size      — TweakType.uniformSize  (repurposed as saturation)
+//                 Colour saturation. 0.0 = fully desaturated (greyscale glow),
+//                 1.0 = fully vivid. Values around 0.8–1.0 recommended.
+//                 min: 0.0  max: 1.0  default: 0.9
 //
-//   u_speed     — TweakType.uniformSpeed
-//                 Rate at which the hue window drifts around the colour wheel
-//                 over time. 0.0 = window anchored at u_hueShift; higher
-//                 values slowly rotate the whole palette. The music still
-//                 moves hue within the window at a fixed sensitivity.
-//                 min: 0.0  max: 1.0  default: 0.1
+//   u_speed     — TweakType.uniformSpeed  (repurposed as spectral sensitivity)
+//                 Scales how strongly the music pulls hue within u_hueRange.
+//                 0.0 = hue locked to u_hueShift (static palette, no music
+//                 reactivity). 1.0 = full excursion across u_hueRange on
+//                 strong bass/treble contrast. The tilt is computed from raw
+//                 unsmoothed bins so it reacts to individual transients.
+//                 min: 0.0  max: 1.0  default: 0.7
 
 // ---------------------------------------------------------------------------
 // HSV → RGB — H in [0,360], S/V in [0,1].
@@ -214,39 +216,50 @@ void main() {
 
   // --- Glow from the curve ---
   //
-  // u_zoom controls the glow radius — the only stroke-width knob.
-  // Falloff exponent is fixed at 4.0 (soft neon feel); removing the
-  // separate exponent slider eliminates the redundancy with u_zoom.
+  // Map minDist → brightness using an inverse power curve.
+  // clamp ensures we don't go negative or above 1.0 before the pow().
   float distNorm = clamp(1.0 - minDist / u_zoom, 0.0, 1.0);
-  float intensity = pow(distNorm, 4.0);
+  float intensity = pow(distNorm, u_emphasis);
 
   // --- Colour ---
   //
-  // HUE — music-reactive, hard-clamped to [u_hueShift, u_hueShift + u_hueRange].
+  // Colour is expressed in HSV so hue, saturation and brightness are
+  // independently controllable.
   //
-  // spectralTilt (−1..+1) reflects the bass/treble balance each frame.
-  // It's remapped to 0..1 and scaled by u_speed, then mapped into the
-  // hue window. At u_speed=0 hue sits at the window midpoint; at u_speed=1
-  // the music drives it fully across u_hueRange. midCharge adds a small
-  // transient nudge on hits without ever escaping the window.
+  // HUE — built from three signals at very different timescales:
   //
-  float rawBass   = sampleBin(3.0);
-  float rawTreble = sampleBin(180.0);
-  float rawTotal  = rawBass + rawTreble + 0.001;
+  //   1. u_hueShift — static palette anchor.
+  //
+  //   2. spectralTilt — the primary music-reactive signal. Reads raw
+  //      (unsmoothed) bins at the extremes of the spectrum: a deep bass bin
+  //      (bin 3) and a high treble bin (bin 180). Using raw values rather
+  //      than the smoothed band averages means transients register fully.
+  //      Using bins far apart maximises the difference signal — nearby bins
+  //      move together, distant bins genuinely diverge with the music.
+  //
+  //      rawBass and rawTreble are independent 0..1 values. Their difference
+  //      is in −1..+1. u_hueRange sets the full palette width, u_speed
+  //      scales how strongly music pulls within that range.
+  //
+  //   3. midCharge — the G channel at bin 40, remapped to −1..+1. This is
+  //      a faster, unsmoothed signal that adds transient flicker on hits
+  //      and note attacks on top of the slower tilt.
+  //
+  float rawBass = sampleBin(3.0);     // single deep bass bin, unsmoothed
+  float rawTreble = sampleBin(180.0); // single high treble bin, unsmoothed
+  float rawTotal = rawBass + rawTreble + 0.001;
 
-  // −1 = pure bass, +1 = pure treble
+  // Signed tilt in −1..+1: negative = bass-heavy, positive = treble-heavy.
   float spectralTilt = (rawTreble - rawBass) / rawTotal;
 
-  // Map into 0..1 with fixed sensitivity, add small charge nudge and slow
-  // time drift, then clamp — so the total excursion is always 0..1 before
-  // being scaled by u_hueRange.
-  float drift = mod(u_speed * u_time * 0.1, 1.0);
-  float hueT = clamp(drift + spectralTilt * 0.35 + midCharge * 0.05, 0.0, 1.0);
-  float hue = u_hueShift + hueT * u_hueRange;
+  float hue = u_hueShift +
+              spectralTilt * u_hueRange * u_speed // music pulls across range
+              + midCharge * 30.0 * u_speed;       // transient charge flicker
 
-  // SATURATION — u_emphasis drives vibrancy (0 = grey, 1 = vivid).
-  // globalEnergy adds a small boost on loud passages.
-  float sat = clamp(u_emphasis + globalEnergy * 0.1, 0.0, 1.0);
+  // SATURATION — u_size sets the base level (0 = grey, 1 = vivid).
+  // globalEnergy boosts saturation on loud passages so the palette gets
+  // richer when the music is full, and gentler in quiet moments.
+  float sat = clamp(u_size + globalEnergy * 0.2, 0.0, 1.0);
 
   // VALUE — intensity is the primary brightness driver (glow shape).
   // globalEnergy adds a small ambient floor so the background lifts

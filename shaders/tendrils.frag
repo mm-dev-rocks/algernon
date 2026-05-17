@@ -92,13 +92,16 @@ void main() {
     // z: 0 = back, 1 = front.
     float z = row / max(numLayers - 1.0, 1.0);
 
-    float rootX = -xBleed + (col + 0.5 + (h1 - 0.5) * 0.8) * (xScale / bladesPerLayer);
+    float rootX =
+        -xBleed + (col + 0.5 + (h1 - 0.5) * 0.8) * (xScale / bladesPerLayer);
 
     // Per-blade FFT slice.
     float binStart = fi * binsPerBlade;
     vec2 fc = sampleBinRange(binStart, binStart + binsPerBlade);
-    float myMag    = fc.x;
+    float myMag = fc.x;
     float myCharge = fc.y;
+
+    // float musicalDisplacement = 0.5;
 
     // Soften per-blade energy — drives ripple and flutter character,
     // not the main sway. Clamped so a loud bin can't spike wildly.
@@ -108,9 +111,9 @@ void main() {
     if (world.y > myLen)
       continue;
 
-    float myPhase    = h1 * 6.28318;
+    float myPhase = h1 * 6.28318;
     float myWindResp = 0.6 + h3 * 0.4; // tighter range, less variance
-    float myFreq     = 0.8 + h4 * 0.5;
+    float myFreq = 0.8 + h4 * 0.5;
 
     // Parallax: front blades shift slightly with ambient wind only.
     float parallax = windBase * z * 0.18;
@@ -121,47 +124,53 @@ void main() {
 
     // Each blade responds to its own bin energy, not a global music signal.
     float swayScale = 0.3 + z * 0.2;
-    float swaySignal = (windBase + myEnergy * 0.35) * u_warp;
+    // float swaySignal = (windBase + myEnergy * 0.35) * u_spread;
+    float swaySignal = windBase * u_spread + myEnergy * u_warp;
     float primarySway = swaySignal * myWindResp * swayScale * swayFactor;
 
     // Ripple: u_speed controls frequency, myEnergy controls amplitude.
-    // u_warp also scales it so at warp=0 ripple is minimal.
+    // u_spread also scales it so at warp=0 ripple is minimal.
     float rippleAmp = 0.0;
     float myRipple = sin(myFreq * ht * 3.14159 + u_time * 0.9 + myPhase) *
                      rippleAmp * swayFactor * swayFactor;
 
-    float bendAmount    = abs(primarySway + myRipple) / max(myLen, 0.001);
+    float bendAmount = abs(primarySway + myRipple) / max(myLen, 0.001);
     float arcCorrection = sqrt(max(0.0, 1.0 - bendAmount * bendAmount));
-    float correctedHt   = ht / max(arcCorrection, 0.3);
+    float correctedHt = ht / max(arcCorrection, 0.3);
 
     if (correctedHt > 1.0)
       continue;
 
-    swayFactor  = pow(correctedHt, 1.4);
-    primarySway = (windBase + myEnergy * 0.35) * u_warp * myWindResp * swayScale * swayFactor;
-    myRipple    = sin(myFreq * correctedHt * 3.14159 + u_time * 0.9 + myPhase) *
-                  rippleAmp * swayFactor * swayFactor;
+    swayFactor = pow(correctedHt, 1.4);
+    // primarySway = (windBase + myEnergy * 0.35) * u_spread * myWindResp *
+    // swayScale * swayFactor;
+    primarySway = (windBase * u_spread + myEnergy * u_warp) * myWindResp *
+                  swayScale * swayFactor;
+    myRipple = sin(myFreq * correctedHt * 3.14159 + u_time * 0.9 + myPhase) *
+               rippleAmp * swayFactor * swayFactor;
 
     // Tip flutter: driven by charge (phase proxy), scaled by warp.
-    // Slow independent drift per blade — organic restlessness, no music connection.
-    float drift = sin(u_time * (0.2 + h3 * 0.15) + myPhase) * 0.015 * swayFactor;
+    // Slow independent drift per blade — organic restlessness, no music
+    // connection.
+    float drift =
+        sin(u_time * (0.2 + h3 * 0.15) + myPhase) * 0.015 * swayFactor;
 
     float tendrilX = rootXp + primarySway + myRipple + drift;
 
-    float dx    = world.x - tendrilX;
+    float dx = world.x - tendrilX;
     float width = u_size * max(0.4 + z * 0.6, 0.3) * (1.0 - correctedHt * 0.88);
 
     float coverage = exp(-dx * dx / (width * width * 0.04));
     if (coverage < 0.005)
       continue;
 
-    float tipGlow    = 0.25 + pow(correctedHt, 1.8) * 0.75;
-    float depthVal   = 0.25 + z * 0.75;
+    float tipGlow = 0.25 + pow(correctedHt, 1.8) * 0.75;
+    float depthVal = 0.25 + z * 0.75;
     float tendrilVal = tipGlow * depthVal;
 
-    glow     += coverage * depthVal;
-    hueAcc   += (h1 + myCharge * 0.15) * coverage;
-    valAcc   += tendrilVal * coverage;
+    glow += coverage * depthVal;
+    hueAcc += (h1 + myCharge * 0.15) * coverage;
+    valAcc += tendrilVal * coverage;
     wgtTotal += coverage;
   }
 
@@ -174,8 +183,8 @@ void main() {
   float avgVal = valAcc / wgtTotal;
 
   float hue = u_hueShift + avgHue * u_hueRange;
-  float sat  = 0.7;
-  float val  = clamp(avgVal, 0.0, 1.0);
+  float sat = 0.7;
+  float val = clamp(avgVal, 0.0, 1.0);
 
   vec3 col = hsv2rgb(hue, sat, val);
   col = pow(col, vec3(u_emphasis));

@@ -6,42 +6,6 @@ import 'package:algernon/shader_tweak_model.dart';
 
 final List<ShaderModel> shadersData = [
   ShaderModel(
-    friendlyName: 'Rose Tunnel',
-    id: 'rose_tunnel_quadrant',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'rose_tunnel_quadrant',
-        tweakType: TweakType.fftDataSmoothing,
-        min: 0.5,
-        max: 0.9,
-      ),
-      TweakType.uniformSpeed.name: ShaderTweakModel(
-        shaderId: 'rose_tunnel_quadrant',
-        tweakType: TweakType.uniformSpeed,
-        min: 2.0,
-        max: 6.0,
-        defaultValue: 0.8,
-      ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
-        shaderId: 'rose_tunnel_quadrant',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultValue: 100,
-      ),
-      TweakType.uniformEmphasis.name: ShaderTweakModel(
-        shaderId: 'rose_tunnel_quadrant',
-        tweakType: TweakType.uniformEmphasis,
-        isEnergyUniform: true,
-        min: 1,
-        max: 66,
-        divisions: 65,
-        defaultValue: 30,
-      ),
-    },
-  ),
-
-  ShaderModel(
     friendlyName: 'Kaleido Warp',
     id: 'warp_kaleido',
     shaderTweaks: {
@@ -93,22 +57,15 @@ final List<ShaderModel> shadersData = [
         tweakType: TweakType.uniformCountPrimary,
         isEnergyUniform: true,
         min: 2,
-        max: 80,
-        divisions: 78,
+        max: 123,
+        divisions: 121,
         defaultValue: 40,
-      ),
-      TweakType.uniformEmphasis.name: ShaderTweakModel(
-        shaderId: 'lissajous_web',
-        tweakType: TweakType.uniformEmphasis,
-        min: 1.0,
-        max: 10.0,
-        defaultValue: 4.5,
       ),
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
         tweakType: TweakType.uniformZoom,
-        min: 0.1,
-        max: 0.9,
+        min: 0.3,
+        max: 1.5,
         defaultValue: 0.82,
       ),
       TweakType.uniformHueShift.name: ShaderTweakModel(
@@ -125,9 +82,9 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 120,
       ),
-      TweakType.uniformSize.name: ShaderTweakModel(
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'lissajous_web',
-        tweakType: TweakType.uniformSize,
+        tweakType: TweakType.uniformEmphasis,
         min: 0.0,
         max: 1.0,
         defaultValue: 0.9,
@@ -136,7 +93,7 @@ final List<ShaderModel> shadersData = [
         shaderId: 'lissajous_web',
         tweakType: TweakType.uniformSpeed,
         min: 0.0,
-        max: 10.0,
+        max: 5.0,
         defaultValue: 0.7,
       ),
     },
@@ -187,48 +144,6 @@ final List<ShaderModel> shadersData = [
         min: 0.0001,
         max: 2,
         defaultValue: 0.30,
-      ),
-    },
-  ),
-
-  ShaderModel(
-    friendlyName: 'Disco',
-    id: 'rings_radial_2',
-    shaderTweaks: {
-      TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.fftDataSmoothing,
-        min: 0.5,
-        max: 0.95,
-        defaultValue: 0.75,
-      ),
-      TweakType.uniformCountPrimary.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformCountPrimary,
-        min: 4,
-        max: 128,
-        defaultValue: 16,
-      ),
-      TweakType.uniformHueRange.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformHueRange,
-        min: 0,
-        max: 360,
-        defaultValue: 120,
-      ),
-      TweakType.uniformHueShift.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformHueShift,
-        min: 0,
-        max: 360,
-        defaultValue: 200,
-      ),
-      TweakType.uniformEmphasis.name: ShaderTweakModel(
-        shaderId: 'rings_radial_2',
-        tweakType: TweakType.uniformEmphasis,
-        min: 0.1,
-        max: 1,
-        defaultValue: 0.75,
       ),
     },
   ),
@@ -517,21 +432,21 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformSize.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformSize,
-        min: 0.01,
+        min: 0.005,
         max: 0.12,
         defaultValue: 0.038,
       ),
       TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformEmphasis,
-        min: 0.02,
+        min: 0.01,
         max: 3.0,
         defaultValue: 1.8,
       ),
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformZoom,
-        min: 0.15,
+        min: 0.1,
         max: 1,
         defaultValue: 0.32,
       ),
@@ -570,6 +485,13 @@ final List<ShaderModel> shadersData = [
         max: 0.333,
         defaultValue: 0.08,
       ),
+      TweakType.uniformSpread.name: ShaderTweakModel(
+        shaderId: 'tendrils',
+        tweakType: TweakType.uniformSpread,
+        min: 0.1,
+        max: 1.5,
+        defaultValue: 0.4,
+      ),
       TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'tendrils',
         tweakType: TweakType.uniformWarp,
@@ -588,7 +510,7 @@ final List<ShaderModel> shadersData = [
         shaderId: 'tendrils',
         tweakType: TweakType.uniformHueRange,
         min: 0,
-        max: 120,
+        max: 180,
         defaultValue: 40,
       ),
       TweakType.uniformEmphasis.name: ShaderTweakModel(
@@ -602,15 +524,93 @@ final List<ShaderModel> shadersData = [
   ),
 
   ShaderModel(
-    friendlyName: 'Oscilloscope',
-    id: 'oscilloscope_columns',
+    friendlyName: 'Rose Tunnel',
+    id: 'rose_tunnel_quadrant',
     shaderTweaks: {
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
-        shaderId: 'oscilloscope_columns',
+        shaderId: 'rose_tunnel_quadrant',
         tweakType: TweakType.fftDataSmoothing,
+        min: 0.5,
+        max: 0.9,
+      ),
+      TweakType.uniformSpeed.name: ShaderTweakModel(
+        shaderId: 'rose_tunnel_quadrant',
+        tweakType: TweakType.uniformSpeed,
+        min: 2.0,
+        max: 6.0,
+        defaultValue: 0.8,
+      ),
+      TweakType.uniformHueShift.name: ShaderTweakModel(
+        shaderId: 'rose_tunnel_quadrant',
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultValue: 100,
+      ),
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
+        shaderId: 'rose_tunnel_quadrant',
+        tweakType: TweakType.uniformEmphasis,
+        isEnergyUniform: true,
+        min: 1,
+        max: 66,
+        divisions: 65,
+        defaultValue: 30,
       ),
     },
   ),
+
+  ShaderModel(
+    friendlyName: 'Disco',
+    id: 'rings_radial_2',
+    shaderTweaks: {
+      TweakType.fftDataSmoothing.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.fftDataSmoothing,
+        min: 0.5,
+        max: 0.95,
+        defaultValue: 0.75,
+      ),
+      TweakType.uniformCountPrimary.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformCountPrimary,
+        min: 4,
+        max: 128,
+        defaultValue: 16,
+      ),
+      TweakType.uniformHueRange.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformHueRange,
+        min: 0,
+        max: 360,
+        defaultValue: 120,
+      ),
+      TweakType.uniformHueShift.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformHueShift,
+        min: 0,
+        max: 360,
+        defaultValue: 200,
+      ),
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
+        shaderId: 'rings_radial_2',
+        tweakType: TweakType.uniformEmphasis,
+        min: 0.1,
+        max: 1,
+        defaultValue: 0.75,
+      ),
+    },
+  ),
+
+  //ShaderModel(
+  //  friendlyName: 'Oscilloscope',
+  //  id: 'oscilloscope_columns',
+  //  shaderTweaks: {
+  //    TweakType.fftDataSmoothing.name: ShaderTweakModel(
+  //      shaderId: 'oscilloscope_columns',
+  //      tweakType: TweakType.fftDataSmoothing,
+  //    ),
+  //  },
+  //),
 
   //ShaderModel(
   //  friendlyName: 'Fibres',
