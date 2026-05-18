@@ -22,6 +22,9 @@ Named after Algernon the mouse from the sci-fi short story
 - Ajust sliders to change how the animation reacts to the music (each animation will remember its settings)
 ![Screen grab: Sliders](000-ASSETS/img-readme/sliders.png)
 - **Pay close attention to the top slider**, it adjusts stability (smooth animation) vs responsiveness (matching the music)
+![Screen grab: Sliders](000-ASSETS/img-readme/stability-slider.png)
+- Some sliders have an 'auto' icon, tapping it disables the slider and makes that control automatically match energy of
+  the music
 ![Screen grab: Sliders](000-ASSETS/img-readme/auto-slider.png)
 
 ## Memory Slots
