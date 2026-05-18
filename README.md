@@ -15,6 +15,7 @@ Named after Algernon the mouse from the sci-fi short story
 ## Controls
 - Tap the screen to show/hide controls
 - Add some audio files (access the playlist via the bottom dropdown)
+![Screen grab: Sliders](000-ASSETS/img-readme/add-tracks.png)
 - Select animations from the top dropdown
 ![Screen grab: Sliders](000-ASSETS/img-readme/shader-dropdown.png)
 
