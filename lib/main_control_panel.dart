@@ -86,9 +86,10 @@ class _MainControlPanelState extends State<MainControlPanel> {
                   shaderTweak: _fftSmoothingTweak,
                   onChanged: (double value) {
                     if (SoLoud.instance.isInitialized) {
-                      setState(() {
-                        _fftSmoothingTweak.storedValue = value;
-                      });
+                      _fftSmoothingTweak.storedValue = value;
+
+                      /// Rebuild to account for new slider value
+                      setState(() {});
                     }
                     UserInterface.keepControlsAlive();
                   },
@@ -116,15 +117,18 @@ class _MainControlPanelState extends State<MainControlPanel> {
                             ? null
                             : (double value) {
                                 if (SoLoud.instance.isInitialized) {
-                                  setState(() {
-                                    entry.value.storedValue = value;
-                                  });
+                                  entry.value.storedValue = value;
+
+                                  /// Rebuild to account for new slider value
+                                  setState(() {});
                                 }
                                 UserInterface.keepControlsAlive();
                               },
                         onAutoButtonPressed: () {
                           entry.value.useEnergyDerivedCount =
                               !entry.value.useEnergyDerivedCount;
+
+                          /// Rebuild to account for new useEnergyDerivedCount toggle
                           setState(() {});
                         },
                       ),
