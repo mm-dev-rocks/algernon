@@ -16,15 +16,19 @@ Named after Algernon the mouse from the sci-fi short story
 - Tap the screen to show/hide controls
 - Add some audio files (access the playlist via the bottom dropdown)
 - Select animations from the top dropdown
+![Screen grab: Sliders](000-ASSETS/img-readme/shader-dropdown.png)
 
 ## Sliders
 - Ajust sliders to change how the animation reacts to the music (each animation will remember its settings)
+![Screen grab: Sliders](000-ASSETS/img-readme/sliders.png)
 - **Pay close attention to the top slider**, it adjusts stability (smooth animation) vs responsiveness (matching the music)
+![Screen grab: Sliders](000-ASSETS/img-readme/auto-slider.png)
 
 ## Memory Slots
 - The numbers [1] to [5] above the sliders are memory slots
 - Each animation has 5 memory slots to save your favourite settings
 - Memory slots can be copied: long press a slot until it turns pink, then drag it over another slot
+![Screen grab: Sliders](000-ASSETS/img-readme/memory-slots.png)
 
 
 ---
