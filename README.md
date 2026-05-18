@@ -1,6 +1,8 @@
 # Algernon Audio Visualiser
 
-An audio player with shaders animating in time to the music. Named after Algernon the mouse from the sci-fi short story
+An audio player with shaders that animate in time to music. 
+
+Named after Algernon the mouse from the sci-fi short story
 '[Flowers for Algernon](https://www.sdfo.org/gj/stories/flowersforalgernon.pdf)' by Daniel Keyes.
 
 ![Logo: Algernon the mouse](assets/icon/algernon-icon.png)
@@ -17,7 +19,7 @@ An audio player with shaders animating in time to the music. Named after Algerno
 
 ## Sliders
 - Ajust sliders to change how the current animation reacts to the music (your settings will be remembered)
-- **The top slider is often the most important** as it adjusts stability (smooth animation) vs responsiveness (matching the music)
+- **Pay attention to the top slider**, it adjusts stability (smooth animation) vs responsiveness (matching the music)
 
 ## Memory Slots
 - The numbers [1] to [5] above the sliders are memory slots
