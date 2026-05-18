@@ -1,29 +1,31 @@
-# algernon
-
-![Logo: Algernon the mouse](assets/icon/algernon-icon.png)
+# Algernon Audio Visualiser
 
 An audio player with shaders animating in time to the music. Named after Algernon the mouse from the sci-fi short story
 '[Flowers for Algernon](https://www.sdfo.org/gj/stories/flowersforalgernon.pdf)' by Daniel Keyes.
+
+![Logo: Algernon the mouse](assets/icon/algernon-icon.png)
+
+
+---
 
 # How to Use
 
 ## Controls
 - Tap the screen to show/hide controls
-- Add some audio files (the playlist can always be accessed from the bottom dropdown)
+- Add some audio files (access the playlist via the bottom dropdown)
 - Select animations from the top dropdown
 
 ## Sliders
 - Ajust sliders to change how the current animation reacts to the music (your settings will be remembered)
-- The top adjusts stability (smooth animation) vs responsiveness (matching the music)
+- **The top slider is often the most important** as it adjusts stability (smooth animation) vs responsiveness (matching the music)
 
 ## Memory Slots
-- Every animation has 5 memory slots to save different settings
+- The numbers [1] to [5] above the sliders are memory slots
+- Each animation has 5 memory slots to save your favourite settings
 - Memory slots can be copied: long press a slot until it turns pink, then drag it over another slot
 
 
-
-
-
+---
 
 ## Special build instructions for ARM64 Linux
 
