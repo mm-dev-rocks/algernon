@@ -1,10 +1,31 @@
 # algernon
 
-What is flutter\_soloud?[](https://docs.page/alnitak/flutter_soloud_docs#what-is-flutter_soloud)What is flutter\_soloud?[](https://docs.page/alnitak/flutter_soloud_docs#what-is-flutter_soloud)
+![Logo: Algernon the mouse](assets/icon/algernon-icon.png)
+
+An audio player with shaders animating in time to the music. Named after Algernon the mouse from the sci-fi short story
+'[Flowers for Algernon](https://www.sdfo.org/gj/stories/flowersforalgernon.pdf)' by Daniel Keyes.
+
+# How to Use
+
+## Controls
+- Tap the screen to show/hide controls
+- Add some audio files (the playlist can always be accessed from the bottom dropdown)
+- Select animations from the top dropdown
+
+## Sliders
+- Ajust sliders to change how the current animation reacts to the music (your settings will be remembered)
+- The top adjusts stability (smooth animation) vs responsiveness (matching the music)
+
+## Memory Slots
+- Every animation has 5 memory slots to save different settings
+- Memory slots can be copied: long press a slot until it turns pink, then drag it over another slot
 
 
 
-## Dev/build
+
+
+
+## Special build instructions for ARM64 Linux
 
 **flutter\_soloud on Linux ARM64**
 

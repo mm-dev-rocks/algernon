@@ -29,6 +29,11 @@ By default plugin's default icons are not stripped by R8. If you don't use them,
 
 # BUGS
 
+something wrong with memory slots esp. [0]... seems ok at first but going back to a shader later on 0 always seems to be
+same as 1...
+
+app start, not playing, tap of play button works, but pressing space doesn't
+
 mouse not working on android?
 
 chromeos slow no playback bar until rebuild
