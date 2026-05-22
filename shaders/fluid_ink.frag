@@ -18,7 +18,7 @@ out vec4 fragColor;
 //   u_warp  — TweakType.uniformWarpStrength (already exists)
 //                     min: 0.1   max: 1.5   default: 0.7
 //
-//   u_countPrimary     — TweakType.uniformBandCount (already exists)
+//   u_size     — TweakType.uniformBandCount (already exists)
 //                     min: 1.0   max: 4.0   default: 3.0   divisions: 3
 //                     Number of warp iterations.
 //
@@ -83,11 +83,26 @@ vec2 warpDisplace(vec2 p, float bandLow, float timeOffset, float strength) {
   return vec2(wx, wy) * strength * (0.5 + mag * 0.1);
 }
 
-float inkField(vec2 p) {
+// float inkField(vec2 p) {
+//   float v = 0.0;
+//   float amp = 1.0;
+//   float freq = 1.0;
+//   for (int i = 0; i < 5; i++) {
+//     v += sin(p.x * freq + p.y * freq * 0.7) * amp;
+//     p = rot2d(p, 0.2);
+//     freq *= 1.4;
+//     amp *= 0.55;
+//   }
+//   return v;
+// }
+float inkField(vec2 p, int n) {
   float v = 0.0;
   float amp = 1.0;
   float freq = 1.0;
-  for (int i = 0; i < 5; i++) {
+  // for (int i = 0; i < n; i++) {
+  for (int i = 0; i < 999; i++) {
+    if (i >= n)
+      break;
     v += sin(p.x * freq + p.y * freq * 0.7) * amp;
     p = rot2d(p, 0.2);
     freq *= 1.4;
@@ -114,7 +129,8 @@ void main() {
   float midPhase = u_time * 0.5;
   float highPhase = u_time * 0.8;
 
-  int nLayers = int(clamp(u_countPrimary, 1.0, 4.0));
+  int nLayers = int(u_size);
+  // int nLayers = int(clamp(u_size, 1.0, 4.0));
   vec2 wp = p;
 
   // if (nLayers >= 1)
@@ -144,7 +160,8 @@ void main() {
     wp += warpDisplace(wp, 200.0, highPhase * 1.7,
                        u_warp * (0.03 + fcHigh.x * 0.03));
 
-  float ink = inkField(wp * 2.5);
+  // float ink = inkField(wp * 2.5);
+  float ink = inkField(wp * 2.5, nLayers);
   // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
   // float brightness = pow(clamp(ink * 0.5 + 0.5, 0.0, 1.0), u_emphasis);
   // float fade = smoothstep(0.0, 0.4, brightness);

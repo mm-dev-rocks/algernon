@@ -12,6 +12,7 @@ final List<ShaderModel> shadersData = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         shaderId: 'warp_kaleido',
         tweakType: TweakType.fftDataSmoothing,
+        max: 0.995,
       ),
       TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'warp_kaleido',
@@ -196,6 +197,7 @@ final List<ShaderModel> shadersData = [
       TweakType.fftDataSmoothing.name: ShaderTweakModel(
         shaderId: 'polar_warp',
         tweakType: TweakType.fftDataSmoothing,
+        max: 0.995,
       ),
       TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'polar_warp',
@@ -350,18 +352,18 @@ final List<ShaderModel> shadersData = [
         max: 0.99,
         defaultValue: 0.8,
       ),
-      TweakType.uniformCountPrimary.name: ShaderTweakModel(
+      TweakType.uniformSize.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
-        tweakType: TweakType.uniformCountPrimary,
+        tweakType: TweakType.uniformSize,
         min: 1,
-        max: 16,
-        divisions: 15,
+        max: 6,
+        divisions: 5,
         defaultValue: 3,
       ),
       TweakType.uniformWarp.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
         tweakType: TweakType.uniformWarp,
-        min: 0.2,
+        min: 0.3,
         max: 15,
         defaultValue: 0.7,
       ),
@@ -375,8 +377,8 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformEmphasis.name: ShaderTweakModel(
         shaderId: 'fluid_ink',
         tweakType: TweakType.uniformEmphasis,
-        min: 0.1,
-        max: 6.0,
+        min: 0.14,
+        max: 3.5,
         defaultValue: 1.4,
       ),
     },
