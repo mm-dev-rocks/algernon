@@ -29,10 +29,8 @@ By default plugin's default icons are not stripped by R8. If you don't use them,
 
 # BUGS
 
-something wrong with memory slots esp. [0]... seems ok at first but going back to a shader later on 0 always seems to be
-same as 1...
-
-app start, not playing, tap of play button works, but pressing space doesn't
+SOMETHING WRONG WITH MEMORY SLOTS ESP. [0]... SEEMS OK AT FIRST BUT GOING BACK TO A SHADER LATER ON 0 ALWAYS SEEMS TO BE
+SAME AS 1...
 
 mouse not working on android?
 
@@ -191,3 +189,4 @@ cracky background playback on android (audio service?)
 pause button shows wrong state
 cant long press mem slot on android
 need to keep screen awake optionally?
+app start, not playing, tap of play button works, but pressing space doesn't
