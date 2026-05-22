@@ -2,13 +2,10 @@
 
 import 'dart:io' show Platform;
 
+import 'package:algernon/keyboard_handler.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
-import 'package:algernon/algernon_player.dart';
-import 'package:algernon/algernon_window.dart';
-import 'package:algernon/algernon_audio_handler.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:window_manager/window_manager.dart';
 
 import 'app_state.dart';
@@ -60,14 +57,14 @@ class _AlgernonAppState extends State<AlgernonApp> {
     /// [mainNavigatorKey]) so that other classes can access it.
     AppState.update("mainNavigatorKey", _navigatorKey);
 
-    HardwareKeyboard.instance.addHandler(_onKey);
+    KeyboardHandler.init();
 
     super.initState();
   }
 
   @override
   void dispose() {
-    HardwareKeyboard.instance.removeHandler(_onKey);
+    KeyboardHandler.dispose();
     super.dispose();
   }
 
@@ -91,44 +88,6 @@ class _AlgernonAppState extends State<AlgernonApp> {
       },
       settings: settings,
     );
-  }
-
-  bool _onKey(KeyEvent event) {
-    if (event is KeyDownEvent) {
-      debugPrint(event.logicalKey.toString());
-      switch (event.logicalKey.keyLabel) {
-        /// Space toggle pause
-        case " ":
-        case "Media Play Pause":
-          AlgernonPlayer.currentSoundNotifier.togglePause();
-
-        /// Media skip
-        case "Media Track Next":
-          AlgernonAudioHandler.instance.skipToNext();
-        case "Media Track Previous":
-          AlgernonAudioHandler.instance.skipToPrevious();
-
-        /// Fullscreen
-        case "F11":
-
-          /// TODO Does this fail gracefully on non-mobile OSes?
-          AlgernonWindow.toggleFullscreen();
-
-        /// Number keys for memory slots
-        case "1":
-          AlgernonPlayer.painterConfig.currentMemorySlot = 0;
-        case "2":
-          AlgernonPlayer.painterConfig.currentMemorySlot = 1;
-        case "3":
-          AlgernonPlayer.painterConfig.currentMemorySlot = 2;
-        case "4":
-          AlgernonPlayer.painterConfig.currentMemorySlot = 3;
-        case "5":
-          AlgernonPlayer.painterConfig.currentMemorySlot = 4;
-      }
-    }
-    // don't consume — let focus/text fields still work normally
-    return false;
   }
 
   @override

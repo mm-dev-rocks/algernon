@@ -58,6 +58,7 @@ class AlgernonAudioHandler extends BaseAudioHandler with SeekHandler {
         androidNotificationIcon: 'drawable/ic_launcher_monochrome',
       ),
     );
+    isPlaying = false;
     isIdle = true;
   }
 
