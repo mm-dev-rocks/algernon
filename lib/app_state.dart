@@ -148,7 +148,11 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
     AppState.update('preferences', sharedPreferences);
   }
 
-  static dynamic getPreference(String key) {
+  static dynamic deletePreference(String key) {
+    AppState.get('preferences')?.remove(key);
+  }
+
+  static dynamic getPreference(String key, {useDefaults = true}) {
     SharedPreferencesWithCache? sharedPreferences = AppState.get('preferences');
     dynamic userPreference;
 
@@ -156,12 +160,12 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
       AppState.log(
         'SharedPreferencesWithCache has not yet been initialised: $key',
       );
-      if (ALGERNON.defaultPreferences.containsKey(key)) {
+      if (useDefaults && ALGERNON.defaultPreferences.containsKey(key)) {
         var [defaultType, defaultValue] = ALGERNON.defaultPreferences[key];
         userPreference = defaultValue;
         AppState.log('- returning default ($defaultValue)');
       }
-    } else if (ALGERNON.defaultPreferences.containsKey(key)) {
+    } else if (useDefaults && ALGERNON.defaultPreferences.containsKey(key)) {
       var [defaultType, defaultValue] = ALGERNON.defaultPreferences[key];
       switch (defaultType) {
         case const (bool):
@@ -176,9 +180,7 @@ abstract class AppState<T extends StatefulWidget> extends State<T> {
           userPreference = sharedPreferences.getStringList(key) ?? defaultValue;
       }
     } else {
-      AppState.log(
-        "Shared preference '$key' does not exist in app (not found in 'ALGERNON.defaultPreferences')",
-      );
+      AppState.log("Shared preference '$key' does not exist");
     }
     //AppState.log("GET $key: ${userPreference.toString()}");
 

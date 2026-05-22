@@ -7,8 +7,12 @@ import 'package:algernon/memory_slot_copy_model.dart';
 import 'package:algernon/memory_slot_button.dart';
 import 'package:algernon/memory_slot_drag_feedback.dart';
 import 'package:algernon/screen.dart';
+import 'package:algernon/shader_model.dart';
+import 'package:algernon/shader_defaults.dart' as shader_defaults;
+import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
+import 'package:algernon/shaders_meta_data.dart' as meta;
 
 class MemorySlotChooser extends StatefulWidget {
   const MemorySlotChooser({super.key, required this.selectedIndex});
@@ -42,7 +46,7 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
                 feedback: MemorySlotDragFeedback(index: index),
                 data: MemorySlotCopyModel(
                   slotIndex: index,
-                  preferenceKeys: _getPrefKeysFromIndex(index),
+                  //preferenceKeys: _getPrefKeysFromIndex(index),
                 ),
 
                 child: DragTarget<MemorySlotCopyModel>(
@@ -72,22 +76,75 @@ class _MemorySlotChooserState extends State<MemorySlotChooser> {
     );
   }
 
-  Set<String> _getPrefKeysFromIndex(int index) {
-    return AppState.allPreferenceKeys
-        .where(
-          (String prefKey) =>
-              prefKey.startsWith('${ALGERNON.memorySlotPrefPrefix}$index'),
-        )
-        .toSet();
-  }
+  //Set<String> _getPrefKeysFromIndex(int index) {
+  //  return AppState.allPreferenceKeys
+  //      .where(
+  //        (String prefKey) =>
+  //            prefKey.startsWith('${ALGERNON.memorySlotPrefPrefix}$index'),
+  //      )
+  //      .toSet();
+  //}
 
   void _copySlotFromDetails(DragTargetDetails details, int toIndex) {
-    for (final String fromPrefKey in details.data.preferenceKeys) {
-      String toPrefKey = fromPrefKey.replaceFirst(
-        '${ALGERNON.memorySlotPrefPrefix}${details.data.slotIndex}',
-        '${ALGERNON.memorySlotPrefPrefix}$toIndex',
-      );
-      AppState.setPreference(toPrefKey, AppState.getPreference(fromPrefKey));
+    /// Get relevant info about the currently in-use shader.
+    int fromIndex = details.data.slotIndex;
+    String currentShaderId = AlgernonPlayer.painterConfig.currentShader.id;
+    ShaderModel currentShader = meta.shadersData.firstWhere(
+      (shader) => shader.id == currentShaderId,
+    );
+
+    /// For all properties in the slot we're copying **TO**, we need to either:
+    /// - Copy the **FROM** property, or
+    /// - Copy any matching property from [shaderDefaults] (some shaders have multiple defaults for different mem slots
+    ///   so to make sure the exact shader details are copied we might need to copy those across)
+    /// - Delete the existing property. This is necessary because non-existant properties use default values, so if we
+    /// don't delete them they will persist (if **FROM** uses a default, we have to ensure that **TO** goes back to
+    /// using that default)
+    for (String tweakId in currentShader.shaderTweaks.keys) {
+      String fromKey =
+          "${ALGERNON.memorySlotPrefPrefix}$fromIndex-$currentShaderId-$tweakId";
+      String toKey =
+          "${ALGERNON.memorySlotPrefPrefix}$toIndex-$currentShaderId-$tweakId";
+
+      /// Delete all for a clean start
+      AppState.deletePreference(toKey);
+
+      debugPrint('*** copying slot [$fromKey] -> [$toKey]');
+
+      /// Copy settings for this tweak from one of:
+      /// - A saved preference for the slot we're copying from
+      /// - A default for the slot we're copying from (remember different slots may have different defaults)
+
+      dynamic prefToCopy = AppState.getPreference(fromKey);
+      //dynamic prefToCopy = AppState.getPreference(fromKey, useDefaults: false);
+
+      if (prefToCopy == null) {
+        if (shader_defaults.shaderDefaults[fromKey] != null) {
+          debugPrint('- FOUND DEFAULT SETTING');
+          prefToCopy = shader_defaults.shaderDefaults[fromKey][1];
+        } else {
+          debugPrint('- FOUND NOTHING');
+        }
+      } else {
+        debugPrint('- FOUND USER SETTING');
+      }
+
+      //dynamic prefToCopy =
+      //    AppState.getPreference(fromKey, useDefaults: false) ??
+      //        shader_defaults.shaderDefaults[fromKey] == null
+      //    ? null
+      //    /// Default prefs are a [List] of [`runtimeType`, `value`]
+      //    : shader_defaults.shaderDefaults[fromKey][1];
+      debugPrint('- prefToCopy: $prefToCopy');
+
+      if (prefToCopy == null) {
+        /// Already deleted earlier
+        //debugPrint('- DELETING');
+        //AppState.deletePreference(toKey);
+      } else {
+        debugPrint('- COPYING');
+        AppState.setPreference(toKey, prefToCopy);
+      }
     }
   }
 

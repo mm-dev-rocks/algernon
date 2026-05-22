@@ -7,6 +7,9 @@
 /// - MAKE SURE THE OUTER CURLY BRACES MATCH! If you copy a complete JSON it will include the {} so be sure to overwrite
 ///   them in this file.
 ///
+/// Observe the mapping at the end of this file where each value is wrapped in a 2-item list, with the value and its
+/// [runtimeType] to match [ALGERNON.defaultPreferences].
+///
 final Map<String, dynamic> shaderDefaults =
     ({
               //"selectedShaderIndex": 14,
