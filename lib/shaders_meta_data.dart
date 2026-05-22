@@ -396,17 +396,17 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformCountPrimary.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformCountPrimary,
-        min: 8,
+        min: 10,
         max: 128,
         divisions: 12,
         defaultValue: 40,
       ),
-      TweakType.uniformSpeed.name: ShaderTweakModel(
+      TweakType.uniformSize.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformSpeed,
-        min: 0.05,
-        max: 5.0,
-        defaultValue: 0.18,
+        tweakType: TweakType.uniformSize,
+        min: 0.005,
+        max: 0.06,
+        defaultValue: 0.038,
       ),
       TweakType.uniformSpread.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
@@ -414,6 +414,13 @@ final List<ShaderModel> shadersData = [
         min: 0.1,
         max: 2,
         defaultValue: 0.33,
+      ),
+      TweakType.uniformEmphasis.name: ShaderTweakModel(
+        shaderId: 'spectral_sphere',
+        tweakType: TweakType.uniformEmphasis,
+        min: 0.01,
+        max: 1.5,
+        defaultValue: 1.8,
       ),
       TweakType.uniformHueRange.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
@@ -429,19 +436,12 @@ final List<ShaderModel> shadersData = [
         max: 360,
         defaultValue: 25,
       ),
-      TweakType.uniformSize.name: ShaderTweakModel(
+      TweakType.uniformSpeed.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformSize,
-        min: 0.005,
-        max: 0.12,
-        defaultValue: 0.038,
-      ),
-      TweakType.uniformEmphasis.name: ShaderTweakModel(
-        shaderId: 'spectral_sphere',
-        tweakType: TweakType.uniformEmphasis,
-        min: 0.01,
-        max: 3.0,
-        defaultValue: 1.8,
+        tweakType: TweakType.uniformSpeed,
+        min: 0.05,
+        max: 5.0,
+        defaultValue: 0.18,
       ),
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'spectral_sphere',

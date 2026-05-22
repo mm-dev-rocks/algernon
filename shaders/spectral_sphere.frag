@@ -160,9 +160,16 @@ void main() {
   // float rotAngleY = u_time * u_speed + energy * 0.6;
   // float rotAngleX = sin(u_time * u_speed * 0.37) * 0.4 + energy * 0.2;
 
+  // float baseAngle = mod(u_time * u_speed, TAU);
+  // float rotAngleY = baseAngle + energy * 0.6;
+  // float rotAngleX = sin(baseAngle * 0.37) * 0.4 + energy * 0.2;
+  // Precision-safe wrapped angle for Y rotation (the original improvement,
+  // kept)
   float baseAngle = mod(u_time * u_speed, TAU);
   float rotAngleY = baseAngle + energy * 0.6;
-  float rotAngleX = sin(baseAngle * 0.37) * 0.4 + energy * 0.2;
+
+  // X tilt uses its own time-based input — never wraps discontinuously
+  float rotAngleX = sin(u_time * u_speed * 0.37) * 0.4 + energy * 0.2;
 
   mat3 orient = rotX(rotAngleX) * rotY(rotAngleY);
 
