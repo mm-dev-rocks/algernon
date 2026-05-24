@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-only
 
 import 'package:algernon/algernon_player.dart';
+import 'package:algernon/auto_sequence_toggle.dart';
 import 'package:algernon/constants.dart';
 import 'package:algernon/enum.dart';
 import 'package:algernon/memory_slot_chooser.dart';
@@ -48,93 +49,102 @@ class _MainControlPanelState extends State<MainControlPanel> {
       SoLoud.instance.setFftSmoothing(_fftSmoothingTweak.storedValue);
     }
 
-    return Column(
-      mainAxisSize: .min,
+    return Row(
       crossAxisAlignment: .start,
-
-      spacing: uiSizes.paddingSmall,
       children: [
-        /// 'Choose shader' dropdown
-        const Flexible(fit: FlexFit.loose, child: ShaderChooser()),
+        AutoSequenceToggle(),
+        Expanded(
+          child: Column(
+            mainAxisSize: .min,
+            crossAxisAlignment: .start,
 
-        /// Memory slot buttons
-        ListenableBuilder(
-          listenable: AlgernonPlayer.painterConfig,
-          builder: (context, child) {
-            _updateNonUniformTweaks();
-            return MemorySlotChooser(
-              selectedIndex: AlgernonPlayer.painterConfig.currentMemorySlot,
-            );
-          },
-        ),
+            spacing: uiSizes.paddingSmall,
+            children: [
+              /// 'Choose shader' dropdown
+              const Flexible(fit: FlexFit.loose, child: ShaderChooser()),
 
-        /// FFT smoothing
-        ConstrainedBox(
-          constraints: BoxConstraints(
-            maxHeight:
-                Screen.height(context) -
-                (kToolbarHeight * 2 +
-                    ALGERNON.memorySlotButtonSize.height +
-                    uiSizes.paddingLarge),
-          ),
-          // [kToolbarHeight] matches [DropdownMenu] height.
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: .min,
-              children: [
-                ShaderTweakSlider(
-                  shaderTweak: _fftSmoothingTweak,
-                  onChanged: (double value) {
-                    if (SoLoud.instance.isInitialized) {
-                      _fftSmoothingTweak.storedValue = value;
+              /// Memory slot buttons
+              ListenableBuilder(
+                listenable: AlgernonPlayer.painterConfig,
+                builder: (context, child) {
+                  _updateNonUniformTweaks();
+                  return MemorySlotChooser(
+                    selectedIndex:
+                        AlgernonPlayer.painterConfig.currentMemorySlot,
+                  );
+                },
+              ),
 
-                      /// Rebuild to account for new slider value
-                      setState(() {});
-                    }
-                    UserInterface.keepControlsAlive();
-                  },
+              /// FFT smoothing
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight:
+                      Screen.height(context) -
+                      (kToolbarHeight * 2 +
+                          ALGERNON.memorySlotButtonSize.height +
+                          uiSizes.paddingLarge),
                 ),
+                // [kToolbarHeight] matches [DropdownMenu] height.
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: .min,
+                    children: [
+                      ShaderTweakSlider(
+                        shaderTweak: _fftSmoothingTweak,
+                        onChanged: (double value) {
+                          if (SoLoud.instance.isInitialized) {
+                            _fftSmoothingTweak.storedValue = value;
 
-                SizedBox(height: uiSizes.paddingMedium),
-
-                /// Shader-specific tweaks
-                ...widget.currentShader.shaderTweaks.entries
-                    /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
-                    /// and have bespoke sliders.
-                    .where(
-                      (MapEntry<String, ShaderTweakModel> entry) =>
-                          !entry.value.tweakType.isNonUniformTweak,
-                    )
-                    .map(
-                      (
-                        MapEntry<String, ShaderTweakModel> entry,
-                      ) => ShaderTweakSlider(
-                        shaderTweak: entry.value,
-                        onChanged:
-                            /// If this is an energy uniform and the user has selected 'auto', disable its slider.
-                            (entry.value.isEnergyUniform &&
-                                entry.value.useEnergyDerivedCount)
-                            ? null
-                            : (double value) {
-                                if (SoLoud.instance.isInitialized) {
-                                  entry.value.storedValue = value;
-
-                                  /// Rebuild to account for new slider value
-                                  setState(() {});
-                                }
-                                UserInterface.keepControlsAlive();
-                              },
-                        onAutoButtonPressed: () {
-                          entry.value.useEnergyDerivedCount =
-                              !entry.value.useEnergyDerivedCount;
-
-                          /// Rebuild to account for new useEnergyDerivedCount toggle
-                          setState(() {});
+                            /// Rebuild to account for new slider value
+                            setState(() {});
+                          }
+                          UserInterface.keepControlsAlive();
                         },
                       ),
-                    ),
-              ],
-            ),
+
+                      SizedBox(height: uiSizes.paddingMedium),
+
+                      /// Shader-specific tweaks
+                      ...widget.currentShader.shaderTweaks.entries
+                          /// Non uniform tweaks such as FFT Smoothing and Overall Effect are treated differently to the others
+                          /// and have bespoke sliders.
+                          .where(
+                            (MapEntry<String, ShaderTweakModel> entry) =>
+                                !entry.value.tweakType.isNonUniformTweak,
+                          )
+                          .map(
+                            (
+                              MapEntry<String, ShaderTweakModel> entry,
+                            ) => ShaderTweakSlider(
+                              shaderTweak: entry.value,
+                              onChanged:
+                                  /// If this is an energy uniform and the user has selected 'auto', disable its slider.
+                                  (entry.value.isEnergyUniform &&
+                                      entry.value.useEnergyDerivedCount)
+                                  ? null
+                                  : (double value) {
+                                      if (SoLoud.instance.isInitialized) {
+                                        entry.value.storedValue = value;
+
+                                        /// Rebuild to account for new slider value
+                                        setState(() {});
+                                      }
+                                      UserInterface.keepControlsAlive();
+                                    },
+                              onAutoButtonPressed: () {
+                                entry.value.useEnergyDerivedCount =
+                                    !entry.value.useEnergyDerivedCount;
+
+                                /// Rebuild to account for new useEnergyDerivedCount toggle
+                                setState(() {});
+                              },
+                            ),
+                          ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -48,4 +48,5 @@ class PlaylistItemModel {
   }
 
   String get title => path.withoutExtension(path.basename(filepath));
+  String get basename => path.basename(filepath);
 }

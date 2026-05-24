@@ -2,6 +2,7 @@ import 'package:algernon/algernon_audio_handler.dart';
 import 'package:algernon/algernon_player.dart';
 import 'package:algernon/app_state.dart';
 import 'package:algernon/playlist_item_model.dart';
+import 'package:algernon/sequences.dart';
 import 'package:flutter/material.dart';
 
 class PlaylistNotifier extends ChangeNotifier {
@@ -90,4 +91,10 @@ class PlaylistNotifier extends ChangeNotifier {
     currentPlaylist = List<PlaylistItemModel>.of(list);
     notifyListeners();
   }
+
+  String get currentSequencingId =>
+      selectedItem.basename;
+
+  bool get currentTrackHasSequencing =>
+      SEQUENCES.list.containsKey(currentSequencingId);
 }

@@ -9,7 +9,6 @@ import 'package:algernon/memory_slot_drag_feedback.dart';
 import 'package:algernon/screen.dart';
 import 'package:algernon/shader_model.dart';
 import 'package:algernon/shader_defaults.dart' as shader_defaults;
-import 'package:algernon/shader_tweak_model.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:algernon/shaders_meta_data.dart' as meta;

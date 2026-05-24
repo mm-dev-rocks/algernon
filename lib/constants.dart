@@ -44,6 +44,8 @@ class ALGERNON {
     'selectedMemorySlotIndex': [int, 0],
     'selectedAudioFilePathIndex': [int, 0],
 
+    'useShaderSequenceWhereAvailable': [bool, false],
+
     /// Default to 'no looping'
     'loopTypeIndex': [int, 0],
     //

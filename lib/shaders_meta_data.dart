@@ -142,7 +142,7 @@ final List<ShaderModel> shadersData = [
       TweakType.uniformZoom.name: ShaderTweakModel(
         shaderId: 'voronoi_cells',
         tweakType: TweakType.uniformZoom,
-        min: 0.0001,
+        min: 0.00001,
         max: 2,
         defaultValue: 0.30,
       ),
@@ -399,8 +399,8 @@ final List<ShaderModel> shadersData = [
         shaderId: 'spectral_sphere',
         tweakType: TweakType.uniformCountPrimary,
         min: 10,
-        max: 128,
-        divisions: 12,
+        max: 120,
+        divisions: 11,
         defaultValue: 40,
       ),
       TweakType.uniformSize.name: ShaderTweakModel(

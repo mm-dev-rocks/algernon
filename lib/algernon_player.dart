@@ -13,6 +13,7 @@ import 'package:algernon/file_chooser.dart';
 import 'package:algernon/painter_config_model.dart';
 import 'package:algernon/playlist_notifier.dart';
 import 'package:algernon/resolution_changer.dart';
+import 'package:algernon/sequencing.dart';
 import 'package:algernon/user_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -88,6 +89,8 @@ class AlgernonPlayer extends StatefulWidget {
         await _startListeningForTrackFinished();
         debugPrint(
           'AlgernonPlayer._startListeningForTrackFinished() took ${stopwatch.elapsedMilliseconds}ms',
+        );
+        Sequencing.startListening(
         );
 
         await _calibrateCurrentTrack();
@@ -200,6 +203,7 @@ class AlgernonPlayer extends StatefulWidget {
   static Future<void> _onAllInstancesFinished(_) async {
     debugPrint('AlgernonPlayer::_onAllInstancesFinished()');
     debugPrint('\t${AlgernonPlayer.playlistNotifier.selectedFilePathIndex}');
+    Sequencing.stopListening();
     await AlgernonPlayer.currentSoundNotifier.togglePause(forcedState: true);
     _trackFinishedSubscription?.cancel();
     switch (AlgernonPlayer.currentSoundNotifier.loopType) {
