@@ -148,6 +148,26 @@ class _AlgernonAppState extends State<AlgernonApp> {
           valueIndicatorShape: const PaddleSliderValueIndicatorShape(),
           showValueIndicator: ShowValueIndicator.alwaysVisible,
         ),
+        checkboxTheme: Theme.of(context).checkboxTheme.copyWith(
+          side: BorderSide(color: ALGERNON.uiDefaultForegroundColor),
+          checkColor: WidgetStateProperty<Color?>.fromMap(
+            <WidgetStatesConstraint, Color?>{
+              WidgetState.hovered & WidgetState.focused:
+                  ALGERNON.uiStrongForegroundColor,
+              WidgetState.focused: ALGERNON.uiStrongForegroundColor,
+              ~WidgetState.disabled: ALGERNON.uiDefaultForegroundColor,
+            },
+          ),
+          fillColor: WidgetStateProperty<Color?>.fromMap(
+            <WidgetStatesConstraint, Color?>{
+              WidgetState.hovered & WidgetState.focused:
+                  ALGERNON.uiInactiveForegroundColor,
+              WidgetState.focused: ALGERNON.uiInactiveForegroundColor,
+              ~WidgetState.disabled: Colors.transparent,
+            },
+          ),
+          overlayColor: WidgetStatePropertyAll<Color?>(Colors.transparent),
+        ),
         scrollbarTheme: Theme.of(context).scrollbarTheme.copyWith(
           thickness: WidgetStatePropertyAll<double?>(
             ALGERNON.scrollbarThickness,
