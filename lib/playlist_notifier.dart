@@ -92,9 +92,8 @@ class PlaylistNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get currentSequencingId =>
-      selectedItem.basename;
+  String get currentSequencingId => selectedItem.basename;
 
   bool get currentTrackHasSequencing =>
-      SEQUENCES.list.containsKey(currentSequencingId);
+      playableItemCount > 0 && SEQUENCES.list.containsKey(currentSequencingId);
 }
